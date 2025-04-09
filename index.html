@@ -273,5 +273,30 @@
         // Inicialización
         cambiarInicio();
     </script>
+<!-- Añade esto justo antes de cerrar </body> en index.html -->
+<a href="publicos.html" class="floating-button">
+    📜 Ver refranes públicos
+</a>
+
+<style>
+    .floating-button {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #2c3e50;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 50px;
+        text-decoration: none;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        z-index: 1000;
+        font-size: 0.9em;
+        transition: all 0.3s;
+    }
+    .floating-button:hover {
+        background: #1a252f;
+        transform: translateY(-3px);
+    }
+</style>
 </body>
 </html>
