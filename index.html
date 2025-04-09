@@ -216,7 +216,7 @@
         })
         .then(() => {
             heart.classList.add('liked');
-            alert("Nuevo refránkenstein creado");
+            showToast("Combinación guardada ★");
         })
         .catch(error => {
             console.error("Error al guardar:", error);
