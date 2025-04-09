@@ -269,6 +269,15 @@
                 deltaX > 0 ? previousRemate() : nextRemate();
             }
         }
+	    function showToast(message, duration = 3000) {
+    const toast = document.getElementById('custom-toast');
+    document.getElementById('toast-message').textContent = message;
+    
+    toast.classList.add('toast-visible');
+    setTimeout(() => {
+        toast.classList.remove('toast-visible');
+    }, duration);
+}
 
         // Inicialización
         cambiarInicio();
@@ -296,6 +305,29 @@
     .floating-button:hover {
         background: #1a252f;
         transform: translateY(-3px);
+    }
+</style>
+<div id="custom-toast" class="toast-hidden">
+    <span id="toast-message"></span>
+</div>
+
+<style>
+    #custom-toast {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #2c3e50;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 30px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 10000;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+    .toast-visible {
+        opacity: 1 !important;
     }
 </style>
 </body>
