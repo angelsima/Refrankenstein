@@ -50,6 +50,29 @@
 </head>
 <body>
     <h1>Refránkensteins de la Comunidad</h1>
+<!-- Añade esto en la parte superior de publicos.html -->
+<div class="counter-container">
+    <span id="refranes-counter">0</span> nuevos refranes
+</div>
+
+<style>
+    .counter-container {
+        text-align: center;
+        margin: 20px 0;
+        font-size: 1.1em;
+        color: #2c3e50;
+        background: #f8f9fa;
+        padding: 10px;
+        border-radius: 8px;
+    }
+    
+    #refranes-counter {
+        font-weight: bold;
+        color: #e74c3c;
+        font-size: 1.3em;
+    }
+</style>
+    
     <div id="loading">Cargando refranes...</div>
     <div id="error-message"></div>
     <div id="lista-refranes"></div>
@@ -74,30 +97,7 @@
     firebase.firestore().collection('refranes')
         .onSnapshot(() => updateCounter());
 </script>
-
-<!-- Añade esto en la parte superior de publicos.html -->
-<div class="counter-container">
-    <span id="refranes-counter">0</span> nuevos refranes
-</div>
-
-<style>
-    .counter-container {
-        text-align: center;
-        margin: 20px 0;
-        font-size: 1.1em;
-        color: #2c3e50;
-        background: #f8f9fa;
-        padding: 10px;
-        border-radius: 8px;
-    }
-    
-    #refranes-counter {
-        font-weight: bold;
-        color: #e74c3c;
-        font-size: 1.3em;
-    }
-</style>
-    
+  
     <script>
         // 1. Configuración de Firebase (REMPLAZA con tus datos reales)
         const firebaseConfig = {
