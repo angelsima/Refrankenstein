@@ -315,30 +315,36 @@
 
 <style>
     #custom-toast {
-        position: fixed;
-        bottom: 100px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: #2c3e50;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 30px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        z-index: 10000;
-        opacity: 0;
-        transition: opacity 0.3s;
-    }
-	.toast-message-container {
-        padding: 12px 24px;
-        text-align: center;  /* Centrado horizontal */
-        display: flex;
-        align-items: center;  /* Centrado vertical */
-        justify-content: center;
-        min-height: 100%;
-	}
-    .toast-visible {
-        opacity: 1 !important;
-    }
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2c3e50;
+    color: white;
+    padding: 0;
+    border-radius: 30px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 10000;
+    opacity: 0;
+    transition: opacity 0.3s;
+    min-width: 200px;
+    max-width: 80%;
+    display: flex; /* Añadido */
+    justify-content: center; /* Añadido */
+    align-items: center; /* Añadido */
+    min-height: 50px; /* Añadido para altura mínima */
+}
+
+.toast-message-container {
+    padding: 12px 24px;
+    text-align: center;
+    width: 100%; /* Añadido */
+    box-sizing: border-box; /* Añadido */
+}
+
+.toast-visible {
+    opacity: 1 !important;
+}
 </style>
 
 	<a href="about.html" class="about-button">?</a>
