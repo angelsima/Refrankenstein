@@ -46,6 +46,49 @@
             font-weight: bold;
         }
     </style>
+<!-- Añade esto en la parte superior de publicos.html -->
+<div class="counter-container">
+    <span id="refranes-counter">0</span> refranes creados por la comunidad
+</div>
+
+<style>
+    .counter-container {
+        text-align: center;
+        margin: 20px 0;
+        font-size: 1.1em;
+        color: #2c3e50;
+        background: #f8f9fa;
+        padding: 10px;
+        border-radius: 8px;
+    }
+    
+    #refranes-counter {
+        font-weight: bold;
+        color: #e74c3c;
+        font-size: 1.3em;
+    }
+</style>
+
+<script>
+    // Añade esto al código Firebase existente
+    function updateCounter() {
+        firebase.firestore().collection('refranes')
+            .get()
+            .then(querySnapshot => {
+                document.getElementById('refranes-counter').textContent = querySnapshot.size;
+            })
+            .catch(error => {
+                console.error("Error contando refranes:", error);
+            });
+    }
+
+    // Llama a la función cuando se cargue la página
+    document.addEventListener('DOMContentLoaded', updateCounter);
+    
+    // Actualiza en tiempo real (opcional)
+    firebase.firestore().collection('refranes')
+        .onSnapshot(() => updateCounter());
+</script>
 </head>
 <body>
     <h1>Refránkensteins de la Comunidad</h1>
