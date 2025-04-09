@@ -193,6 +193,7 @@
         function toggleLike() {
     const combination = `${inicioActual} ${remateHistory[currentIndex]}`;
     const heart = document.querySelector('.heart-button');
+    heart.classList.toggle('liked');
     
     // Referencia a la colección en Firestore
     const refranesRef = firebase.firestore().collection('refranes');
