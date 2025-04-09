@@ -191,19 +191,39 @@
         }
 
         function toggleLike() {
-            const combination = `${inicioActual} ${remateHistory[currentIndex]}`;
-            const index = likedCombinations.indexOf(combination);
-            
-            if (index === -1) {
-                likedCombinations.push(combination);
-            } else {
-                likedCombinations.splice(index, 1);
-            }
-            
-            actualizarCorazon();
-            actualizarStorage();
-            alert(`Combinación ${index === -1 ? 'guardada' : 'eliminada'} en localStorage`);
-        }
+    const combination = `${inicioActual} ${remateHistory[currentIndex]}`;
+    const heart = document.querySelector('.heart-button');
+    
+    // Referencia a la colección en Firestore
+    const refranesRef = firebase.firestore().collection('refranes');
+    
+    if (heart.classList.contains('liked')) {
+        // Eliminar de Firestore (opcional)
+        refranesRef.where('texto', '==', combination).get()
+            .then(querySnapshot => {
+                querySnapshot.forEach(doc => {
+                    doc.ref.delete();
+                });
+            });
+        heart.classList.remove('liked');
+        alert("Combinación eliminada de la nube");
+    } else {
+        // Guardar en Firestore
+        refranesRef.add({
+            texto: combination,
+            fecha: firebase.firestore.FieldValue.serverTimestamp(),
+            votos: 0
+        })
+        .then(() => {
+            heart.classList.add('liked');
+            alert("Combinación guardada en la nube");
+        })
+        .catch(error => {
+            console.error("Error al guardar:", error);
+            alert("Error al guardar. Revisa la consola.");
+        });
+    }
+}
 
         function actualizarCorazon() {
             const heart = document.querySelector('.heart-button');
