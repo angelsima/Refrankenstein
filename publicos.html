@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Refranes Públicos</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .refran { background: #f5f5f5; padding: 15px; margin: 10px 0; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <h1>Refranes Guardados por la Comunidad</h1>
+    <div id="lista-refranes"></div>
+
+    <script>
+        // Configuración de Firebase (usa LA MISMA que en tu index.html)
+        const firebaseConfig = {
+            apiKey: "TU_API_KEY",
+            authDomain: "TU_PROYECTO.firebaseapp.com",
+            projectId: "TU_PROYECTO",
+            storageBucket: "TU_PROYECTO.appspot.com",
+            messagingSenderId: "TU_SENDER_ID",
+            appId: "TU_APP_ID"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Mostrar refranes en tiempo real
+        db.collection("refranes")
+            .orderBy("fecha", "desc")
+            .onSnapshot((querySnapshot) => {
+                const lista = document.getElementById("lista-refranes");
+                lista.innerHTML = "";
+                
+                querySnapshot.forEach((doc) => {
+                    const refran = doc.data();
+                    lista.innerHTML += `
+                        <div class="refran">
+                            <p>${refran.texto}</p>
+                            <small>${refran.fecha?.toDate().toLocaleString() || 'Fecha desconocida'}</small>
+                        </div>
+                    `;
+                });
+            });
+    </script>
+</body>
+</html>
