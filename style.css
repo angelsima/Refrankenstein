@@ -43,3 +43,27 @@ button:hover {
     font-size: 18px;
     color: #333;
 }
+.heart-button {
+    font-size: 2em;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #ccc; /* Gris por defecto para TODOS los dispositivos */
+    display: block;
+    margin: 0 auto;
+    transition: color 0.3s ease;
+    padding: 10px;
+    -webkit-tap-highlight-color: transparent; /* Elimina el resaltado azul en móviles */
+}
+
+.heart-button.liked {
+    color: #ff3366; /* Rojo solo cuando está activo */
+    animation: pulse 0.5s; /* Efecto opcional al dar like */
+}
+
+/* Efecto opcional de palpitar */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
