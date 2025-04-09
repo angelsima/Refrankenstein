@@ -206,7 +206,7 @@
                 });
             });
         heart.classList.remove('liked');
-        alert("Combinación eliminada de la nube");
+        alert("Refránkenstein eliminado");
     } else {
         // Guardar en Firestore
         refranesRef.add({
@@ -216,7 +216,7 @@
         })
         .then(() => {
             heart.classList.add('liked');
-            alert("Combinación guardada en la nube");
+            alert("Nuevo refránkenstein creado");
         })
         .catch(error => {
             console.error("Error al guardar:", error);
