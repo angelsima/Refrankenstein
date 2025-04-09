@@ -274,119 +274,29 @@
         cambiarInicio();
     </script>
 <!-- Añade esto justo antes de cerrar </body> en index.html -->
-<div class="bottom-tab">
-    <button class="tab-toggle" onclick="toggleTab()">▲ Refranes públicos ▲</button>
-    <div class="tab-content">
-        <h3>Refranes destacados</h3>
-        <div id="tab-refranes">
-            <p>Cargando refranes...</p>
-        </div>
-        <a href="publicos.html" class="ver-todos">Ver todos los refranes ➔</a>
-    </div>
-</div>
+<a href="publicos.html" class="floating-button">
+    📜 Ver refranes públicos
+</a>
 
 <style>
-    .bottom-tab {
+    .floating-button {
         position: fixed;
-        bottom: -250px; /* Oculta el contenido inicialmente */
-        left: 0;
-        right: 0;
-        background: white;
-        box-shadow: 0 -2px 15px rgba(0,0,0,0.1);
-        transition: bottom 0.3s ease-out;
-        z-index: 1000;
-        border-radius: 15px 15px 0 0;
-        max-height: 70vh;
-        overflow-y: auto;
-    }
-    
-    .tab-toggle {
-        position: absolute;
-        top: -40px;
-        left: 50%;
-        transform: translateX(-50%);
+        bottom: 20px;
+        right: 20px;
         background: #2c3e50;
         color: white;
-        border: none;
-        padding: 10px 25px;
-        border-radius: 15px 15px 0 0;
-        cursor: pointer;
-        font-size: 0.9em;
-        box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
-    }
-    
-    .tab-content {
-        padding: 20px;
-        text-align: center;
-    }
-    
-    .ver-todos {
-        display: inline-block;
-        margin-top: 15px;
-        padding: 8px 15px;
-        background: #3498db;
-        color: white;
-        border-radius: 20px;
+        padding: 12px 20px;
+        border-radius: 50px;
         text-decoration: none;
-        font-size: 0.8em;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        z-index: 1000;
+        font-size: 0.9em;
+        transition: all 0.3s;
     }
-    
-    #tab-refranes {
-        margin: 15px 0;
-    }
-    
-    #tab-refranes p {
-        background: #f8f9fa;
-        padding: 10px;
-        border-radius: 8px;
-        margin: 8px 0;
+    .floating-button:hover {
+        background: #1a252f;
+        transform: translateY(-3px);
     }
 </style>
-
-<script>
-    // Función para mostrar/ocultar la pestaña
-    function toggleTab() {
-        const tab = document.querySelector('.bottom-tab');
-        const isHidden = tab.style.bottom === '-250px' || !tab.style.bottom;
-        tab.style.bottom = isHidden ? '0px' : '-250px';
-        document.querySelector('.tab-toggle').textContent = isHidden ? '▼ Ocultar ▼' : '▲ Refranes públicos ▲';
-    }
-
-    // Carga 3 refranes destacados (opcional)
-    function cargarRefranesDestacados() {
-        if (typeof firebase !== 'undefined') {
-            firebase.firestore().collection('refranes')
-                .orderBy('votos', 'desc')
-                .limit(3)
-                .get()
-                .then(querySnapshot => {
-                    const container = document.getElementById('tab-refranes');
-                    if (querySnapshot.empty) {
-                        container.innerHTML = '<p>No hay refranes destacados aún</p>';
-                        return;
-                    }
-                    
-                    container.innerHTML = '';
-                    querySnapshot.forEach(doc => {
-                        const refran = doc.data();
-                        container.innerHTML += `
-                            <p>${refran.texto || 'Refrán sin texto'}</p>
-                        `;
-                    });
-                })
-                .catch(error => {
-                    console.error("Error al cargar refranes:", error);
-                    document.getElementById('tab-refranes').innerHTML = 
-                        '<p>Error al cargar. Intenta recargar.</p>';
-                });
-        } else {
-            document.getElementById('tab-refranes').innerHTML = 
-                '<p>Conecta a internet para ver refranes destacados</p>';
-        }
-    }
-
-    // Cargar refranes al abrir la página
-    document.addEventListener('DOMContentLoaded', cargarRefranesDestacados);
-</script>
 </body>
 </html>
