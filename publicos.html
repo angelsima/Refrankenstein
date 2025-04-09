@@ -1,44 +1,127 @@
-const firebaseConfig = {
-    apiKey: "AIzaSyAdoPUF-cCyvpfiCJiBfCRv3ZYtwu1W4tc",
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Refranes Públicos</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .refran-container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .refran-text {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .refran-date {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        #loading {
+            text-align: center;
+            font-style: italic;
+            color: #7f8c8d;
+        }
+        #error-message {
+            color: #e74c3c;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Refranes Guardados por la Comunidad</h1>
+    <div id="loading">Cargando refranes...</div>
+    <div id="error-message"></div>
+    <div id="lista-refranes"></div>
+
+    <script>
+        // 1. Configuración de Firebase (REMPLAZA con tus datos reales)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAdoPUF-cCyvpfiCJiBfCRv3ZYtwu1W4tc",
     authDomain: "refrankenstein.firebaseapp.com",
     projectId: "refrankenstein",
     storageBucket: "refrankenstein.firebasestorage.app",
     messagingSenderId: "575434538832",
     appId: "1:575434538832:web:615f850a61c54ddd9d3655"
-  };
+        };
 
-// Inicializar Firebase
-try {
-  firebase.initializeApp(firebaseConfig);
-  console.log("Firebase inicializado correctamente");
-  const db = firebase.firestore();
-
-  // Mostrar refranes con depuración
-  db.collection("refranes")
-    .orderBy("fecha", "desc")
-    .onSnapshot(
-      (querySnapshot) => {
-        console.log("Datos recibidos:", querySnapshot.docs);
-        const lista = document.getElementById("lista-refranes");
-        lista.innerHTML = "";
-        
-        querySnapshot.forEach((doc) => {
-          const refran = doc.data();
-          console.log("Refrán:", refran);
-          lista.innerHTML += `
-            <div class="refran">
-              <p>${refran.texto}</p>
-              <small>${refran.fecha?.toDate().toLocaleString() || 'Fecha no disponible'}</small>
-            </div>
-          `;
-        });
-      },
-      (error) => {
-        console.error("Error en la consulta:", error);
-        alert("Error al cargar refranes. Revisa la consola (F12)");
-      }
-    );
-
-} catch (error) {
-  console.error("Error al inicializar Firebase:", error);
-}
+        // 2. Inicialización de Firebase con control de errores
+        try {
+            // Inicializa Firebase
+            const app = firebase.initializeApp(firebaseConfig);
+            console.log("Firebase inicializado correctamente");
+            
+            // Inicializa Firestore
+            const db = firebase.firestore();
+            
+            // 3. Referencia a la colección
+            const refranesRef = db.collection('refranes');
+            
+            // 4. Elementos del DOM
+            const loadingElement = document.getElementById('loading');
+            const errorElement = document.getElementById('error-message');
+            const listaElement = document.getElementById('lista-refranes');
+            
+            // 5. Cargar y mostrar refranes
+            refranesRef.orderBy('fecha', 'desc').onSnapshot({
+                next: (querySnapshot) => {
+                    console.log("Datos recibidos:", querySnapshot.docs);
+                    loadingElement.style.display = 'none';
+                    
+                    if (querySnapshot.empty) {
+                        listaElement.innerHTML = '<div class="refran-container">No hay refranes guardados todavía.</div>';
+                        return;
+                    }
+                    
+                    listaElement.innerHTML = '';
+                    querySnapshot.forEach((doc) => {
+                        const refran = doc.data();
+                        console.log("Procesando refrán:", refran);
+                        
+                        const fecha = refran.fecha 
+                            ? refran.fecha.toDate().toLocaleString('es-ES') 
+                            : 'Fecha desconocida';
+                        
+                        listaElement.innerHTML += `
+                            <div class="refran-container">
+                                <div class="refran-text">${refran.texto || 'Refrán sin texto'}</div>
+                                <div class="refran-date">Guardado el: ${fecha}</div>
+                            </div>
+                        `;
+                    });
+                },
+                error: (error) => {
+                    console.error("Error al cargar refranes:", error);
+                    loadingElement.style.display = 'none';
+                    errorElement.textContent = `Error al cargar refranes: ${error.message}`;
+                }
+            });
+            
+        } catch (error) {
+            console.error("Error al inicializar Firebase:", error);
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error-message').textContent = 
+                `Error crítico: ${error.message}. Recarga la página o intenta más tarde.`;
+        }
+    </script>
+</body>
+</html>
