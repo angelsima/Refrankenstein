@@ -273,30 +273,75 @@
         // Inicialización
         cambiarInicio();
     </script>
-<!-- Añade esto justo antes de cerrar </body> en index.html -->
-<a href="publicos.html" class="floating-button">
-    📜 Ver refranes públicos
-</a>
+<!-- Añade en <body> de index.html -->
+<div class="sidebar">
+    <button class="sidebar-toggle" onclick="toggleSidebar()">☰ Refranes públicos</button>
+    <div class="sidebar-content">
+        <h3>Top refranes</h3>
+        <div id="sidebar-refranes">
+            <p>Cargando...</p>
+        </div>
+        <a href="publicos.html" class="ver-mas">Ver todos ➔</a>
+    </div>
+</div>
 
 <style>
-    .floating-button {
+    .sidebar {
         position: fixed;
-        bottom: 20px;
-        right: 20px;
+        top: 50%;
+        left: -300px;
+        transform: translateY(-50%);
+        width: 300px;
+        background: white;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        transition: left 0.3s;
+        z-index: 1000;
+        border-radius: 0 8px 8px 0;
+    }
+    .sidebar-toggle {
+        position: absolute;
+        right: -100px;
+        top: 50%;
+        transform: translateY(-50%) rotate(90deg);
         background: #2c3e50;
         color: white;
-        padding: 12px 20px;
-        border-radius: 50px;
-        text-decoration: none;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        z-index: 1000;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 8px 8px 0 0;
+        cursor: pointer;
         font-size: 0.9em;
-        transition: all 0.3s;
     }
-    .floating-button:hover {
-        background: #1a252f;
-        transform: translateY(-3px);
+    .sidebar-content {
+        padding: 20px;
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+    .ver-mas {
+        display: block;
+        text-align: center;
+        margin-top: 15px;
+        color: #3498db;
     }
 </style>
+
+<script>
+    function toggleSidebar() {
+        const sidebar = document.querySelector('.sidebar');
+        sidebar.style.left = sidebar.style.left === '0px' ? '-300px' : '0px';
+    }
+
+    // Opcional: Carga 3 refranes destacados
+    firebase.firestore().collection('refranes')
+        .orderBy('votos', 'desc')
+        .limit(3)
+        .get()
+        .then(querySnapshot => {
+            const container = document.getElementById('sidebar-refranes');
+            container.innerHTML = '';
+            querySnapshot.forEach(doc => {
+                container.innerHTML += `<p>${doc.data().texto}</p>`;
+            });
+        });
+</script>
 </body>
 </html>
