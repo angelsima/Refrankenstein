@@ -156,17 +156,22 @@ const firebaseConfig = {
     appId: "1:575434538832:web:615f850a61c54ddd9d3655"
 };
 
+// Variables globales
+let currentFilter = 'nuevos';
+let loadedRefranes = new Set();
+let currentPage = 1;
+const refranesPerPage = 50;
+let lastVisibleDoc = null;
+let firstVisibleDoc = null;
+let unsubscribe = null;
+
 // Inicialización de Firebase
 try {
     const app = firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     console.log("Firebase inicializado correctamente");
-    
-    // Variables globales
-    let currentFilter = 'nuevos';
-    let loadedRefranes = new Set();
 
-    // Función para votar
+    // Función para votar (sin cambios)
     function votarRefran(refranId, votosActuales) {
         const nuevoVoto = votosActuales + 1;
         
@@ -174,7 +179,6 @@ try {
             votos: nuevoVoto
         })
         .then(() => {
-            // Actualiza el contador visual
             const voteCountElements = document.querySelectorAll(`[data-refran-id="${refranId}"] .vote-count`);
             voteCountElements.forEach(el => {
                 el.textContent = nuevoVoto;
@@ -186,95 +190,120 @@ try {
         });
     }
 
-    // Función para filtrar
-function filtrarRefranes(tipo) {
-    currentFilter = tipo;
-    
-    // Actualiza botones activos
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.getAttribute('data-filter') === tipo) {
-            btn.classList.add('active');
-        }
-    });
-    
-    // Recarga los refranes con el nuevo filtro
-    cargarRefranesUnicos();
-}
-
-  // Función principal para cargar refranes
-function cargarRefranesUnicos() {
-    const listaRefranes = document.getElementById('lista-refranes');
-    const loadingElement = document.getElementById('loading');
-    const errorElement = document.getElementById('error-message');
-    
-    loadingElement.style.display = 'block';
-    errorElement.textContent = '';
-    listaRefranes.innerHTML = '';
-    loadedRefranes.clear();
-
-    let query = db.collection('refranes');
-    
-    // Aplica el filtro seleccionado
-    if (currentFilter === 'populares') {
-        query = query.orderBy('votos', 'desc');
-    } else if (currentFilter === 'alfabetico') {
-        query = query.orderBy('texto', 'asc');
-    } else {
-        query = query.orderBy('fecha', 'desc');
-    }
-
-    query.get().then(querySnapshot => {
-        loadingElement.style.display = 'none';
+    // Función para filtrar (modificada)
+    function filtrarRefranes(tipo) {
+        currentFilter = tipo;
+        currentPage = 1;
+        lastVisibleDoc = null;
+        firstVisibleDoc = null;
         
-        const uniqueRefranes = [];
-        const seenTexts = new Set();
-        
-        querySnapshot.forEach(doc => {
-            const refranData = doc.data();
-            if (!seenTexts.has(refranData.texto)) {
-                seenTexts.add(refranData.texto);
-                uniqueRefranes.push({
-                    id: doc.id,
-                    ...refranData
-                });
+        // Actualiza botones activos
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.getAttribute('data-filter') === tipo) {
+                btn.classList.add('active');
             }
         });
+        
+        // Recarga los refranes
+        cargarRefranesUnicos();
+    }
 
-        // Orden alfabético adicional (por si acaso)
-        if (currentFilter === 'alfabetico') {
-            uniqueRefranes.sort((a, b) => a.texto.localeCompare(b.texto));
+    // Función principal para cargar refranes (completamente renovada)
+    function cargarRefranesUnicos() {
+        if (unsubscribe) unsubscribe(); // Cancela cualquier suscripción anterior
+        
+        const listaRefranes = document.getElementById('lista-refranes');
+        const loadingElement = document.getElementById('loading');
+        const errorElement = document.getElementById('error-message');
+        
+        loadingElement.style.display = 'block';
+        errorElement.textContent = '';
+        listaRefranes.innerHTML = '';
+        loadedRefranes.clear();
+
+        let query = db.collection('refranes').limit(refranesPerPage);
+        
+        // Aplica el filtro seleccionado
+        if (currentFilter === 'populares') {
+            query = query.orderBy('votos', 'desc');
+        } else if (currentFilter === 'alfabetico') {
+            query = query.orderBy('texto', 'asc');
+        } else {
+            query = query.orderBy('fecha', 'desc');
         }
 
-        if (uniqueRefranes.length === 0) {
-            listaRefranes.innerHTML = '<div class="refran-container">No hay refranes disponibles</div>';
-            return;
+        // Paginación
+        if (currentPage > 1 && lastVisibleDoc) {
+            query = query.startAfter(lastVisibleDoc);
         }
 
-        uniqueRefranes.forEach(refran => {
-            const fecha = refran.fecha?.toDate 
-                ? refran.fecha.toDate().toLocaleDateString('es-ES') 
-                : 'Fecha desconocida';
+        unsubscribe = query.onSnapshot(querySnapshot => {
+            loadingElement.style.display = 'none';
             
-            listaRefranes.innerHTML += `
-                <div class="refran-container" data-refran-id="${refran.id}">
-                    <p class="refran-text">${refran.texto}</p>
-                    <div class="voting-container">
-                        <button class="vote-btn" onclick="votarRefran('${refran.id}', ${refran.votos || 0})">
-                            👍 <span class="vote-count">${refran.votos || 0}</span>
-                        </button>
+            if (querySnapshot.empty) {
+                listaRefranes.innerHTML = '<div class="refran-container">No hay más refranes</div>';
+                document.getElementById('next-page').disabled = true;
+                return;
+            }
+
+            // Guarda los documentos para paginación
+            lastVisibleDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
+            firstVisibleDoc = querySnapshot.docs[0];
+            
+            const uniqueRefranes = [];
+            const seenTexts = new Set();
+            
+            querySnapshot.forEach(doc => {
+                const refranData = doc.data();
+                if (!seenTexts.has(refranData.texto)) {
+                    seenTexts.add(refranData.texto);
+                    uniqueRefranes.push({
+                        id: doc.id,
+                        ...refranData
+                    });
+                }
+            });
+
+            // Actualiza controles de paginación
+            document.getElementById('page-info').textContent = `Página ${currentPage}`;
+            document.getElementById('prev-page').disabled = currentPage === 1;
+            document.getElementById('next-page').disabled = uniqueRefranes.length < refranesPerPage;
+
+            if (uniqueRefranes.length === 0) {
+                listaRefranes.innerHTML = '<div class="refran-container">No hay refranes disponibles</div>';
+                return;
+            }
+
+            // Orden alfabético adicional (por si acaso)
+            if (currentFilter === 'alfabetico') {
+                uniqueRefranes.sort((a, b) => a.texto.localeCompare(b.texto));
+            }
+
+            // Renderiza los refranes
+            uniqueRefranes.forEach(refran => {
+                const fecha = refran.fecha?.toDate 
+                    ? refran.fecha.toDate().toLocaleDateString('es-ES') 
+                    : 'Fecha desconocida';
+                
+                listaRefranes.innerHTML += `
+                    <div class="refran-container" data-refran-id="${refran.id}">
+                        <p class="refran-text">${refran.texto}</p>
+                        <div class="voting-container">
+                            <button class="vote-btn" onclick="votarRefran('${refran.id}', ${refran.votos || 0})">
+                                👍 <span class="vote-count">${refran.votos || 0}</span>
+                            </button>
+                        </div>
+                        <small class="refran-date">${fecha}</small>
                     </div>
-                    <small class="refran-date">${fecha}</small>
-                </div>
-            `;
+                `;
+            });
+        }, error => {
+            console.error("Error al cargar refranes:", error);
+            loadingElement.style.display = 'none';
+            errorElement.textContent = `Error al cargar refranes: ${error.message}`;
         });
-    })
-    .catch(error => {
-        console.error("Error al cargar refranes:", error);
-        loadingElement.style.display = 'none';
-        errorElement.textContent = `Error al cargar refranes: ${error.message}`;
-    });
-}
+    }
 
     // Event listeners para los botones de filtro
     document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -283,13 +312,26 @@ function cargarRefranesUnicos() {
         });
     });
 
+    // Event listeners para paginación
+    document.getElementById('next-page').addEventListener('click', () => {
+        currentPage++;
+        cargarRefranesUnicos();
+    });
+
+    document.getElementById('prev-page').addEventListener('click', () => {
+        if (currentPage > 1) {
+            currentPage--;
+            cargarRefranesUnicos();
+        }
+    });
+
     // Inicialización
     document.addEventListener('DOMContentLoaded', () => {
         cargarRefranesUnicos();
         updateCounter();
     });
 
-    // Contador de refranes
+    // Contador de refranes (sin cambios)
     function updateCounter() {
         db.collection('refranes')
             .get()
