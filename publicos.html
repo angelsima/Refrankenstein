@@ -305,6 +305,39 @@ function cargarRefranesUnicos() {
         `Error crítico: ${error.message}. Recarga la página o intenta más tarde.`;
 }
     </script>
+<div class="pagination-controls">
+    <button id="prev-page" disabled>◀ Anterior</button>
+    <span id="page-info">Página 1</span>
+    <button id="next-page">Siguiente ▶</button>
+</div>
+
+<style>
+    .pagination-controls {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        margin: 20px 0;
+    }
+    
+    .pagination-controls button {
+        padding: 8px 16px;
+        background: #2c3e50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    
+    .pagination-controls button:disabled {
+        background: #95a5a6;
+        cursor: not-allowed;
+    }
+    
+    #page-info {
+        font-weight: bold;
+    }
+</style>
 <!-- Botón flotante para volver -->
 <a href="index.html" class="back-button">
     ← 🧪 Volver al generador
