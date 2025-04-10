@@ -50,16 +50,14 @@
 </head>
 <body>
     <h1>Refránkensteins creados</h1>
-<!-- Añade esto en la parte superior de publicos.html -->
 <div class="counter-container">
-   Ya llevamos <span id="refranes-counter">0</span>
-</div>
-<div class="filters">
-    <button class="filter-btn active" data-filter="nuevos">Más recientes</button>
-    <button class="filter-btn" data-filter="populares">Más votados</button>
-    <button class="filter-btn" data-filter="alfabetico">Alfabético</button>
-</div>
-
+       Ya llevamos <span id="refranes-counter">0</span>
+    </div>
+ <div class="filters">
+        <button class="filter-btn active" data-filter="nuevos">Más nuevos</button>
+        <button class="filter-btn" data-filter="populares">Más votados</button>
+        <button class="filter-btn" data-filter="alfabetico">Alfabético</button>
+    </div>
 <style>
     .counter-container {
         text-align: center;
@@ -81,7 +79,6 @@
     <div id="loading">Cargando refranes...</div>
     <div id="error-message"></div>
     <div id="lista-refranes"></div>
-
 <style>
     .voting-container {
         margin: 10px 0;
@@ -390,10 +387,10 @@ document.addEventListener('DOMContentLoaded', () => {
 });
     </script>
 <div class="pagination-controls">
-    <button id="prev-page" disabled>◀ Anterior</button>
-    <span id="page-info">Página 1</span>
-    <button id="next-page" disabled>Siguiente ▶</button>
-</div>
+        <button id="prev-page" disabled>◀ Anterior</button>
+        <span id="page-info">Página 1</span>
+        <button id="next-page" disabled>Siguiente ▶</button>
+    </div>
 
 <style>
     .pagination-controls {
@@ -423,8 +420,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 </style>
 <!-- Botón flotante para volver -->
-<a href="index.html" class="back-button">
-    ← 🧪 Volver al generador
+ <a href="index.html" class="back-button">← 🧪 Volver al generador</a>
 </a>
 
 <style>
@@ -448,7 +444,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 </style>
 
-    <a href="about.html" class="about-button">?</a>
+      <a href="about.html" class="about-button">?</a>
 <style>
     .about-button {
         position: fixed;
