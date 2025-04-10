@@ -57,7 +57,9 @@
 <div class="filters">
     <button class="filter-btn active" onclick="filtrarRefranes('nuevos')">Más nuevos</button>
     <button class="filter-btn" onclick="filtrarRefranes('populares')">Más votados</button>
+    <button class="filter-btn" onclick="filtrarRefranes('alfabetico')">Alfabético</button>
 </div>
+
 <style>
     .counter-container {
         text-align: center;
@@ -242,100 +244,84 @@ function cargarRefranesUnicos() {
             const listaElement = document.getElementById('lista-refranes');
             
             // 5. Cargar y mostrar refranes
-            refranesRef.orderBy('fecha', 'desc').onSnapshot({
-                next: (querySnapshot) => {
-                    console.log("Datos recibidos:", querySnapshot.docs);
-                    loadingElement.style.display = 'none';
-                    
-                    if (querySnapshot.empty) {
-                        listaElement.innerHTML = '<div class="refran-container">No hay refranes guardados todavía.</div>';
-                        return;
-                    }
-                    
-                    listaElement.innerHTML = '';
-                    querySnapshot.forEach((doc) => {
-                        const refran = doc.data();
-                        console.log("Procesando refrán:", refran);
-                        
-                        const fecha = refran.fecha 
-                            ? refran.fecha.toDate().toLocaleString('es-ES') 
-                            : 'Fecha desconocida';
-                        
-                        listaElement.innerHTML += `
-                            <div class="refran-container">
-                                <div class="refran-text">${refran.texto || 'Refrán sin texto'}</div>
-                                <div class="refran-date">Guardado el: ${fecha}</div>
-                            </div>
-                        `;
-                    });
-                },
-                error: (error) => {
-                    console.error("Error al cargar refranes:", error);
-                    loadingElement.style.display = 'none';
-                    errorElement.textContent = `Error al cargar refranes: ${error.message}`;
-                }
-            });
-            
-        } catch (error) {
-            console.error("Error al inicializar Firebase:", error);
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('error-message').textContent = 
-                `Error crítico: ${error.message}. Recarga la página o intenta más tarde.`;
+           let currentFilter = 'nuevos';
+
+function filtrarRefranes(tipo) {
+    currentFilter = tipo;
+
+    // Actualiza botones activos
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (
+            (tipo === 'nuevos' && btn.textContent.includes('nuevos')) ||
+            (tipo === 'populares' && btn.textContent.includes('votados')) ||
+            (tipo === 'alfabetico' && btn.textContent.includes('Alfabético'))
+        ) {
+            btn.classList.add('active');
         }
-    let loadedRefranes = new Set(); // Para trackear refranes ya mostrados
+    });
+
+    cargarRefranesUnicos();
+}
 
 function cargarRefranesUnicos() {
-    const listaRefranes = document.getElementById('lista-refranes');
-    
-    firebase.firestore().collection('refranes')
-        .orderBy('fecha', 'desc')
-        .get()
-        .then(querySnapshot => {
-            listaRefranes.innerHTML = '';
-            loadedRefranes.clear(); // Limpiar el set al recargar
-            
-            const uniqueRefranes = [];
-            const seenTexts = new Set();
-            
-            querySnapshot.forEach(doc => {
-                const refran = doc.data().texto;
-                if (!seenTexts.has(refran)) {
-                    seenTexts.add(refran);
-                    uniqueRefranes.push(doc.data());
-                }
-            });
-            
-            if (uniqueRefranes.length === 0) {
-                listaRefranes.innerHTML = '<p>No hay refranes únicos disponibles</p>';
+    const listaElement = document.getElementById('lista-refranes');
+    const loadingElement = document.getElementById('loading');
+    const errorElement = document.getElementById('error-message');
+
+    loadingElement.style.display = 'block';
+    errorElement.textContent = '';
+    listaElement.innerHTML = '';
+
+    let query = firebase.firestore().collection('refranes');
+
+    if (currentFilter === 'populares') {
+        query = query.orderBy('votos', 'desc');
+    } else if (currentFilter === 'alfabetico') {
+        query = query.orderBy('texto', 'asc');
+    } else {
+        query = query.orderBy('fecha', 'desc');
+    }
+
+    query.get()
+        .then(snapshot => {
+            loadingElement.style.display = 'none';
+
+            if (snapshot.empty) {
+                listaElement.innerHTML = '<div class="refran-container">No hay refranes guardados todavía.</div>';
                 return;
             }
-            
-            uniqueRefranes.forEach(refran => {
-                if (!loadedRefranes.has(refran.texto)) {
-                    loadedRefranes.add(refran.texto);
-                    
-                    const fecha = refran.fecha?.toDate 
-                        ? refran.fecha.toDate().toLocaleDateString('es-ES') 
-                        : 'Fecha desconocida';
-                    
-                    listaRefranes.innerHTML += `
-                        <div class="refran-container">
-                            <p class="refran-text">${refran.texto}</p>
-                            <small class="refran-date">${fecha}</small>
+
+            snapshot.forEach(doc => {
+                const refran = doc.data();
+                const fecha = refran.fecha
+                    ? refran.fecha.toDate().toLocaleString('es-ES')
+                    : 'Fecha desconocida';
+
+                listaElement.innerHTML += `
+                    <div class="refran-container">
+                        <p class="refran-text">${refran.texto || 'Refrán sin texto'}</p>
+                        <div class="voting-container">
+                            <button class="vote-btn" onclick="votarRefran('${doc.id}', ${refran.votos || 0})">
+                                👍 <span class="vote-count">${refran.votos || 0}</span>
+                            </button>
                         </div>
-                    `;
-                }
+                        <small class="refran-date">Guardado el: ${fecha}</small>
+                    </div>
+                `;
             });
         })
         .catch(error => {
             console.error("Error al cargar refranes:", error);
-            listaRefranes.innerHTML = '<p>Error al cargar refranes. Intenta recargar.</p>';
+            loadingElement.style.display = 'none';
+            errorElement.textContent = `Error al cargar refranes: ${error.message}`;
         });
 }
 
-// Llamar al cargar la página
-document.addEventListener('DOMContentLoaded', cargarRefranesUnicos);
-  
+// Cargar al inicio por defecto
+document.addEventListener('DOMContentLoaded', () => {
+    cargarRefranesUnicos();
+});
     </script>
 <!-- Botón flotante para volver -->
 <a href="index.html" class="back-button">
