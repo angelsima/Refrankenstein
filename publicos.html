@@ -167,6 +167,59 @@
             document.getElementById('error-message').textContent = 
                 `Error crítico: ${error.message}. Recarga la página o intenta más tarde.`;
         }
+    let loadedRefranes = new Set(); // Para trackear refranes ya mostrados
+
+function cargarRefranesUnicos() {
+    const listaRefranes = document.getElementById('lista-refranes');
+    
+    firebase.firestore().collection('refranes')
+        .orderBy('fecha', 'desc')
+        .get()
+        .then(querySnapshot => {
+            listaRefranes.innerHTML = '';
+            loadedRefranes.clear(); // Limpiar el set al recargar
+            
+            const uniqueRefranes = [];
+            const seenTexts = new Set();
+            
+            querySnapshot.forEach(doc => {
+                const refran = doc.data().texto;
+                if (!seenTexts.has(refran)) {
+                    seenTexts.add(refran);
+                    uniqueRefranes.push(doc.data());
+                }
+            });
+            
+            if (uniqueRefranes.length === 0) {
+                listaRefranes.innerHTML = '<p>No hay refranes únicos disponibles</p>';
+                return;
+            }
+            
+            uniqueRefranes.forEach(refran => {
+                if (!loadedRefranes.has(refran.texto)) {
+                    loadedRefranes.add(refran.texto);
+                    
+                    const fecha = refran.fecha?.toDate 
+                        ? refran.fecha.toDate().toLocaleDateString('es-ES') 
+                        : 'Fecha desconocida';
+                    
+                    listaRefranes.innerHTML += `
+                        <div class="refran-container">
+                            <p class="refran-text">${refran.texto}</p>
+                            <small class="refran-date">${fecha}</small>
+                        </div>
+                    `;
+                }
+            });
+        })
+        .catch(error => {
+            console.error("Error al cargar refranes:", error);
+            listaRefranes.innerHTML = '<p>Error al cargar refranes. Intenta recargar.</p>';
+        });
+}
+
+// Llamar al cargar la página
+document.addEventListener('DOMContentLoaded', cargarRefranesUnicos);
     </script>
 <!-- Botón flotante para volver -->
 <a href="index.html" class="back-button">
