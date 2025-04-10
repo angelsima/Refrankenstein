@@ -273,6 +273,55 @@ function cargarRefranesUnicos() {
 
 // Llamar al cargar la página
 document.addEventListener('DOMContentLoaded', cargarRefranesUnicos);
+   // Función para votar
+function votarRefran(refranId, votosActuales) {
+    const nuevoVoto = votosActuales + 1;
+    
+    firebase.firestore().collection('refranes').doc(refranId).update({
+        votos: nuevoVoto
+    })
+    .then(() => {
+        // Actualiza el contador visual sin recargar
+        document.querySelector(`button[onclick*="${refranId}"] .vote-count`).textContent = nuevoVoto;
+    })
+    .catch(error => {
+        console.error("Error al votar:", error);
+        alert("Debes iniciar sesión para votar"); // Opcional: implementa autenticación
+    });
+}
+
+// Función para filtrar
+let currentFilter = 'nuevos';
+
+function filtrarRefranes(tipo) {
+    currentFilter = tipo;
+    
+    // Actualiza botones activos
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.includes(tipo === 'nuevos' ? 'nuevos' : 'votados'));
+    });
+    
+    // Recarga los refranes con el nuevo filtro
+    cargarRefranesUnicos();
+}
+
+// Función de carga modificada
+function cargarRefranesUnicos() {
+    const listaRefranes = document.getElementById('lista-refranes');
+    listaRefranes.innerHTML = '<p>Cargando refranes...</p>';
+    
+    let query = firebase.firestore().collection('refranes');
+    
+    if (currentFilter === 'populares') {
+        query = query.orderBy('votos', 'desc');
+    } else {
+        query = query.orderBy('fecha', 'desc');
+    }
+    
+    query.get().then(querySnapshot => {
+        // ... (mantén el resto de tu lógica de uniqueRefranes)
+    });
+}
     </script>
 <!-- Botón flotante para volver -->
 <a href="index.html" class="back-button">
