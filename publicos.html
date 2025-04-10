@@ -55,8 +55,8 @@
    Ya llevamos <span id="refranes-counter">0</span>
 </div>
 <div class="filters">
-    <button class="filter-btn active" data-filter="nuevos">Más nuevos</button>
-    <button class="filter-btn" data-filter="populares">Más votados</button>
+    <button class="filter-btn active" onclick="filtrarRefranes('nuevos')">Más nuevos</button>
+    <button class="filter-btn" onclick="filtrarRefranes('populares')">Más votados</button>
 </div>
 <style>
     .counter-container {
@@ -170,74 +170,49 @@ function votarRefran(refranId, votosActuales) {
         alert("Debes iniciar sesión para votar"); // Opcional: implementa autenticación
     });
 }
-
-// Variable global para el filtro actual
+</script>
+<script>
+// Función para filtrar
 let currentFilter = 'nuevos';
 
-// Función para cargar refranes con filtro
-function cargarRefranesConFiltro() {
+function filtrarRefranes(tipo) {
+    currentFilter = tipo;
+    
+    // Actualiza botones activos
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.includes(tipo === 'nuevos' ? 'nuevos' : 'votados'));
+    });
+    
+    // Recarga los refranes con el nuevo filtro
+    cargarRefranesUnicos();
+}
+
+// Función de carga modificada
+function cargarRefranesUnicos() {
     const listaRefranes = document.getElementById('lista-refranes');
-    listaRefranes.innerHTML = '<p>Cargando refranes...</p>';
-
+    listaRefranes.innerHTML += `
+    <div class="refran-container">
+        <p class="refran-text">${refran.texto}</p>
+        <div class="voting-container">
+            <button class="vote-btn" onclick="votarRefran('${doc.id}', ${refran.votos || 0})">
+                👍 <span class="vote-count">${refran.votos || 0}</span>
+            </button>
+        </div>
+        <small class="refran-date">${fecha}</small>
+    </div>
+`;
+    
     let query = firebase.firestore().collection('refranes');
-
-    // Aplica el filtro seleccionado
+    
     if (currentFilter === 'populares') {
         query = query.orderBy('votos', 'desc');
     } else {
         query = query.orderBy('fecha', 'desc');
     }
-
+    
     query.get().then(querySnapshot => {
-        listaRefranes.innerHTML = '';
-        const uniqueRefranes = [];
-        const seenTexts = new Set();
-
-        querySnapshot.forEach(doc => {
-            const refran = doc.data();
-            if (!seenTexts.has(refran.texto)) {
-                seenTexts.add(refran.texto);
-                uniqueRefranes.push({ ...refran, id: doc.id });
-            }
-        });
-
-        uniqueRefranes.forEach(refran => {
-            const fecha = refran.fecha?.toDate?.().toLocaleDateString('es-ES') || 'Reciente';
-            
-            listaRefranes.innerHTML += `
-                <div class="refran-container">
-                    <p class="refran-text">${refran.texto}</p>
-                    <div class="voting-container">
-                        <button class="vote-btn" onclick="votarRefran('${refran.id}', ${refran.votos || 0})">
-                            👍 <span class="vote-count">${refran.votos || 0}</span>
-                        </button>
-                    </div>
-                    <small class="refran-date">${fecha}</small>
-                </div>
-            `;
-        });
+        // ... (mantén el resto de tu lógica de uniqueRefranes)
     });
-}
-
-// Event listeners para los botones de filtro
-document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        // Remueve la clase 'active' de todos los botones
-        document.querySelectorAll('.filter-btn').forEach(b => {
-            b.classList.remove('active');
-        });
-        
-        // Añade 'active' al botón clickeado
-        this.classList.add('active');
-        
-        // Actualiza el filtro y recarga
-        currentFilter = this.getAttribute('data-filter');
-        cargarRefranesConFiltro();
-    });
-});
-
-// Cargar refranes al iniciar
-document.addEventListener('DOMContentLoaded', cargarRefranesConFiltro);
 }
         // 1. Configuración de Firebase (REMPLAZA con tus datos reales)
         const firebaseConfig = {
