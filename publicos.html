@@ -152,9 +152,7 @@
     // Actualiza en tiempo real (opcional)
     firebase.firestore().collection('refranes')
         .onSnapshot(() => updateCounter());
-</script>
-  
-    <script>
+
          // Función para votar
 function votarRefran(refranId, votosActuales) {
     const nuevoVoto = votosActuales + 1;
