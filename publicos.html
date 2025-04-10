@@ -81,16 +81,6 @@
     <div id="loading">Cargando refranes...</div>
     <div id="error-message"></div>
     <div id="lista-refranes"></div>
-<!-- Añade esto donde muestras cada refrán -->
-<div class="refran-container">
-    <p class="refran-text">${refran.texto}</p>
-    <div class="voting-container">
-        <button class="vote-btn" onclick="votarRefran('${refran.id}', ${refran.votos || 0})">
-            👍 <span class="vote-count">${refran.votos || 0}</span>
-        </button>
-    </div>
-    <small class="refran-date">${fecha}</small>
-</div>
 
 <style>
     .voting-container {
