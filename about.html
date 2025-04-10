@@ -102,8 +102,7 @@
     <!-- Formulario para sugerir refranes -->
     <div class="suggestion-form">
         <h2>¿Echas en falta un refrán tradicional?</h2>
-        <p>Ayúdanos a mejorar enviando refranes que conozcas y no estén en la app:</p>
-        
+               
         <form id="suggestion-form">
                      
             <div class="form-group">
@@ -117,20 +116,57 @@
         </form>
     </div>
 
-    <div class="social-links">
-        <h2>¿Quién ha creado esto?</h2>
-        <div class="links-grid">
-            <a href="https://instagram.com/sima.punto" target="_blank" class="social-link">
-                <span class="icon">📷</span> Instagram
-            </a>
-            <a href="https://tantoshigostanto.wordpress.com/" target="_blank" class="social-link">
-                <span class="icon">🐝</span> Tantos higos tanto
-            </a>
-            <a href="https://tu-otro-proyecto.com" target="_blank" class="social-link">
-                <span class="icon">🚀</span> Continuará...
-            </a>
-        </div>
+    <!-- Añade esto después del contenido principal -->
+<div class="social-links">
+    <h2>¿Quién ha creado esto?</h2>
+    <div class="links-grid">
+        <a href="https://instagram.com/sima.punto" target="_blank" class="social-link">
+            <span class="icon">📷</span> Instagram
+        </a>
+        <a href="https://tantoshigostanto.wordpress.com/" target="_blank" class="social-link">
+            <span class="icon">🐝</span> Tantos higos tanto
+        </a>
+        <a href="https://tu-otro-proyecto.com" target="_blank" class="social-link">
+            <span class="icon">🚀</span> Continuará...
+        </a>
     </div>
+</div>
+
+<style>
+    .social-links {
+        margin-top: 40px;
+        text-align: center;
+    }
+    
+    .links-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-top: 20px;
+    }
+    
+    .social-link {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        text-decoration: none;
+        color: #2c3e50;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transition: all 0.3s;
+    }
+    
+    .social-link:hover {
+        background: #e8f4fc;
+        transform: translateY(-3px);
+    }
+    
+    .icon {
+        font-size: 2em;
+        margin-bottom: 8px;
+    }
+</style>
 
     <a href="index.html" class="back-button">← 🧪 Volver al generador</a>
 
