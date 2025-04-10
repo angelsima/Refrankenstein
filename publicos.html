@@ -76,7 +76,60 @@
     <div id="loading">Cargando refranes...</div>
     <div id="error-message"></div>
     <div id="lista-refranes"></div>
+<!-- Añade esto donde muestras cada refrán -->
+<div class="refran-container">
+    <p class="refran-text">${refran.texto}</p>
+    <div class="voting-container">
+        <button class="vote-btn" onclick="votarRefran('${refran.id}', ${refran.votos || 0})">
+            👍 <span class="vote-count">${refran.votos || 0}</span>
+        </button>
+    </div>
+    <small class="refran-date">${fecha}</small>
+</div>
 
+<style>
+    .voting-container {
+        margin: 10px 0;
+    }
+    
+    .vote-btn {
+        background: #f0f0f0;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 15px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .vote-btn:hover {
+        background: #e0e0e0;
+    }
+    
+    .vote-count {
+        margin-left: 5px;
+        font-weight: bold;
+    }
+    
+    .filters {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin: 20px 0;
+    }
+    
+    .filter-btn {
+        padding: 8px 15px;
+        border: 1px solid #ddd;
+        border-radius: 20px;
+        background: white;
+        cursor: pointer;
+    }
+    
+    .filter-btn.active {
+        background: #2c3e50;
+        color: white;
+    }
+</style>
 <script>
     // Añade esto al código Firebase existente
     function updateCounter() {
