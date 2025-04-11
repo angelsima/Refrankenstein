@@ -204,7 +204,15 @@ function filtrarRefranes(tipo) {
     cargarRefranesUnicos();
 }
 
-  // Función principal para cargar refranes
+  // Variables globales para paginación
+let currentPage = 1;
+const refranesPerPage = 25;
+let totalRefranes = 0;
+let totalPages = 1;
+let lastVisibleDoc = null;
+let firstVisibleDoc = null;
+
+// Función principal para cargar refranes con paginación
 function cargarRefranesUnicos() {
     const listaRefranes = document.getElementById('lista-refranes');
     const loadingElement = document.getElementById('loading');
@@ -226,9 +234,28 @@ function cargarRefranesUnicos() {
         query = query.orderBy('fecha', 'desc');
     }
 
+    // Para la primera página
+    if (currentPage === 1) {
+        query = query.limit(refranesPerPage);
+    } 
+    // Para páginas posteriores
+    else {
+        query = query.startAfter(lastVisibleDoc).limit(refranesPerPage);
+    }
+    // Para páginas anteriores
+    else if (currentPage < 1) {
+        query = query.endBefore(firstVisibleDoc).limitToLast(refranesPerPage);
+    }
+
     query.get().then(querySnapshot => {
         loadingElement.style.display = 'none';
         
+        // Actualiza los documentos visibles para paginación
+        if (querySnapshot.docs.length > 0) {
+            lastVisibleDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
+            firstVisibleDoc = querySnapshot.docs[0];
+        }
+
         const uniqueRefranes = [];
         const seenTexts = new Set();
         
@@ -243,9 +270,13 @@ function cargarRefranesUnicos() {
             }
         });
 
-        // Orden alfabético adicional (por si acaso)
-        if (currentFilter === 'alfabetico') {
-            uniqueRefranes.sort((a, b) => a.texto.localeCompare(b.texto));
+        // Actualiza el contador total (solo en primera carga)
+        if (currentPage === 1) {
+            db.collection('refranes').get().then(snap => {
+                totalRefranes = snap.size;
+                totalPages = Math.ceil(totalRefranes / refranesPerPage);
+                updatePaginationControls();
+            });
         }
 
         if (uniqueRefranes.length === 0) {
@@ -270,6 +301,8 @@ function cargarRefranesUnicos() {
                 </div>
             `;
         });
+
+        updatePaginationControls();
     })
     .catch(error => {
         console.error("Error al cargar refranes:", error);
@@ -278,34 +311,86 @@ function cargarRefranesUnicos() {
     });
 }
 
-    // Event listeners para los botones de filtro
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            filtrarRefranes(this.getAttribute('data-filter'));
-        });
-    });
-
-    // Inicialización
-    document.addEventListener('DOMContentLoaded', () => {
-        cargarRefranesUnicos();
-        updateCounter();
-    });
-
-    // Contador de refranes
-    function updateCounter() {
-        db.collection('refranes')
-            .get()
-            .then(querySnapshot => {
-                document.getElementById('refranes-counter').textContent = querySnapshot.size;
-            });
+// Función para actualizar controles de paginación
+function updatePaginationControls() {
+    const prevBtn = document.getElementById('prev-page');
+    const nextBtn = document.getElementById('next-page');
+    const pageNumbers = document.getElementById('page-numbers');
+    
+    // Botones anterior/siguiente
+    prevBtn.disabled = currentPage === 1;
+    nextBtn.disabled = currentPage === totalPages;
+    
+    // Números de página
+    pageNumbers.innerHTML = '';
+    
+    // Mostrar máximo 5 números de página alrededor de la actual
+    const startPage = Math.max(1, currentPage - 2);
+    const endPage = Math.min(totalPages, currentPage + 2);
+    
+    if (startPage > 1) {
+        addPageNumber(1);
+        if (startPage > 2) {
+            pageNumbers.innerHTML += '<span>...</span>';
+        }
     }
-
-} catch (error) {
-    console.error("Error al inicializar Firebase:", error);
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('error-message').textContent = 
-        `Error crítico: ${error.message}. Recarga la página o intenta más tarde.`;
+    
+    for (let i = startPage; i <= endPage; i++) {
+        addPageNumber(i);
+    }
+    
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            pageNumbers.innerHTML += '<span>...</span>';
+        }
+        addPageNumber(totalPages);
+    }
 }
+
+// Función auxiliar para añadir número de página
+function addPageNumber(page) {
+    const pageNumbers = document.getElementById('page-numbers');
+    const pageElement = document.createElement('span');
+    pageElement.textContent = page;
+    pageElement.className = 'page-number';
+    
+    if (page === currentPage) {
+        pageElement.classList.add('active');
+    }
+    
+    pageElement.addEventListener('click', () => {
+        if (page !== currentPage) {
+            currentPage = page;
+            cargarRefranesUnicos();
+        }
+    });
+    
+    pageNumbers.appendChild(pageElement);
+}
+
+// Event listeners para botones de paginación
+document.getElementById('prev-page').addEventListener('click', () => {
+    if (currentPage > 1) {
+        currentPage--;
+        cargarRefranesUnicos();
+    }
+});
+
+document.getElementById('next-page').addEventListener('click', () => {
+    if (currentPage < totalPages) {
+        currentPage++;
+        cargarRefranesUnicos();
+    }
+});
+
+// Modifica el event listener de los filtros para resetear a página 1
+document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        currentPage = 1;
+        lastVisibleDoc = null;
+        filtrarRefranes(this.getAttribute('data-filter'));
+    });
+});
     </script>
 <!-- Botón flotante para volver -->
 <a href="index.html" class="back-button">
@@ -357,6 +442,55 @@ function cargarRefranesUnicos() {
     .about-button:hover {
         transform: scale(1.1);
         background: #1a252f;
+    }
+</style>
+<!-- Paginación -->
+<div class="pagination">
+    <button id="prev-page" disabled>← Anterior</button>
+    <div id="page-numbers"></div>
+    <button id="next-page">Siguiente →</button>
+</div>
+
+<style>
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        margin: 30px 0;
+        flex-wrap: wrap;
+    }
+    
+    .pagination button {
+        padding: 8px 16px;
+        border: 1px solid #ddd;
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .pagination button:hover:not(:disabled) {
+        background: #2c3e50;
+        color: white;
+        border-color: #2c3e50;
+    }
+    
+    .pagination button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    .page-number {
+        padding: 8px 12px;
+        margin: 0 2px;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+    
+    .page-number.active {
+        background: #2c3e50;
+        color: white;
     }
 </style>
 </body>
