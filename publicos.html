@@ -269,7 +269,7 @@
             cargarRefranesUnicos();
         }
 
-       // Función principal para cargar refranes con paginación (MODIFICADA)
+      // Función principal para cargar refranes con paginación (MODIFICADA)
 function cargarRefranesUnicos() {
     const listaRefranes = document.getElementById('lista-refranes');
     const loadingElement = document.getElementById('loading');
@@ -377,6 +377,71 @@ function updatePaginationControls() {
         pageNumbers.appendChild(pageBtn);
     }
 }
+
+        // Función auxiliar para añadir número de página
+        function addPageNumber(page) {
+            const pageNumbers = document.getElementById('page-numbers');
+            const pageElement = document.createElement('span');
+            pageElement.textContent = page;
+            pageElement.className = 'page-number';
+            
+            if (page === currentPage) {
+                pageElement.classList.add('active');
+            }
+            
+            pageElement.addEventListener('click', () => {
+                if (page !== currentPage) {
+                    currentPage = page;
+                    cargarRefranesUnicos();
+                }
+            });
+            
+            pageNumbers.appendChild(pageElement);
+        }
+
+        // Event listeners para botones de paginación
+        document.getElementById('prev-page').addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                cargarRefranesUnicos();
+            }
+        });
+
+        document.getElementById('next-page').addEventListener('click', () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                cargarRefranesUnicos();
+            }
+        });
+
+        // Event listeners para los botones de filtro
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                filtrarRefranes(this.getAttribute('data-filter'));
+            });
+        });
+
+        // Contador de refranes
+        function updateCounter() {
+            db.collection('refranes')
+                .get()
+                .then(querySnapshot => {
+                    document.getElementById('refranes-counter').textContent = querySnapshot.size;
+                });
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarRefranesUnicos();
+            updateCounter();
+        });
+
+    } catch (error) {
+        console.error("Error al inicializar Firebase:", error);
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('error-message').textContent = 
+            `Error crítico: ${error.message}. Recarga la página o intenta más tarde.`;
+    }
 </script>
 </body>
 </html>
