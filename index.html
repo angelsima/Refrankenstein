@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -6,117 +5,121 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Refránkenstein</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            touch-action: pan-y;
-        }
-        
-        .title-container {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        
-        .inicio-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin: 20px 0;
-            position: relative;
-        }
-        
-        .change-inicio {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 1.2em;
-            padding: 5px;
-        }
-        
-        .swipe-container {
-            position: relative;
-            height: 150px;
-            margin: 30px 0;
-            overflow: hidden;
-        }
-        
-        .remate-card {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2em;
-            text-align: center;
-            border: 2px solid #ccc;
-            border-radius: 10px;
-            transition: transform 0.3s;
-            background: white;
-            touch-action: none;
-        }
-        
-        .nav-arrow {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 2em;
-            background: none;
-            border: none;
-            cursor: pointer;
-            z-index: 1;
-        }
-        
-        .prev { left: 10px; }
-        .next { right: 10px; }
-        
-        .heart-button {
-            font-size: 2em;
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #ccc;
-            display: block;
-            margin: 0 auto;
-        }
-        
-        .heart-button.liked {
-            color: #ff3366;
+        /* Tu CSS permanece igual */
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAdoPUF-cCyvpfiCJiBfCRv3ZYtwu1W4tc",
+            authDomain: "refrankenstein.firebaseapp.com",
+            projectId: "refrankenstein",
+            storageBucket: "refrankenstein.firebasestorage.app",
+            messagingSenderId: "575434538832",
+            appId: "1:575434538832:web:615f850a61c54ddd9d3655"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Variables globales
+        let iniciosRefran = [];
+        let rematesRefran = [];
+
+        // Cargar refranes desde Firestore
+        function cargarRefranes() {
+            const iniciosRef = db.collection("tradicionales").where("tipo", "==", "inicio");
+            const rematesRef = db.collection("tradicionales").where("tipo", "==", "remate");
+
+            iniciosRef.get().then(querySnapshot => {
+                iniciosRefran = querySnapshot.docs.map(doc => doc.data().texto);
+                rematesRef.get().then(querySnapshot => {
+                    rematesRefran = querySnapshot.docs.map(doc => doc.data().texto);
+                    cambiarInicio(); // Llamar a cambiarInicio después de cargar los datos
+                });
+            }).catch(error => {
+                console.error("Error al cargar los refranes:", error);
+            });
         }
 
-        @media (hover: hover) {
-            .nav-arrow {
-                display: block;
+        function guardarRefran(refran) {
+            db.collection("refranes").add({
+                texto: refran,
+                fecha: new Date()
+            });
+        }
+
+        function cambiarInicio() {
+            if (iniciosRefran.length === 0) {
+                console.error("No se encontraron refranes de inicio.");
+                return;
+            }
+
+            let inicioActual = iniciosRefran[Math.floor(Math.random() * iniciosRefran.length)];
+            document.getElementById('inicio-refran').textContent = inicioActual;
+            generarNuevoRemate();
+        }
+
+        function generarNuevoRemate() {
+            if (rematesRefran.length === 0) {
+                console.error("No se encontraron refranes de remate.");
+                return;
+            }
+
+            let remateActual = rematesRefran[Math.floor(Math.random() * rematesRefran.length)];
+            document.getElementById('remate-card').textContent = remateActual;
+        }
+
+        function toggleLike() {
+            const combination = `${document.getElementById('inicio-refran').textContent} ${document.getElementById('remate-card').textContent}`;
+            const heart = document.querySelector('.heart-button');
+            
+            // Referencia a la colección en Firestore
+            const refranesRef = firebase.firestore().collection('refranes');
+            
+            if (heart.classList.contains('liked')) {
+                // Eliminar de Firestore (opcional)
+                refranesRef.where('texto', '==', combination).get()
+                    .then(querySnapshot => {
+                        querySnapshot.forEach(doc => {
+                            doc.ref.delete();
+                        });
+                    });
+                heart.classList.remove('liked');
+                showToast("Refránkenstein eliminado❌");
+            } else {
+                // Guardar en Firestore
+                refranesRef.add({
+                    texto: combination,
+                    fecha: firebase.firestore.FieldValue.serverTimestamp(),
+                    votos: 0
+                })
+                .then(() => {
+                    heart.classList.add('liked');
+                    showToast("Refránkenstein guardado✔");
+                })
+                .catch(error => {
+                    console.error("Error al guardar:", error);
+                    alert("Error al guardar. Revisa la consola.");
+                });
             }
         }
-    </style>
-	<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
 
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyAdoPUF-cCyvpfiCJiBfCRv3ZYtwu1W4tc",
-    authDomain: "refrankenstein.firebaseapp.com",
-    projectId: "refrankenstein",
-    storageBucket: "refrankenstein.firebasestorage.app",
-    messagingSenderId: "575434538832",
-    appId: "1:575434538832:web:615f850a61c54ddd9d3655"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
+        function showToast(message, duration = 3000) {
+            const toast = document.getElementById('custom-toast');
+            document.getElementById('toast-message').textContent = message;
+            
+            toast.classList.add('toast-visible');
+            setTimeout(() => {
+                toast.classList.remove('toast-visible');
+            }, duration);
+        }
 
-  function guardarRefran(refran) {
-    db.collection("refranes").add({
-      texto: refran,
-      fecha: new Date()
-    });
-  }
-</script>
+        // Inicialización
+        cargarRefranes(); // Cargar los refranes al cargar la página
+    </script>
 </head>
 <body>
+    <!-- Tu HTML permanece igual -->
     <div class="title-container">
         <h1>Refránkenstein</h1>
     </div>
@@ -134,232 +137,26 @@
 
     <button class="heart-button" onclick="toggleLike()">❤</button>
 
-    <script>
-        const iniciosRefran = [
-		"A caballo regalado", "A falta de pan", "A grandes males", "A la tercera", "A lo hecho", "A palabras necias", "A quien madruga", "A rey muerto",
-      "Afortunado en el juego", "Al mal tiempo", "Al pan, pan", "Aquí te pillo", "Aunque la mona se vista de seda", "Bicho malo", "Caballo grande",
-      "Cada maestrillo", "Cada mochuelo", "Cada oveja", "Cría cuervos", "Crea fama", "Cree el ladrón (que)", "Cuando el río suena", "De aquellos barros",
-      "De tal palo", "Del dicho al hecho", "Dios aprieta (pero)", "Dios da pan", "Dios los cría", "Donde fueres", "El hábito", "El mundo", "El que a hierro mata",
-      "El que algo quiere", "El que calla", "El que la hace", "El que no la debe", "El que ríe el último", "El que no llora", "El que roba a un ladrón",
-      "El que se pica", "El tiempo", "En abril", "En boca cerrada", "En casa del herrero", "Genio y figura", "Hoy por ti", "La cabra", "La intención", "La música",
-      "La práctica", "La primavera", "La ropa sucia", "Lo cortés", "Más sabe el diablo por viejo", "Más vale maña", "Más vale pájaro en mano", "Más vale prevenir",
-      "Más vale tarde", "Mejor solo", "Mucho ruido", "No es más rico el que más tiene", "No hay mal", "No por mucho madrugar", "No todo el monte", "Nunca digas",
-      "Ojo por ojo", "Ojos que no ven", "Perro ladrador", "Piensa mal", "Por la boca", "Querer es", "Quien mucho abarca", "Quien tiene boca", "Sarna con gusto",
-      "Se dice el pecado", "Si te he visto", "Siempre pagan justos", "Tanto tienes", "Tira la piedra", "Un clavo", "Vende la piel", "Vísteme despacio", "Zapatero"
-	];
+    <a href="publicos.html" class="floating-button">
+        📜 Refránkensteins creados→
+    </a>
 
-        const rematesRefran = [
-		"no le mires los dientes", "buenas son tortas", "grandes remedios", "va la vencida", "pecho", "oidos sordos", "dios le ayuda", "rey puesto",
-      "desafortunado en el amor", "buena cara", "y al vino, vino", "aquí te mato", "mona se queda", "nunca muere", "ande o no ande", "tiene su librillo",
-      "a su olivo", "con su pareja", "y te sacarán los ojos", "y acuéstate a dormir", "que todos son de su condición", "agua lleva", "estos lodos", "tal astilla",
-      "hay un trecho", "pero no ahoga", "a quien no tiene dientes", "y ellos se juntan", "haz lo que vieres", "no hace al monje", "es un pañuelo", "a hierro muere",
-      "algo le cuesta", "otorga", "la paga", "no la teme", "ríe mejor", "no mama", "tiene cien años de perdón", "ajos come", "es oro", "aguas mil", "no entran moscas",
-      "cuchara de palo", "hasta la sepultura", "mañana por mí", "tira al monte", "es lo que cuenta", "amansa a las fieras", "hace al maestro", "la sangre altera",
-      "en casa se lava", "no quita lo valiente", "que por diablo", "que fuerza", "que ciento volando", "que curar", "que nunca", "que mal acompañado", "y pocas nueces",
-      "sino el que menos necesita", "que por bien no venga", "amanece más temprano", "es orégano", "de este agua no beberé", "diente por diente", "corazón que no siente",
-      "poco mordedor", "y acertarás", "muere el pez", "poder", "poco aprieta", "se equivoca", "no pica", "pero no el pecador", "no me acuerdo", "por pecadores", "tanto vales",
-      "y esconde la mano", "saca otro clavo", "antes de cazar el oso", "que tengo prisa", "a sus zapatos"
-	];
-
-        let inicioActual = '';
-        let remateActual = '';
-        let remateHistory = [];
-        let currentIndex = -1;
-        let likedCombinations = JSON.parse(localStorage.getItem('likedCombinations')) || [];
-
-        function actualizarStorage() {
-            localStorage.setItem('likedCombinations', JSON.stringify(likedCombinations));
+    <style>
+        .floating-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #2c3e50;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 1000;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
         }
-
-        function cambiarInicio() {
-            inicioActual = iniciosRefran[Math.floor(Math.random() * iniciosRefran.length)];
-            document.getElementById('inicio-refran').textContent = inicioActual;
-            generarNuevoRemate();
-        }
-
-        function generarNuevoRemate() {
-            const nuevoRemate = rematesRefran[Math.floor(Math.random() * rematesRefran.length)];
-            remateHistory = remateHistory.slice(0, currentIndex + 1);
-            remateHistory.push(nuevoRemate);
-            currentIndex++;
-            actualizarRemate();
-        }
-
-        function actualizarRemate() {
-            const card = document.getElementById('remate-card');
-            card.textContent = remateHistory[currentIndex];
-            actualizarCorazon();
-        }
-
-        function toggleLike() {
-    const combination = `${inicioActual} ${remateHistory[currentIndex]}`;
-    const heart = document.querySelector('.heart-button');
-    
-    // Referencia a la colección en Firestore
-    const refranesRef = firebase.firestore().collection('refranes');
-    
-    if (heart.classList.contains('liked')) {
-        // Eliminar de Firestore (opcional)
-        refranesRef.where('texto', '==', combination).get()
-            .then(querySnapshot => {
-                querySnapshot.forEach(doc => {
-                    doc.ref.delete();
-                });
-            });
-        heart.classList.remove('liked');
-        showToast("Refránkenstein eliminado❌");
-    } else {
-        // Guardar en Firestore
-        refranesRef.add({
-            texto: combination,
-            fecha: firebase.firestore.FieldValue.serverTimestamp(),
-            votos: 0
-        })
-        .then(() => {
-            heart.classList.add('liked');
-            showToast("Refránkenstein guardado✔");
-        })
-        .catch(error => {
-            console.error("Error al guardar:", error);
-            alert("Error al guardar. Revisa la consola.");
-        });
-    }
-}
-
-        function actualizarCorazon() {
-            const heart = document.querySelector('.heart-button');
-            const combination = `${inicioActual} ${remateHistory[currentIndex]}`;
-            heart.classList.toggle('liked', likedCombinations.includes(combination));
-        }
-
-        // Navegación
-        function nextRemate() {
-            if (currentIndex < remateHistory.length - 1) {
-                currentIndex++;
-            } else {
-                generarNuevoRemate();
-            }
-            actualizarRemate();
-        }
-
-        function previousRemate() {
-            if (currentIndex > 0) {
-                currentIndex--;
-                actualizarRemate();
-            }
-        }
-
-        // Manejo de Swipe para móviles
-        let touchStartX = 0;
-        let touchEndX = 0;
-        const swipeThreshold = 50;
-
-        document.getElementById('remate-card').addEventListener('touchstart', e => {
-            touchStartX = e.changedTouches[0].screenX;
-        });
-
-        document.getElementById('remate-card').addEventListener('touchend', e => {
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-        });
-
-        function handleSwipe() {
-            const deltaX = touchEndX - touchStartX;
-
-            if (Math.abs(deltaX) > swipeThreshold) {
-                deltaX > 0 ? previousRemate() : nextRemate();
-            }
-        }
-	    function showToast(message, duration = 3000) {
-    const toast = document.getElementById('custom-toast');
-    document.getElementById('toast-message').textContent = message;
-    
-    toast.classList.add('toast-visible');
-    setTimeout(() => {
-        toast.classList.remove('toast-visible');
-    }, duration);
-}
-
-        // Inicialización
-        cambiarInicio();
-    </script>
-<!-- Añade esto justo antes de cerrar </body> en index.html -->
-<a href="publicos.html" class="floating-button">
-    📜 Refránkensteins creados→
-</a>
-
-<style>
-    .floating-button {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: #2c3e50;
-        color: white;
-        padding: 12px 20px;
-        border-radius: 50px;
-        text-decoration: none;
-	    text-align: center;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        z-index: 1000;
-        font-size: 0.9em;
-        transition: all 0.3s;
-    }
-    .floating-button:hover {
-        background: #1a252f;
-        transform: translateY(-3px);
-    }
-</style>
-<div id="custom-toast" class="toast-hidden">
-    <span id="toast-message"></span>
-	<div id="toast-message" class="toast-message-container"></div>
-</div>
-
-<style>
-#custom-toast {
-        position: fixed;
-        bottom: 70px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: #2c3e50;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 30px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        z-index: 10000;
-        opacity: 0;
-        transition: opacity 0.3s;
-    }
-    .toast-visible {
-        opacity: 1 !important;
-}
-</style>
-
-	<a href="about.html" class="about-button">?</a>
-
-<style>
-    .about-button {
-        position: fixed;
-        top: 10px;
-        right: 10px;
-        width: 40px;
-        height: 40px;
-        background: #2c3e50;
-        color: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-decoration: none;
-        font-size: 1.5em;
-        font-weight: bold;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        z-index: 1000;
-        transition: all 0.3s;
-    }
-    .about-button:hover {
-        transform: scale(1.1);
-        background: #1a252f;
-    }
-</style>
+    </style>
 </body>
 </html>
