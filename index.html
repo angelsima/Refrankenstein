@@ -136,49 +136,56 @@
     <button class="heart-button" onclick="toggleLike()">💾</button>
 
     <script>
-   const firebaseConfig = {
-            apiKey: "AIzaSyAdoPUF-cCyvpfiCJiBfCRv3ZYtwu1W4tc",
-            authDomain: "refrankenstein.firebaseapp.com",
-            projectId: "refrankenstein",
-            storageBucket: "refrankenstein.firebasestorage.app",
-            messagingSenderId: "575434538832",
-            appId: "1:575434538832:web:615f850a61c54ddd9d3655"
-        };
-        
-        const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+ const firebaseConfig = {
+    apiKey: "AIzaSyAdoPUF-cCyvpfiCJiBfCRv3ZYtwu1W4tc",
+    authDomain: "refrankenstein.firebaseapp.com",
+    projectId: "refrankenstein",
+    storageBucket: "refrankenstein.firebasestorage.app",
+    messagingSenderId: "575434538832",
+    appId: "1:575434538832:web:615f850a61c54ddd9d3655"
+};
 
-       let iniciosRefran = [];
-        let rematesRefran = [];
-        let inicioActual = '';
-        let remateActual = '';
-        let remateHistory = [];
-        let currentIndex = -1;
-        let likedCombinations = JSON.parse(localStorage.getItem('likedCombinations')) || [];
+// Inicialización única de Firebase
+const app = firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+let iniciosRefran = [];
+let rematesRefran = [];
+let inicioActual = '';
+let remateActual = '';
+let remateHistory = [];
+let currentIndex = -1;
+let likedCombinations = JSON.parse(localStorage.getItem('likedCombinations')) || [];
+
 async function cargarRefranesTradicionales() {
-            try {
-                const snapshot = await db.collection('tradicionales').get();
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    iniciosRefran.push(data.inicio);
-                    rematesRefran.push(data.remate);
-                });
-                console.log('Refranes cargados:', iniciosRefran.length, 'inicios', rematesRefran.length, 'remates');
-            } catch (error) {
-                console.error('Error cargando refranes:', error);
+    try {
+        const snapshot = await db.collection('tradicionales').get();
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            // Verificar estructura de datos
+            if(data.inicio && data.remate) {
+                iniciosRefran.push(data.inicio);
+                rematesRefran.push(data.remate);
             }
-        }
+        });
+        console.log('Refranes cargados:', iniciosRefran.length, iniciosRefran);
+    } catch (error) {
+        console.error('Error cargando refranes:', error);
+        showToast("Error cargando refranes", 5000);
+    }
+}
 
         function actualizarStorage() {
             localStorage.setItem('likedCombinations', JSON.stringify(likedCombinations));
         }
 
-        function cambiarInicio() {
-            if(iniciosRefran.length === 0) return;
-            inicioActual = iniciosRefran[Math.floor(Math.random() * iniciosRefran.length)];
-            document.getElementById('inicio-refran').textContent = inicioActual;
-            generarNuevoRemate();
-        }
+        // Modificar función de cambio de inicio
+function cambiarInicio() {
+    if(iniciosRefran.length === 0) return;
+    inicioActual = iniciosRefran[Math.floor(Math.random() * iniciosRefran.length)];
+    document.getElementById('inicio-refran').textContent = inicioActual;
+    generarNuevoRemate();
+}
 
         function generarNuevoRemate() {
             if(rematesRefran.length === 0) return;
@@ -285,10 +292,19 @@ async function cargarRefranesTradicionales() {
 }
 
         // Inicialización async
-        async function inicializarApp() {
-            await cargarRefranesTradicionales();
-            cambiarInicio();
-        }
+       async function inicializarApp() {
+    await cargarRefranesTradicionales();
+    if(iniciosRefran.length > 0 && rematesRefran.length > 0) {
+        cambiarInicio();
+    } else {
+        showToast("No se encontraron refranes", 5000);
+    }
+}
+        // Añadir loader mientras carga
+function toggleLoader(show) {
+    document.getElementById('loading').style.display = show ? 'block' : 'none';
+}
+
 
         // Iniciar la aplicación
         inicializarApp();
