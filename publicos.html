@@ -269,114 +269,134 @@
             cargarRefranesUnicos();
         }
 
-      // Función principal para cargar refranes con paginación (MODIFICADA)
-function cargarRefranesUnicos() {
-    const listaRefranes = document.getElementById('lista-refranes');
-    const loadingElement = document.getElementById('loading');
-    const errorElement = document.getElementById('error-message');
-    
-    loadingElement.style.display = 'block';
-    errorElement.textContent = '';
-    listaRefranes.innerHTML = '';
-    loadedRefranes.clear();
+        // Función principal para cargar refranes con paginación
+        function cargarRefranesUnicos() {
+            const listaRefranes = document.getElementById('lista-refranes');
+            const loadingElement = document.getElementById('loading');
+            const errorElement = document.getElementById('error-message');
+            
+            loadingElement.style.display = 'block';
+            errorElement.textContent = '';
+            listaRefranes.innerHTML = '';
+            loadedRefranes.clear();
 
-    let query = db.collection('refranes');
-    
-    // Aplica el filtro seleccionado
-    if (currentFilter === 'populares') {
-        query = query.orderBy('votos', 'desc');
-    } else if (currentFilter === 'alfabetico') {
-        query = query.orderBy('texto', 'asc');
-    } else {
-        query = query.orderBy('fecha', 'desc');
-    }
+            let query = db.collection('refranes');
+            
+            // Aplica el filtro seleccionado
+            if (currentFilter === 'populares') {
+                query = query.orderBy('votos', 'desc');
+            } else if (currentFilter === 'alfabetico') {
+                query = query.orderBy('texto', 'asc');
+            } else {
+                query = query.orderBy('fecha', 'desc');
+            }
 
-    // NUEVA LÓGICA DE PAGINACIÓN
-    const offset = (currentPage - 1) * refranesPerPage;
-    query = query.offset(offset).limit(refranesPerPage);
+            // Configuración de paginación
+            if (currentPage === 1) {
+                query = query.limit(refranesPerPage);
+            } else if (lastVisibleDoc) {
+                query = query.startAfter(lastVisibleDoc).limit(refranesPerPage);
+            }
 
-    query.get().then(querySnapshot => {
-        loadingElement.style.display = 'none';
-        
-        // Obtener total de documentos (solo en primera carga)
-        if (currentPage === 1) {
-            db.collection('refranes').count().get().then(snap => {
-                totalRefranes = snap.data().count;
-                totalPages = Math.ceil(totalRefranes / refranesPerPage);
+            query.get().then(querySnapshot => {
+                loadingElement.style.display = 'none';
+                
+                // Actualiza los documentos visibles para paginación
+                if (querySnapshot.docs.length > 0) {
+                    lastVisibleDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
+                    firstVisibleDoc = querySnapshot.docs[0];
+                }
+
+                const uniqueRefranes = [];
+                const seenTexts = new Set();
+                
+                querySnapshot.forEach(doc => {
+                    const refranData = doc.data();
+                    if (!seenTexts.has(refranData.texto)) {
+                        seenTexts.add(refranData.texto);
+                        uniqueRefranes.push({
+                            id: doc.id,
+                            ...refranData
+                        });
+                    }
+                });
+
+                // Actualiza el contador total (solo en primera carga)
+                if (currentPage === 1) {
+                    db.collection('refranes').get().then(snap => {
+                        totalRefranes = snap.size;
+                        totalPages = Math.ceil(totalRefranes / refranesPerPage);
+                        updatePaginationControls();
+                    });
+                }
+
+                if (uniqueRefranes.length === 0) {
+                    listaRefranes.innerHTML = '<div class="refran-container">No hay refranes disponibles</div>';
+                    return;
+                }
+
+                uniqueRefranes.forEach(refran => {
+                    const fecha = refran.fecha?.toDate 
+                        ? refran.fecha.toDate().toLocaleDateString('es-ES') 
+                        : 'Fecha desconocida';
+                    
+                    listaRefranes.innerHTML += `
+                        <div class="refran-container" data-refran-id="${refran.id}">
+                            <p class="refran-text">${refran.texto}</p>
+                            <div class="voting-container">
+                                <button class="vote-btn" onclick="votarRefran('${refran.id}', ${refran.votos || 0})">
+                                    👍 <span class="vote-count">${refran.votos || 0}</span>
+                                </button>
+                            </div>
+                            <small class="refran-date">${fecha}</small>
+                        </div>
+                    `;
+                });
+
                 updatePaginationControls();
+            })
+            .catch(error => {
+                console.error("Error al cargar refranes:", error);
+                loadingElement.style.display = 'none';
+                errorElement.textContent = `Error al cargar refranes: ${error.message}`;
             });
         }
 
-        const uniqueRefranes = [];
-        const seenTexts = new Set();
-        
-        querySnapshot.forEach(doc => {
-            const refranData = doc.data();
-            if (!seenTexts.has(refranData.texto)) {
-                seenTexts.add(refranData.texto);
-                uniqueRefranes.push({
-                    id: doc.id,
-                    ...refranData
-                });
+        // Función para actualizar controles de paginación
+        function updatePaginationControls() {
+            const prevBtn = document.getElementById('prev-page');
+            const nextBtn = document.getElementById('next-page');
+            const pageNumbers = document.getElementById('page-numbers');
+            
+            // Botones anterior/siguiente
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages || totalPages === 0;
+            
+            // Números de página
+            pageNumbers.innerHTML = '';
+            
+            // Mostrar máximo 5 números de página alrededor de la actual
+            const startPage = Math.max(1, currentPage - 2);
+            const endPage = Math.min(totalPages, currentPage + 2);
+            
+            if (startPage > 1) {
+                addPageNumber(1);
+                if (startPage > 2) {
+                    pageNumbers.innerHTML += '<span>...</span>';
+                }
             }
-        });
-
-        if (uniqueRefranes.length === 0) {
-            listaRefranes.innerHTML = '<div class="refran-container">No hay refranes disponibles</div>';
-            return;
+            
+            for (let i = startPage; i <= endPage; i++) {
+                addPageNumber(i);
+            }
+            
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    pageNumbers.innerHTML += '<span>...</span>';
+                }
+                addPageNumber(totalPages);
+            }
         }
-
-        listaRefranes.innerHTML = uniqueRefranes.map(refran => `
-            <div class="refran-container" data-refran-id="${refran.id}">
-                <p class="refran-text">${refran.texto}</p>
-                <div class="voting-container">
-                    <button class="vote-btn" onclick="votarRefran('${refran.id}', ${refran.votos || 0})">
-                        👍 <span class="vote-count">${refran.votos || 0}</span>
-                    </button>
-                </div>
-                <small class="refran-date">
-                    ${refran.fecha?.toDate?.().toLocaleDateString('es-ES') || 'Fecha desconocida'}
-                </small>
-            </div>
-        `).join('');
-
-        updatePaginationControls();
-    })
-    .catch(error => {
-        console.error("Error al cargar refranes:", error);
-        loadingElement.style.display = 'none';
-        errorElement.textContent = `Error al cargar refranes: ${error.message}`;
-    });
-}
-
-// Función para actualizar controles de paginación (MODIFICADA)
-function updatePaginationControls() {
-    const prevBtn = document.getElementById('prev-page');
-    const nextBtn = document.getElementById('next-page');
-    const pageNumbers = document.getElementById('page-numbers');
-    
-    // Botones anterior/siguiente
-    prevBtn.disabled = currentPage === 1;
-    nextBtn.disabled = currentPage === totalPages || totalPages === 0;
-    
-    // Números de página
-    pageNumbers.innerHTML = '';
-    
-    // Mostrar máximo 5 números alrededor de la página actual
-    const startPage = Math.max(1, currentPage - 2);
-    const endPage = Math.min(totalPages, currentPage + 2);
-    
-    for (let i = startPage; i <= endPage; i++) {
-        const pageBtn = document.createElement('button');
-        pageBtn.className = `page-number ${i === currentPage ? 'active' : ''}`;
-        pageBtn.textContent = i;
-        pageBtn.onclick = () => {
-            currentPage = i;
-            cargarRefranesUnicos();
-        };
-        pageNumbers.appendChild(pageBtn);
-    }
-}
 
         // Función auxiliar para añadir número de página
         function addPageNumber(page) {
