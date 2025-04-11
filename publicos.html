@@ -218,18 +218,13 @@
     try {
         const app = firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        console.log("Firebase inicializado correctamente");
+        
         
         // Variables globales
-        let currentFilter = 'nuevos';
-        let loadedRefranes = new Set();
+       let currentFilter = 'nuevos';
         let currentPage = 1;
         const refranesPerPage = 25;
-        let totalRefranes = 0;
-        let totalPages = 1;
-       let lastVisibleDocs = {}; // Almacena {página: documentSnapshot}
-let firstLoad = true;
-        let firstVisibleDoc = null;
+        let lastVisibleDocs = {};
 
         // Función para votar
         function votarRefran(refranId, votosActuales) {
@@ -252,11 +247,15 @@ let firstLoad = true;
         }
 
         // Función para filtrar
-        function filtrarRefranes(tipo) {
+       function filtrarRefranes(tipo) {
             currentFilter = tipo;
             currentPage = 1;
-            lastVisibleDoc = null;
-            firstVisibleDoc = null;
+            lastVisibleDocs = {}; // Resetear documentos al cambiar filtro
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === tipo);
+            });
+            cargarRefranesUnicos();
+        }
             
             // Actualiza botones activos
             document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -271,39 +270,38 @@ let firstLoad = true;
         }
 
     // Función principal modificada
-async function cargarRefranesUnicos() {
-    const listaRefranes = document.getElementById('lista-refranes');
-    const loadingElement = document.getElementById('loading');
-    
-    loadingElement.style.display = 'block';
-    listaRefranes.innerHTML = '';
-
-    try {
-        let query = db.collection('refranes');
-        
-        // Aplicar ordenamiento
-        if (currentFilter === 'populares') {
-            query = query.orderBy('votos', 'desc');
-        } else {
-            query = query.orderBy('fecha', 'desc');
-        }
-
-        // Manejo de paginación
-        if (currentPage !== 1 && lastVisibleDocs[currentPage - 1]) {
-            query = query.startAfter(lastVisibleDocs[currentPage - 1]);
-        }
-
-        const querySnapshot = await query.limit(refranesPerPage).get();
-
-        // Guardar referencia para la página actual
-        lastVisibleDocs[currentPage] = querySnapshot.docs[querySnapshot.docs.length - 1];
+  async function cargarRefranesUnicos() {
+            const listaRefranes = document.getElementById('lista-refranes');
+            const loadingElement = document.getElementById('loading');
+            
+            loadingElement.style.display = 'block';
+            listaRefranes.innerHTML = '';
+            
+            try {
+                let query = db.collection('refranes');
                 
-                // Actualiza los documentos visibles para paginación
-                if (querySnapshot.docs.length > 0) {
-                    lastVisibleDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
-                    firstVisibleDoc = querySnapshot.docs[0];
+                // Aplicar ordenamiento
+                query = currentFilter === 'populares' 
+                    ? query.orderBy('votos', 'desc') 
+                    : query.orderBy('fecha', 'desc');
+
+                // Manejo de paginación
+                if (currentPage > 1 && lastVisibleDocs[currentPage - 1]) {
+                    query = query.startAfter(lastVisibleDocs[currentPage - 1]);
                 }
 
+                const querySnapshot = await query.limit(refranesPerPage).get();
+                
+                // Actualizar estado de paginación
+                if (querySnapshot.docs.length > 0) {
+                    lastVisibleDocs[currentPage] = querySnapshot.docs[querySnapshot.docs.length - 1];
+                }
+
+                // Actualizar controles de paginación
+                document.getElementById('prev-page').disabled = currentPage === 1;
+                document.getElementById('next-page').disabled = querySnapshot.docs.length < refranesPerPage;
+
+                // Procesar resultados
                 const uniqueRefranes = [];
                 const seenTexts = new Set();
                 
@@ -311,32 +309,18 @@ async function cargarRefranesUnicos() {
                     const refranData = doc.data();
                     if (!seenTexts.has(refranData.texto)) {
                         seenTexts.add(refranData.texto);
-                        uniqueRefranes.push({
-                            id: doc.id,
-                            ...refranData
-                        });
+                        uniqueRefranes.push({ id: doc.id, ...refranData });
                     }
                 });
 
-                // Actualiza el contador total (solo en primera carga)
-                if (currentPage === 1) {
-                    db.collection('refranes').get().then(snap => {
-                        totalRefranes = snap.size;
-                        totalPages = Math.ceil(totalRefranes / refranesPerPage);
-                        updatePaginationControls();
-                    });
-                }
-
+                // Renderizar resultados
                 if (uniqueRefranes.length === 0) {
                     listaRefranes.innerHTML = '<div class="refran-container">No hay refranes disponibles</div>';
                     return;
                 }
 
                 uniqueRefranes.forEach(refran => {
-                    const fecha = refran.fecha?.toDate 
-                        ? refran.fecha.toDate().toLocaleDateString('es-ES') 
-                        : 'Fecha desconocida';
-                    
+                    const fecha = refran.fecha?.toDate?.().toLocaleDateString('es-ES') || 'Fecha desconocida';
                     listaRefranes.innerHTML += `
                         <div class="refran-container" data-refran-id="${refran.id}">
                             <p class="refran-text">${refran.texto}</p>
@@ -350,54 +334,16 @@ async function cargarRefranesUnicos() {
                     `;
                 });
 
-                updatePaginationControls();
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById('error-message').textContent = 
+                    "Error al cargar refranes. Recarga la página.";
+            } finally {
+                loadingElement.style.display = 'none';
             }
-              catch (error) {
-        console.error("Error:", error);
-    } finally {
-        loadingElement.style.display = 'none';
-    }
-}
-        // Función para cambiar de página
-function goToPage(page) {
-    if (page < 1 || page > totalPages) return;
-    currentPage = page;
-    cargarRefranesUnicos();
-}
-      // Actualizar función de controles de paginación
-function updatePaginationControls() {
-    const pageNumbers = document.getElementById('page-numbers');
-    pageNumbers.innerHTML = '';
+        }
 
-    // Mostrar números de página con saltos inteligentes
-    const range = 2;
-    let start = Math.max(1, currentPage - range);
-    let end = Math.min(totalPages, currentPage + range);
-
-    if (start > 1) {
-        addPageNumber(1);
-        if (start > 2) pageNumbers.innerHTML += '<span class="page-dots">...</span>';
-    }
-
-    for (let i = start; i <= end; i++) {
-        addPageNumber(i);
-    }
-
-    if (end < totalPages) {
-        if (end < totalPages - 1) pageNumbers.innerHTML += '<span class="page-dots">...</span>';
-        addPageNumber(totalPages);
-    }
-}
-        // Función auxiliar modificada
-function addPageNumber(page) {
-    const pageBtn = document.createElement('button');
-    pageBtn.className = `page-number ${page === currentPage ? 'active' : ''}`;
-    pageBtn.textContent = page;
-    pageBtn.onclick = () => goToPage(page);
-    document.getElementById('page-numbers').appendChild(pageBtn);
-}
-
-        // Event listeners para botones de paginación
+        // Event listeners corregidos
         document.getElementById('prev-page').addEventListener('click', () => {
             if (currentPage > 1) {
                 currentPage--;
@@ -406,37 +352,21 @@ function addPageNumber(page) {
         });
 
         document.getElementById('next-page').addEventListener('click', () => {
-            if (currentPage < totalPages) {
-                currentPage++;
-                cargarRefranesUnicos();
-            }
+            currentPage++;
+            cargarRefranesUnicos();
         });
-
-        // Event listeners para los botones de filtro
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                filtrarRefranes(this.getAttribute('data-filter'));
-            });
-        });
-
-        // Contador de refranes
-        function updateCounter() {
-            db.collection('refranes')
-                .get()
-                .then(querySnapshot => {
-                    document.getElementById('refranes-counter').textContent = querySnapshot.size;
-                });
-        }
 
         // Inicialización
         document.addEventListener('DOMContentLoaded', () => {
             cargarRefranesUnicos();
-            updateCounter();
+            // Actualizar contador general (opcional)
+            db.collection('refranes').get().then(snap => {
+                document.getElementById('refranes-counter').textContent = snap.size;
+            });
         });
 
     } catch (error) {
         console.error("Error al inicializar Firebase:", error);
-        document.getElementById('loading').style.display = 'none';
         document.getElementById('error-message').textContent = 
             `Error crítico: ${error.message}. Recarga la página o intenta más tarde.`;
     }
