@@ -114,6 +114,85 @@
     });
   }
 </script>
+	<script>
+		<!-- Asegúrate de que ya has incluido y configurado Firebase en tu proyecto -->
+<script src="https://www.gstatic.com/firebasejs/9.9.3/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.9.3/firebase-firestore.js"></script>
+
+<script>
+  // Configuración de Firebase (reemplaza con la tuya)
+  const firebaseConfig = {
+    apiKey: "AIzaSyAdoPUF-cCyvpfiCJiBfCRv3ZYtwu1W4tc",
+    authDomain: "refrankenstein.firebaseapp.com",
+    projectId: "refrankenstein",
+	storageBucket: "refrankenstein.firebasestorage.app",
+    messagingSenderId: "575434538832",
+    appId: "1:575434538832:web:615f850a61c54ddd9d3655"
+    // Otros parámetros según corresponda…
+  };
+
+  // Inicializa Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  // Los arrays originales con inicios y remates de refranes:
+  const iniciosRefran = [
+    "A caballo regalado", "A falta de pan", "A grandes males", "A la tercera", /* ... más refranes ... */, "Zapatero"
+  ];
+
+  const rematesRefran = [
+    "no le mires los dientes", "buenas son tortas", "grandes remedios", "va la vencida", /* ... más refranes ... */, "a sus zapatos"
+  ];
+
+  // Función para determinar el conector del inicio:
+  function tieneConector(inicio) {
+    // Aquí comprobamos si el texto contiene un paréntesis, por ejemplo "(que)"
+    // Esta es una regla simple; puedes ajustarla según tus necesidades.
+    return inicio.includes('(');
+  }
+
+  // Recorremos los arrays. Suponemos que ambos tienen la misma cantidad de elementos.
+  for (let i = 0; i < iniciosRefran.length; i++) {
+    // Obtenemos el inicio y el remate de la misma posición
+    let inicio = iniciosRefran[i];
+    let remate = rematesRefran[i];
+
+    // Para el campo 'completo', concatenamos inicio y remate (con un espacio extra si es necesario)
+    let completo = inicio;
+    // Si el último carácter de 'inicio' no es un espacio, lo agregamos
+    if (!inicio.endsWith(' ')) {
+      completo += ' ';
+    }
+    completo += remate;
+
+    // Determinamos si el inicio tiene un conector (por ejemplo, “(que)”)
+    const inicioConector = tieneConector(inicio);
+    const inicioConectorTipo = inicioConector ? "copulativo" : null;
+
+    // Creamos el objeto que queremos insertar en Firebase
+    const refranDoc = {
+      activo: true,
+      completo: completo,
+      inicio: inicio,                // tal cual el texto del inicio
+      inicio_conector: inicioConector,
+      inicio_conector_tipo: inicioConectorTipo,
+      remate: remate,
+      remate_conector: false,        // por defecto, false
+      remate_conector_tipo: null     // por defecto, null
+    };
+
+    // Insertamos el documento en la colección "tradicionales"
+    db.collection("tradicionales").add(refranDoc)
+      .then(() => {
+        console.log("Refrán insertado correctamente:", refranDoc);
+      })
+      .catch((error) => {
+        console.error("Error al insertar el refrán:", error);
+      });
+  }
+</script>
+
+	</script>
 </head>
 <body>
     <div class="title-container">
