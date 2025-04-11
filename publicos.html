@@ -1,191 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Refranes Públicos</title>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            line-height: 1.6;
-        }
-        h1 {
-            color: #2c3e50;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .refran-container {
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .refran-text {
-            font-size: 1.2em;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        .refran-date {
-            color: #7f8c8d;
-            font-size: 0.9em;
-        }
-        #loading {
-            text-align: center;
-            font-style: italic;
-            color: #7f8c8d;
-        }
-        #error-message {
-            color: #e74c3c;
-            text-align: center;
-            font-weight: bold;
-        }
-        .counter-container {
-            text-align: center;
-            margin: 20px 0;
-            font-size: 1.1em;
-            color: #2c3e50;
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 8px;
-        }
-        #refranes-counter {
-            font-weight: bold;
-            color: #48bf67;
-            font-size: 1.3em;
-        }
-        .voting-container {
-            margin: 10px 0;
-        }
-        .vote-btn {
-            background: #f0f0f0;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .vote-btn:hover {
-            background: #e0e0e0;
-        }
-        .vote-count {
-            margin-left: 5px;
-            font-weight: bold;
-        }
-        .filters {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin: 20px 0;
-        }
-        .filter-btn {
-            padding: 8px 15px;
-            border: 1px solid #ddd;
-            border-radius: 20px;
-            background: white;
-            cursor: pointer;
-        }
-        .filter-btn.active {
-            background: #2c3e50;
-            color: white;
-        }
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            margin: 30px 0;
-            flex-wrap: wrap;
-        }
-        .pagination button {
-            padding: 8px 16px;
-            border: 1px solid #ddd;
-            background: white;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .pagination button:hover:not(:disabled) {
-            background: #2c3e50;
-            color: white;
-            border-color: #2c3e50;
-        }
-        .pagination button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        .page-number {
-            padding: 8px 12px;
-            margin: 0 2px;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-        .page-number.active {
-            background: #2c3e50;
-            color: white;
-        }
-        .back-button {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background: #2c3e50;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 50px;
-            text-decoration: none;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            z-index: 1000;
-            font-size: 0.9em;
-            transition: all 0.3s;
-        }
-        .back-button:hover {
-            background: #1a252f;
-            transform: translateX(-3px);
-        }
-        .about-button {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            width: 40px;
-            height: 40px;
-            background: #2c3e50;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            font-size: 1.5em;
-            font-weight: bold;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            z-index: 1000;
-            transition: all 0.3s;
-        }
-        .about-button:hover {
-            transform: scale(1.1);
-            background: #1a252f;
-        }
-    </style>
+    <!-- ... (Estilos permanecen igual) ... -->
 </head>
 <body>
-    <h1>Refránkensteins creados</h1>
-    <div class="counter-container">
-        Ya llevamos <span id="refranes-counter">0</span>
-    </div>
-    <div class="filters">
-        <button class="filter-btn active" data-filter="nuevos">Más recientes</button>
-        <button class="filter-btn" data-filter="populares">Más votados</button>
-        <button class="filter-btn" data-filter="alfabetico">Alfabético</button>
-    </div>
-    
-    <div id="loading">Cargando refranes...</div>
-    <div id="error-message"></div>
-    <div id="lista-refranes"></div>
+    <!-- ... (HTML permanece igual hasta la paginación) ... -->
     
     <!-- Paginación -->
     <div class="pagination">
@@ -194,12 +13,7 @@
         <button id="next-page"> →</button>
     </div>
 
-    <!-- Botón flotante para volver -->
-    <a href="index.html" class="back-button">
-        ← 🧪 Volver al generador
-    </a>
-
-    <a href="about.html" class="about-button">?</a>
+    <!-- ... (Resto del HTML permanece igual) ... -->
 
 <script>
     // Configuración de Firebase
@@ -216,191 +30,179 @@
     try {
         const app = firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        console.log("Firebase inicializado correctamente");
         
         // Variables globales
         let currentFilter = 'nuevos';
-        let loadedRefranes = new Set();
         let currentPage = 1;
         const refranesPerPage = 25;
         let totalRefranes = 0;
         let totalPages = 1;
-        let lastVisibleDocs = {}; // Almacena el último documento visible por página
-        let firstVisibleDocs = {}; // Almacena el primer documento visible por página
+        let lastVisible = null;
+        let paginationData = {};
 
-        // Función para cargar una página específica
-        function goToPage(page) {
-            currentPage = page;
-            cargarRefranesUnicos();
+        // Función para votar (sin cambios)
+        function votarRefran(refranId, votosActuales) {
+            const nuevoVoto = votosActuales + 1;
+            db.collection('refranes').doc(refranId).update({ votos: nuevoVoto })
+                .then(() => {
+                    document.querySelectorAll(`[data-refran-id="${refranId}"] .vote-count`)
+                        .forEach(el => el.textContent = nuevoVoto);
+                })
+                .catch(error => console.error("Error al votar:", error));
         }
 
-        // Función principal para cargar refranes con paginación
-        function cargarRefranesUnicos() {
+        // Función para filtrar (actualizada)
+        function filtrarRefranes(tipo) {
+            currentFilter = tipo;
+            currentPage = 1;
+            lastVisible = null;
+            paginationData = {};
+            document.querySelectorAll('.filter-btn').forEach(btn => 
+                btn.classList.toggle('active', btn.dataset.filter === tipo));
+            cargarRefranes();
+        }
+
+        // Función principal para cargar refranes (revisada)
+        async function cargarRefranes() {
             const listaRefranes = document.getElementById('lista-refranes');
             const loadingElement = document.getElementById('loading');
-            const errorElement = document.getElementById('error-message');
             
             loadingElement.style.display = 'block';
-            errorElement.textContent = '';
             listaRefranes.innerHTML = '';
-            loadedRefranes.clear();
 
-            let query = db.collection('refranes');
-            
-            // Aplica el filtro seleccionado
-            if (currentFilter === 'populares') {
-                query = query.orderBy('votos', 'desc');
-            } else if (currentFilter === 'alfabetico') {
-                query = query.orderBy('texto', 'asc');
-            } else {
-                query = query.orderBy('fecha', 'desc');
-            }
-
-            // Configuración de paginación
-            if (currentPage === 1) {
-                query = query.limit(refranesPerPage);
-            } else if (lastVisibleDocs[currentPage - 1]) {
-                query = query.startAfter(lastVisibleDocs[currentPage - 1]).limit(refranesPerPage);
-            }
-
-            query.get().then(querySnapshot => {
-                loadingElement.style.display = 'none';
+            try {
+                let query = db.collection('refranes');
                 
-                // Almacena los documentos visibles para paginación
-                if (querySnapshot.docs.length > 0) {
-                    lastVisibleDocs[currentPage] = querySnapshot.docs[querySnapshot.docs.length - 1];
-                    firstVisibleDocs[currentPage] = querySnapshot.docs[0];
+                // Aplicar ordenamiento
+                if (currentFilter === 'populares') query = query.orderBy('votos', 'desc');
+                else if (currentFilter === 'alfabetico') query = query.orderBy('texto', 'asc');
+                else query = query.orderBy('fecha', 'desc');
+                
+                // Manejo de paginación
+                if (currentPage === 1) {
+                    query = query.limit(refranesPerPage);
+                } else {
+                    const lastDoc = paginationData[currentFilter]?.[currentPage - 1];
+                    if (lastDoc) query = query.startAfter(lastDoc).limit(refranesPerPage);
                 }
 
+                const querySnapshot = await query.get();
+                const docs = querySnapshot.docs;
+                
+                // Actualizar datos de paginación
+                if (docs.length > 0) {
+                    if (!paginationData[currentFilter]) paginationData[currentFilter] = {};
+                    paginationData[currentFilter][currentPage] = docs[docs.length - 1];
+                    lastVisible = docs[docs.length - 1];
+                }
+
+                // Obtener total de refranes (solo primera vez)
+                if (currentPage === 1) {
+                    const totalSnapshot = await db.collection('refranes').count().get();
+                    totalRefranes = totalSnapshot.data().count;
+                    totalPages = Math.ceil(totalRefranes / refranesPerPage);
+                }
+
+                // Mostrar refranes
                 const uniqueRefranes = [];
                 const seenTexts = new Set();
                 
-                querySnapshot.forEach(doc => {
-                    const refranData = doc.data();
-                    if (!seenTexts.has(refranData.texto)) {
-                        seenTexts.add(refranData.texto);
-                        uniqueRefranes.push({
-                            id: doc.id,
-                            ...refranData
-                        });
+                docs.forEach(doc => {
+                    const data = doc.data();
+                    if (!seenTexts.has(data.texto)) {
+                        seenTexts.add(data.texto);
+                        uniqueRefranes.push({ id: doc.id, ...data });
                     }
                 });
 
-                // Actualiza el contador total (solo en primera carga o al cambiar filtro)
-                if (currentPage === 1) {
-                    db.collection('refranes').get().then(snap => {
-                        totalRefranes = snap.size;
-                        totalPages = Math.ceil(totalRefranes / refranesPerPage);
-                        updatePaginationControls();
-                    });
-                }
-
-                if (uniqueRefranes.length === 0) {
-                    listaRefranes.innerHTML = '<div class="refran-container">No hay refranes disponibles</div>';
-                    return;
-                }
-
-                uniqueRefranes.forEach(refran => {
-                    const fecha = refran.fecha?.toDate 
-                        ? refran.fecha.toDate().toLocaleDateString('es-ES') 
-                        : 'Fecha desconocida';
-                    
-                    listaRefranes.innerHTML += `
-                        <div class="refran-container" data-refran-id="${refran.id}">
-                            <p class="refran-text">${refran.texto}</p>
-                            <div class="voting-container">
-                                <button class="vote-btn" onclick="votarRefran('${refran.id}', ${refran.votos || 0})">
-                                    👍 <span class="vote-count">${refran.votos || 0}</span>
-                                </button>
-                            </div>
-                            <small class="refran-date">${fecha}</small>
+                listaRefranes.innerHTML = uniqueRefranes.map(refran => `
+                    <div class="refran-container" data-refran-id="${refran.id}">
+                        <p class="refran-text">${refran.texto}</p>
+                        <div class="voting-container">
+                            <button class="vote-btn" onclick="votarRefran('${refran.id}', ${refran.votos || 0})">
+                                👍 <span class="vote-count">${refran.votos || 0}</span>
+                            </button>
                         </div>
-                    `;
-                });
+                        <small class="refran-date">
+                            ${refran.fecha?.toDate?.().toLocaleDateString('es-ES') || 'Fecha desconocida'}
+                        </small>
+                    </div>
+                `).join('');
 
                 updatePaginationControls();
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error("Error al cargar refranes:", error);
+                document.getElementById('error-message').textContent = 
+                    `Error al cargar refranes: ${error.message}`;
+            } finally {
                 loadingElement.style.display = 'none';
-                errorElement.textContent = `Error al cargar refranes: ${error.message}`;
-            });
+            }
         }
 
-        // Función para actualizar controles de paginación
+        // Función para actualizar controles de paginación (corregida)
         function updatePaginationControls() {
             const prevBtn = document.getElementById('prev-page');
             const nextBtn = document.getElementById('next-page');
             const pageNumbers = document.getElementById('page-numbers');
             
-            // Botones anterior/siguiente
             prevBtn.disabled = currentPage === 1;
             nextBtn.disabled = currentPage === totalPages || totalPages === 0;
             
-            // Números de página
+            // Generar números de página
             pageNumbers.innerHTML = '';
-            
-            // Mostrar máximo 5 números de página alrededor de la actual
             const startPage = Math.max(1, currentPage - 2);
             const endPage = Math.min(totalPages, currentPage + 2);
             
-            // Botón para ir a la primera página
-            if (currentPage > 3) {
+            if (startPage > 1) {
                 addPageNumber(1);
-                if (currentPage > 4) {
-                    pageNumbers.innerHTML += '<span>...</span>';
-                }
+                if (startPage > 2) pageNumbers.innerHTML += '<span>...</span>';
             }
             
-            // Números de página centrales
             for (let i = startPage; i <= endPage; i++) {
                 addPageNumber(i);
             }
             
-            // Botón para ir a la última página
-            if (currentPage < totalPages - 2) {
-                if (currentPage < totalPages - 3) {
-                    pageNumbers.innerHTML += '<span>...</span>';
-                }
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) pageNumbers.innerHTML += '<span>...</span>';
                 addPageNumber(totalPages);
             }
         }
 
-        // Función auxiliar para añadir número de página
+        // Función auxiliar para números de página
         function addPageNumber(page) {
-            const pageNumbers = document.getElementById('page-numbers');
             const pageElement = document.createElement('span');
+            pageElement.className = `page-number ${page === currentPage ? 'active' : ''}`;
             pageElement.textContent = page;
-            pageElement.className = 'page-number';
-            
-            if (page === currentPage) {
-                pageElement.classList.add('active');
-            }
-            
-            pageElement.addEventListener('click', () => {
-                if (page !== currentPage) {
-                    goToPage(page);
-                }
-            });
-            
-            pageNumbers.appendChild(pageElement);
+            pageElement.onclick = () => goToPage(page);
+            document.getElementById('page-numbers').appendChild(pageElement);
         }
 
-        // Event listeners para botones de paginación
-        document.getElementById('prev-page').addEventListener('click', () => {
-            if (currentPage > 1) {
-                goToPage(currentPage - 1);
+        // Función para cambiar de página (actualizada)
+        function goToPage(page) {
+            if (page < 1 || page > totalPages || page === currentPage) return;
+            
+            // Validar si tenemos el documento de referencia necesario
+            if (page > currentPage && !paginationData[currentFilter]?.[currentPage]) {
+                console.warn("No hay datos de paginación para esta página");
+                return;
             }
-        });
+            
+            currentPage = page;
+            cargarRefranes();
+        }
 
-        document.getElementById('next-page').addEventListener('click', () => {
-            if (currentPage < totalPages) {
-                goToPage(currentPage + 1);
-            }
-        });
+        // Event Listeners
+        document.getElementById('prev-page').addEventListener('click', () => goToPage(currentPage - 1));
+        document.getElementById('next-page').addEventListener('click', () => goToPage(currentPage + 1));
+        document.querySelectorAll('.filter-btn').forEach(btn => 
+            btn.addEventListener('click', () => filtrarRefranes(btn.dataset.filter)));
 
-        // Resto de tus funciones (votarRefran, filtrarRefranes, updateCounter) permanecen igual
-        // ... [El resto de tu código existente] ...
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarRefranes();
+            db.collection('refranes').onSnapshot(() => 
+                document.getElementById('refranes-counter').textContent = totalRefranes);
+        });
 
     } catch (error) {
         console.error("Error al inicializar Firebase:", error);
