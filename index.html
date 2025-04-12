@@ -94,8 +94,51 @@
             }
         }
     </style>
-	
+<style>
+.menu-flotante {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 1000;
+}
 
+.menu-btn {
+  background: #fff;
+  border: 2px solid #000;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.menu-contenido {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  border-radius: 5px;
+  padding: 10px 0;
+}
+
+.menu-contenido a {
+  display: block;
+  padding: 8px 16px;
+  text-decoration: none;
+  color: #333;
+}
+
+.menu-contenido a.activo {
+  font-weight: bold;
+  background: #eee;
+}
+
+.menu-contenido a:hover {
+  background: #ddd;
+}	
+</style>
 </head>
 <body>
 	<!-- En tu index.html -->
@@ -227,21 +270,6 @@ function cambiarInicio() {
         });
     }
 }
-// Mostrar/ocultar menú
-document.querySelector('.menu-btn').addEventListener('click', function() {
-  const menu = document.querySelector('.menu-contenido');
-  menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-});
-
-// Cerrar menú al hacer clic fuera
-window.addEventListener('click', function(e) {
-  if (!e.target.matches('.menu-btn')) {
-    const menu = document.querySelector('.menu-contenido');
-    if (menu.style.display === 'block') {
-      menu.style.display = 'none';
-    }
-  }
-});
         function actualizarCorazon() {
             const heart = document.querySelector('.heart-button');
             const combination = `${inicioActual} ${remateHistory[currentIndex]}`;
@@ -420,5 +448,22 @@ function toggleLoader(show) {
         height: 180px; /* Aumentado de 150px */
     }
 </style>
+	<script>
+// Mostrar/ocultar menú
+document.querySelector('.menu-btn').addEventListener('click', function() {
+  const menu = document.querySelector('.menu-contenido');
+  menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+});
+
+// Cerrar menú al hacer clic fuera
+window.addEventListener('click', function(e) {
+  if (!e.target.matches('.menu-btn') && !e.target.closest('.menu-contenido')) {
+    const menu = document.querySelector('.menu-contenido');
+    if (menu && menu.style.display === 'block') {
+      menu.style.display = 'none';
+    }
+  }
+});
+</script>
 </body>
 </html>
