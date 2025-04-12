@@ -98,6 +98,15 @@
 
 </head>
 <body>
+	<!-- En tu index.html -->
+<div class="menu-flotante">
+  <button class="menu-btn">☰</button>
+  <div class="menu-contenido">
+    <a href="index.html" class="activo">Random</a>
+    <a href="laboratorio.html">Laboratorio</a>
+    <a href="tradicional.html">Tradicional</a>
+  </div>
+</div>
     <div class="title-container">
         <h1>Refránkenstein</h1>
 	    <h5>¡Reinventa el refranero!</h5>
@@ -218,7 +227,21 @@ function cambiarInicio() {
         });
     }
 }
+// Mostrar/ocultar menú
+document.querySelector('.menu-btn').addEventListener('click', function() {
+  const menu = document.querySelector('.menu-contenido');
+  menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+});
 
+// Cerrar menú al hacer clic fuera
+window.addEventListener('click', function(e) {
+  if (!e.target.matches('.menu-btn')) {
+    const menu = document.querySelector('.menu-contenido');
+    if (menu.style.display === 'block') {
+      menu.style.display = 'none';
+    }
+  }
+});
         function actualizarCorazon() {
             const heart = document.querySelector('.heart-button');
             const combination = `${inicioActual} ${remateHistory[currentIndex]}`;
