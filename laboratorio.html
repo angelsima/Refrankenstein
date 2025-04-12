@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Refránkenstein - Laboratorio</title>
+    <style>
+        /* Estilos del menú */
+        .menu-flotante {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 1000;
+        }
+        .menu-btn {
+            background: #fff;
+            border: 2px solid #000;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .menu-contenido {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            border-radius: 5px;
+            padding: 10px 0;
+        }
+        .menu-contenido a {
+            display: block;
+            padding: 8px 16px;
+            text-decoration: none;
+            color: #333;
+        }
+        .menu-contenido a.activo {
+            font-weight: bold;
+            background: #eee;
+        }
+        .menu-contenido a:hover {
+            background: #ddd;
+        }
+
+        /* Estilos del Laboratorio */
+        .laboratorio {
+            max-width: 800px;
+            margin: 70px auto 20px;
+            padding: 20px;
+        }
+        .controles {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .selector {
+            margin-bottom: 15px;
+        }
+        .selector label {
+            display: block;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+        .seleccion-partes {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .selector-parte {
+            flex: 1;
+            padding: 8px;
+            border-radius: 5px;
+        }
+        #generar-refran {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #generar-refran:hover {
+            background: #45a049;
+        }
+        .resultado {
+            font-size: 24px;
+            padding: 20px;
+            border: 1px dashed #ccc;
+            border-radius: 10px;
+            min-height: 100px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Menú -->
+    <div class="menu-flotante">
+        <button class="menu-btn">☰</button>
+        <div class="menu-contenido">
+            <a href="index.html">Random</a>
+            <a href="laboratorio.html" class="activo">Laboratorio</a>
+            <a href="tradicional.html">Tradicional</a>
+        </div>
+    </div>
+
+    <!-- Laboratorio -->
+    <div class="laboratorio">
+        <div class="controles">
+            <div class="selector">
+                <label>
+                    <input type="radio" name="modo" value="inicio-remate" checked>
+                    Inicio + Remate
+                </label>
+                <label>
+                    <input type="radio" name="modo" value="inicio-inicio">
+                    Inicio + Inicio
+                </label>
+                <label>
+                    <input type="radio" name="modo" value="remate-remate">
+                    Remate + Remate
+                </label>
+                <label>
+                    <input type="radio" name="modo" value="remate-inicio">
+                    Remate + Inicio
+                </label>
+            </div>
+            
+            <div class="seleccion-partes">
+                <select id="selector-parte-a" class="selector-parte"></select>
+                <select id="selector-parte-b" class="selector-parte"></select>
+            </div>
+            
+            <button id="generar-refran">Generar Refrán</button>
+        </div>
+        
+        <div class="resultado" id="resultado"></div>
+    </div>
+
+    <!-- Firebase + Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <script>
+        // Configuración Firebase (REEMPLAZA CON TUS DATOS)
+        const firebaseConfig = {
+            apiKey: "TU_API_KEY",
+            authDomain: "TU_PROYECTO.firebaseapp.com",
+            projectId: "TU_PROYECTO",
+            storageBucket: "TU_PROYECTO.appspot.com",
+            messagingSenderId: "TU_SENDER_ID",
+            appId: "TU_APP_ID"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Cargar datos
+        let inicios = [];
+        let remates = [];
+        
+        db.collection("tradicionales").get().then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                if(data.tipo === "inicio") inicios.push(data.texto);
+                if(data.tipo === "remate") remates.push(data.texto);
+            });
+            actualizarSelectores();
+        });
+
+        // Funcionalidad
+        function actualizarSelectores() {
+            const modo = document.querySelector('input[name="modo"]:checked').value;
+            const parteA = modo.split("-")[0];
+            const parteB = modo.split("-")[1];
+            
+            const opcionesA = parteA === "inicio" ? inicios : remates;
+            const opcionesB = parteB === "remate" ? remates : inicios;
+            
+            llenarSelector(document.getElementById('selector-parte-a'), opcionesA);
+            llenarSelector(document.getElementById('selector-parte-b'), opcionesB);
+        }
+
+        function llenarSelector(select, opciones) {
+            select.innerHTML = '';
+            opciones.forEach((opcion, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = opcion;
+                select.appendChild(option);
+            });
+        }
+
+        document.getElementById('generar-refran').addEventListener('click', () => {
+            const modo = document.querySelector('input[name="modo"]:checked').value;
+            const [parteA, parteB] = modo.split("-");
+            
+            const textoA = parteA === "inicio" 
+                ? inicios[document.getElementById('selector-parte-a').value]
+                : remates[document.getElementById('selector-parte-a').value];
+            
+            const textoB = parteB === "remate" 
+                ? remates[document.getElementById('selector-parte-b').value]
+                : inicios[document.getElementById('selector-parte-b').value];
+            
+            document.getElementById('resultado').textContent = `${textoA} ${textoB}`;
+        });
+
+        // Control del menú
+        document.querySelector('.menu-btn').addEventListener('click', function() {
+            const menu = document.querySelector('.menu-contenido');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        });
+
+        window.addEventListener('click', function(e) {
+            if (!e.target.matches('.menu-btn') && !e.target.closest('.menu-contenido')) {
+                const menu = document.querySelector('.menu-contenido');
+                if (menu) menu.style.display = 'none';
+            }
+        });
+
+        // Inicializar selectores
+        document.querySelectorAll('input[name="modo"]').forEach(radio => {
+            radio.addEventListener('change', actualizarSelectores);
+        });
+    </script>
+</body>
+</html>
