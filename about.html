@@ -151,6 +151,23 @@
         </div>
     </div>
 </div>
+	<script>
+// Mostrar/ocultar menú
+document.querySelector('.menu-btn').addEventListener('click', function() {
+  const menu = document.querySelector('.menu-contenido');
+  menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+});
+
+// Cerrar menú al hacer clic fuera
+window.addEventListener('click', function(e) {
+  if (!e.target.matches('.menu-btn') && !e.target.closest('.menu-contenido')) {
+    const menu = document.querySelector('.menu-contenido');
+    if (menu && menu.style.display === 'block') {
+      menu.style.display = 'none';
+    }
+  }
+});
+</script>
     <h1>¿Qué es Refránkenstein?</h1>
     <div class="content">
         <p>Refránkenstein es un generador de refranes nuevos a partir de las piezas oxidadas del refranero popular.</p>
