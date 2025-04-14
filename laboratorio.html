@@ -201,23 +201,34 @@
         // Datos
         let inicios = [];
         let remates = [];
+// Función para eliminar duplicados
+    function eliminarDuplicados(arr) {
+        return [...new Set(arr)];
+    }
+      // Cargar datos (VERSIÓN CORREGIDA)
+    db.collection("tradicionales").get().then((querySnapshot) => {
+        const tempInicios = [];
+        const tempRemates = [];
 
-        // Cargar datos
-      db.collection("tradicionales").get().then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
             const data = doc.data();
             
-            // Si el documento tiene campo "inicio"
-            if(data.inicio) {
-                inicios.push(data.inicio);
+            // Limpiar y validar inicios
+            if(data.inicio && data.inicio.trim() !== "") {
+                tempInicios.push(data.inicio.trim());
             }
             
-            // Si el documento tiene campo "remate"
-            if(data.remate) {
-                remates.push(data.remate);
+            // Limpiar y validar remates
+            if(data.remate && data.remate.trim() !== "") {
+                tempRemates.push(data.remate.trim());
             }
         });
-        
+
+        // Procesar datos
+        inicios = ordenarAlfabetico(eliminarDuplicados(tempInicios));
+        remates = ordenarAlfabetico(eliminarDuplicados(tempRemates));
+
+        // Actualizar UI
         actualizarContenido(1);
         actualizarContenido(2);
     });
@@ -235,9 +246,10 @@
                 `<option value="${index}">${texto}</option>`
             ).join('');
         }
- function ordenarAlfabetico(arr) {
-            return arr.sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }));
-        }
+// Función para ordenar
+    function ordenarAlfabetico(arr) {
+        return arr.sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }));
+    }
         // Generar refrán
         function generarRefran() {
             const tipo1 = document.getElementById('tipo-parte-1').value;
