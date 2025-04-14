@@ -263,7 +263,12 @@
             
             document.getElementById('resultado').textContent = `${parte1} ${parte2}`;
         }
-
+ db.collection("tradicionales").get().then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                if(data.inicio) inicios.push(data.inicio);
+                if(data.remate) remates.push(data.remate);
+            });
                   // Ordenar los arrays
             inicios = ordenarAlfabetico(inicios);
             remates = ordenarAlfabetico(remates);
