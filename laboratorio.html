@@ -172,16 +172,18 @@
                     <option value="inicio" selected>Inicio</option>
                     <option value="remate">Remate</option>
                 </select>
+		    <h4>V</h4>
                 <select id="contenido-parte-1" class="selector-contenido" size="5"></select>
             </div>
 
             <!-- Selector Parte 2 -->
             <div class="selector-columna">
-                <select id="tipo-parte-2" class="selector-tipo" onchange="actualizarContenido(2)">
+                <select id="contenido-parte-2" class="selector-contenido" size="5"></select>
+		     <h4>^</h4>
+		    <select id="tipo-parte-2" class="selector-tipo" onchange="actualizarContenido(2)">
                     <option value="inicio">Inicio</option>
                     <option value="remate" selected>Remate</option>
                 </select>
-                <select id="contenido-parte-2" class="selector-contenido" size="5"></select>
             </div>
             
             <button class="boton-generar" onclick="generarRefran()">
