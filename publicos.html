@@ -183,13 +183,14 @@
 }
 
 .menu-btn {    
-	background: #2c3e50;
-	 color: white;
-    width: 40px;
+  background: #2c3e50;
+  color: white;
+  width: 40px;
   height: 40px;
-button-radius: 50%;
+  border-radius: 50%; /* ← corrección aquí */
   font-size: 20px;
   cursor: pointer;
+  border: none; /* ← elimina el borde del botón */
 }
 
 .menu-contenido {
@@ -198,8 +199,9 @@ button-radius: 50%;
   background-color: #f9f9f9;
   min-width: 160px;
   box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-  border-radius: 5px;
+  border-radius: 12px; /* ← más redondeado si quieres */
   padding: 10px 0;
+  border: none; /* ← elimina cualquier borde */
 }
 
 .menu-contenido a {
