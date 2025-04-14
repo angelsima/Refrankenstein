@@ -117,6 +117,24 @@
             text-align: center;
             background: #fff;
         }
+     .notificacion {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #27ae60;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+            display: none;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { bottom: -50px; }
+            to { bottom: 20px; }
+        }
     </style>
 </head>
 <body>
@@ -163,7 +181,7 @@
         
         <div class="resultado" id="resultado"></div>
     </div>
-
+<div class="notificacion" id="notificacion">¡Refrán guardado!</div>
     <!-- Firebase + Scripts -->
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
@@ -217,7 +235,9 @@
                 `<option value="${index}">${texto}</option>`
             ).join('');
         }
-
+ function ordenarAlfabetico(arr) {
+            return arr.sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }));
+        }
         // Generar refrán
         function generarRefran() {
             const tipo1 = document.getElementById('tipo-parte-1').value;
@@ -231,7 +251,59 @@
             
             document.getElementById('resultado').textContent = `${parte1} ${parte2}`;
         }
+ db.collection("tradicionales").get().then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                if(data.inicio) inicios.push(data.inicio);
+                if(data.remate) remates.push(data.remate);
+            });
+                  // Ordenar los arrays
+            inicios = ordenarAlfabetico(inicios);
+            remates = ordenarAlfabetico(remates);
+            
+            actualizarContenido(1);
+            actualizarContenido(2);
+        });
 
+        // Función para guardar en Firebase (nueva)
+        async function guardarRefran(refran) {
+            try {
+                await db.collection("refranes").add({
+                    texto: refran,
+                    fecha: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                mostrarNotificacion();
+            } catch (error) {
+                console.error("Error guardando refrán:", error);
+            }
+        }
+
+        // Función de notificación (nueva)
+        function mostrarNotificacion() {
+            const notificacion = document.getElementById('notificacion');
+            notificacion.style.display = 'block';
+            setTimeout(() => {
+                notificacion.style.display = 'none';
+            }, 2000);
+        }
+
+        // Generar refrán modificado para guardar
+        function generarRefran() {
+            const tipo1 = document.getElementById('tipo-parte-1').value;
+            const tipo2 = document.getElementById('tipo-parte-2').value;
+            
+            const index1 = document.getElementById('contenido-parte-1').value;
+            const index2 = document.getElementById('contenido-parte-2').value;
+            
+            const parte1 = tipo1 === "inicio" ? inicios[index1] : remates[index1];
+            const parte2 = tipo2 === "inicio" ? inicios[index2] : remates[index2];
+            
+            const refranCompleto = `${parte1} ${parte2}`;
+            
+            // Mostrar y guardar
+            document.getElementById('resultado').textContent = refranCompleto;
+            guardarRefran(refranCompleto);
+        }
         // Control del menú
         document.querySelector('.menu-btn').addEventListener('click', function() {
             const menu = document.querySelector('.menu-contenido');
