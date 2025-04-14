@@ -118,27 +118,31 @@
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
-
-.menu-grupo a {
-    padding-left: 25px !important; /* Sangría para los elementos del menú */
-    position: relative;
-}
-
-.menu-grupo a::before {
-    content: "•";
-    color: #3498db;
-    position: absolute;
-    left: 12px;
-}
-
 .menu-contenido {
-    min-width: 200px !important; /* Ancho aumentado */
-    padding: 8px 0 !important;
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  border-radius: 5px;
+  padding: 10px 0;
 }
 
-.menu-grupo:last-child {
-    border-bottom: none;
+.menu-contenido a {
+  display: block;
+  padding: 8px 16px;
+  text-decoration: none;
+  color: #333;
 }
+
+.menu-contenido a.activo {
+  font-weight: bold;
+  background: #eee;
+}
+
+.menu-contenido a:hover {
+  background: #ddd;
+}	
 </style>
 </head>
 <body>
