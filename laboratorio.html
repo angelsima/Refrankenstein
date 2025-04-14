@@ -45,7 +45,7 @@
             background: #ddd;
         }
 
-        /* Estilos del Laboratorio (igual que index.html) */
+        /* Estilos del Laboratorio */
         .laboratorio {
             max-width: 800px;
             margin: 70px auto 20px;
@@ -57,23 +57,28 @@
             border-radius: 10px;
             margin-bottom: 20px;
         }
-        h3.titulo-combinacion {
-            margin-top: 0;
-            color: #2c3e50;
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 10px;
-        }
-        .contenedor-selectores {
+        .selector-tipo {
             display: flex;
-            gap: 10px;
-            margin: 15px 0;
+            justify-content: space-between;
+            margin-bottom: 15px;
         }
-        .selector-refran {
-            flex: 1;
-            padding: 10px;
+        .selector-tipo select {
+            width: 48%;
+            padding: 8px;
             border: 2px solid #bdc3c7;
             border-radius: 5px;
-            font-size: 16px;
+        }
+        .selector-contenido {
+            display: flex;
+            justify-content: space-between;
+        }
+        .selector-contenido select {
+            width: 48%;
+            padding: 8px;
+            border: 2px solid #bdc3c7;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            height: 150px;
         }
         .boton-generar {
             background: #3498db;
@@ -83,9 +88,8 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            display: block;
+            margin: 0 auto;
         }
         .boton-generar:hover {
             background: #2980b9;
@@ -114,54 +118,28 @@
 
     <!-- Laboratorio -->
     <div class="laboratorio">
-        <!-- Inicio + Remate -->
         <div class="grupo-combinacion">
-            <h3 class="titulo-combinacion">Inicio + Remate</h3>
-            <div class="contenedor-selectores">
-                <select class="selector-refran" id="inicio-remate-inicio"></select>
-                <select class="selector-refran" id="inicio-remate-remate"></select>
+            <div class="selector-tipo">
+                <select id="tipo-parte-1" onchange="actualizarContenido(1)">
+                    <option value="inicio" selected>Inicio</option>
+                    <option value="remate">Remate</option>
+                </select>
+                <select id="tipo-parte-2" onchange="actualizarContenido(2)">
+                    <option value="inicio">Inicio</option>
+                    <option value="remate" selected>Remate</option>
+                </select>
             </div>
-            <button class="boton-generar" onclick="generar('inicio-remate')">
+            
+            <div class="selector-contenido">
+                <select id="contenido-parte-1" size="5"></select>
+                <select id="contenido-parte-2" size="5"></select>
+            </div>
+            
+            <button class="boton-generar" onclick="generarRefran()">
                 Generar Refrán
             </button>
         </div>
-
-        <!-- Remate + Remate -->
-        <div class="grupo-combinacion">
-            <h3 class="titulo-combinacion">Remate + Remate</h3>
-            <div class="contenedor-selectores">
-                <select class="selector-refran" id="remate-remate-1"></select>
-                <select class="selector-refran" id="remate-remate-2"></select>
-            </div>
-            <button class="boton-generar" onclick="generar('remate-remate')">
-                Generar Refrán
-            </button>
-        </div>
-
-        <!-- Remate + Inicio -->
-        <div class="grupo-combinacion">
-            <h3 class="titulo-combinacion">Remate + Inicio</h3>
-            <div class="contenedor-selectores">
-                <select class="selector-refran" id="remate-inicio-remate"></select>
-                <select class="selector-refran" id="remate-inicio-inicio"></select>
-            </div>
-            <button class="boton-generar" onclick="generar('remate-inicio')">
-                Generar Refrán
-            </button>
-        </div>
-
-        <!-- Inicio + Inicio -->
-        <div class="grupo-combinacion">
-            <h3 class="titulo-combinacion">Inicio + Inicio</h3>
-            <div class="contenedor-selectores">
-                <select class="selector-refran" id="inicio-inicio-1"></select>
-                <select class="selector-refran" id="inicio-inicio-2"></select>
-            </div>
-            <button class="boton-generar" onclick="generar('inicio-inicio')">
-                Generar Refrán
-            </button>
-        </div>
-
+        
         <div class="resultado" id="resultado"></div>
     </div>
 
@@ -192,57 +170,34 @@
                 if(data.tipo === "inicio") inicios.push(data.texto);
                 if(data.tipo === "remate") remates.push(data.texto);
             });
-            llenarSelectores();
+            // Inicializar selectores
+            actualizarContenido(1);
+            actualizarContenido(2);
         });
 
-        // Llenar todos los selectores
-        function llenarSelectores() {
-            // Inicio + Remate
-            llenarSelector('inicio-remate-inicio', inicios);
-            llenarSelector('inicio-remate-remate', remates);
+        // Actualizar selectores de contenido
+        function actualizarContenido(parte) {
+            const tipoSelector = document.getElementById(`tipo-parte-${parte}`);
+            const contenidoSelector = document.getElementById(`contenido-parte-${parte}`);
             
-            // Remate + Remate
-            llenarSelector('remate-remate-1', remates);
-            llenarSelector('remate-remate-2', remates);
+            const tipo = tipoSelector.value;
+            const opciones = tipo === "inicio" ? inicios : remates;
             
-            // Remate + Inicio
-            llenarSelector('remate-inicio-remate', remates);
-            llenarSelector('remate-inicio-inicio', inicios);
-            
-            // Inicio + Inicio
-            llenarSelector('inicio-inicio-1', inicios);
-            llenarSelector('inicio-inicio-2', inicios);
-        }
-
-        function llenarSelector(id, opciones) {
-            const selector = document.getElementById(id);
-            selector.innerHTML = opciones.map((texto, index) => 
+            contenidoSelector.innerHTML = opciones.map((texto, index) => 
                 `<option value="${index}">${texto}</option>`
             ).join('');
         }
 
         // Generar refrán
-        function generar(tipo) {
-            let parte1, parte2;
+        function generarRefran() {
+            const tipo1 = document.getElementById('tipo-parte-1').value;
+            const tipo2 = document.getElementById('tipo-parte-2').value;
             
-            switch(tipo) {
-                case 'inicio-remate':
-                    parte1 = inicios[document.getElementById('inicio-remate-inicio').value];
-                    parte2 = remates[document.getElementById('inicio-remate-remate').value];
-                    break;
-                case 'remate-remate':
-                    parte1 = remates[document.getElementById('remate-remate-1').value];
-                    parte2 = remates[document.getElementById('remate-remate-2').value];
-                    break;
-                case 'remate-inicio':
-                    parte1 = remates[document.getElementById('remate-inicio-remate').value];
-                    parte2 = inicios[document.getElementById('remate-inicio-inicio').value];
-                    break;
-                case 'inicio-inicio':
-                    parte1 = inicios[document.getElementById('inicio-inicio-1').value];
-                    parte2 = inicios[document.getElementById('inicio-inicio-2').value];
-                    break;
-            }
+            const index1 = document.getElementById('contenido-parte-1').value;
+            const index2 = document.getElementById('contenido-parte-2').value;
+            
+            const parte1 = tipo1 === "inicio" ? inicios[index1] : remates[index1];
+            const parte2 = tipo2 === "inicio" ? inicios[index2] : remates[index2];
             
             document.getElementById('resultado').textContent = `${parte1} ${parte2}`;
         }
