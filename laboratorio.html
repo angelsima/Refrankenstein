@@ -202,6 +202,23 @@
         </div>
     </div>
 </div>
+	<script>
+// Mostrar/ocultar menú
+document.querySelector('.menu-btn').addEventListener('click', function() {
+  const menu = document.querySelector('.menu-contenido');
+  menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+});
+
+// Cerrar menú al hacer clic fuera
+window.addEventListener('click', function(e) {
+  if (!e.target.matches('.menu-btn') && !e.target.closest('.menu-contenido')) {
+    const menu = document.querySelector('.menu-contenido');
+    if (menu && menu.style.display === 'block') {
+      menu.style.display = 'none';
+    }
+  }
+});
+</script>
     <!-- Menú -->
      <div class="title-container">
         <h1>Refránkenstein</h1>
