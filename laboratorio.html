@@ -185,16 +185,25 @@
         let remates = [];
 
         // Cargar datos
-        db.collection("tradicionales").get().then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                if(data.tipo === "inicio") inicios.push(data.texto);
-                if(data.tipo === "remate") remates.push(data.texto);
-            });
-            // Inicializar selectores
-            actualizarContenido(1);
-            actualizarContenido(2);
+      db.collection("tradicionales").get().then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            
+            // Si el documento tiene campo "inicio"
+            if(data.inicio) {
+                inicios.push(data.inicio);
+            }
+            
+            // Si el documento tiene campo "remate"
+            if(data.remate) {
+                remates.push(data.remate);
+            }
         });
+        
+        actualizarContenido(1);
+        actualizarContenido(2);
+    });
+
 
         // Actualizar selectores de contenido
         function actualizarContenido(parte) {
