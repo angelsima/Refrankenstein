@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Refránkenstein - Laboratorio</title>
-   <p> 🛠En construcción🤹‍♀️</p>
     <style>
         /* Estilos del menú */
         .menu-flotante {
@@ -46,55 +45,59 @@
             background: #ddd;
         }
 
-        /* Estilos del Laboratorio */
+        /* Estilos del Laboratorio (igual que index.html) */
         .laboratorio {
             max-width: 800px;
             margin: 70px auto 20px;
             padding: 20px;
         }
-        .controles {
+        .grupo-combinacion {
             background: #f5f5f5;
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 20px;
         }
-        .selector {
-            margin-bottom: 15px;
+        h3.titulo-combinacion {
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
         }
-        .selector label {
-            display: block;
-            margin-bottom: 8px;
-            cursor: pointer;
-        }
-        .seleccion-partes {
+        .contenedor-selectores {
             display: flex;
             gap: 10px;
-            margin-bottom: 15px;
+            margin: 15px 0;
         }
-        .selector-parte {
+        .selector-refran {
             flex: 1;
-            padding: 8px;
+            padding: 10px;
+            border: 2px solid #bdc3c7;
             border-radius: 5px;
+            font-size: 16px;
         }
-        #generar-refran {
-            background: #4CAF50;
+        .boton-generar {
+            background: #3498db;
             color: white;
             border: none;
-            padding: 10px 15px;
+            padding: 12px 20px;
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        #generar-refran:hover {
-            background: #45a049;
+        .boton-generar:hover {
+            background: #2980b9;
         }
         .resultado {
             font-size: 24px;
             padding: 20px;
-            border: 1px dashed #ccc;
+            border: 2px dashed #bdc3c7;
             border-radius: 10px;
-            min-height: 100px;
+            margin-top: 20px;
             text-align: center;
+            background: #fff;
         }
     </style>
 </head>
@@ -111,34 +114,54 @@
 
     <!-- Laboratorio -->
     <div class="laboratorio">
-        <div class="controles">
-            <div class="selector">
-                <label>
-                    <input type="radio" name="modo" value="inicio-remate" checked>
-                    Inicio + Remate
-                </label>
-                <label>
-                    <input type="radio" name="modo" value="inicio-inicio">
-                    Inicio + Inicio
-                </label>
-                <label>
-                    <input type="radio" name="modo" value="remate-remate">
-                    Remate + Remate
-                </label>
-                <label>
-                    <input type="radio" name="modo" value="remate-inicio">
-                    Remate + Inicio
-                </label>
+        <!-- Inicio + Remate -->
+        <div class="grupo-combinacion">
+            <h3 class="titulo-combinacion">Inicio + Remate</h3>
+            <div class="contenedor-selectores">
+                <select class="selector-refran" id="inicio-remate-inicio"></select>
+                <select class="selector-refran" id="inicio-remate-remate"></select>
             </div>
-            
-            <div class="seleccion-partes">
-                <select id="selector-parte-a" class="selector-parte"></select>
-                <select id="selector-parte-b" class="selector-parte"></select>
-            </div>
-            
-            <button id="generar-refran">Generar Refrán</button>
+            <button class="boton-generar" onclick="generar('inicio-remate')">
+                Generar Refrán
+            </button>
         </div>
-        
+
+        <!-- Remate + Remate -->
+        <div class="grupo-combinacion">
+            <h3 class="titulo-combinacion">Remate + Remate</h3>
+            <div class="contenedor-selectores">
+                <select class="selector-refran" id="remate-remate-1"></select>
+                <select class="selector-refran" id="remate-remate-2"></select>
+            </div>
+            <button class="boton-generar" onclick="generar('remate-remate')">
+                Generar Refrán
+            </button>
+        </div>
+
+        <!-- Remate + Inicio -->
+        <div class="grupo-combinacion">
+            <h3 class="titulo-combinacion">Remate + Inicio</h3>
+            <div class="contenedor-selectores">
+                <select class="selector-refran" id="remate-inicio-remate"></select>
+                <select class="selector-refran" id="remate-inicio-inicio"></select>
+            </div>
+            <button class="boton-generar" onclick="generar('remate-inicio')">
+                Generar Refrán
+            </button>
+        </div>
+
+        <!-- Inicio + Inicio -->
+        <div class="grupo-combinacion">
+            <h3 class="titulo-combinacion">Inicio + Inicio</h3>
+            <div class="contenedor-selectores">
+                <select class="selector-refran" id="inicio-inicio-1"></select>
+                <select class="selector-refran" id="inicio-inicio-2"></select>
+            </div>
+            <button class="boton-generar" onclick="generar('inicio-inicio')">
+                Generar Refrán
+            </button>
+        </div>
+
         <div class="resultado" id="resultado"></div>
     </div>
 
@@ -146,68 +169,83 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
     <script>
-        // Configuración Firebase (REEMPLAZA CON TUS DATOS)
+        // Configuración Firebase
         const firebaseConfig = {
-               apiKey: "AIzaSyAdoPUF-cCyvpfiCJiBfCRv3ZYtwu1W4tc",
-    authDomain: "refrankenstein.firebaseapp.com",
-    projectId: "refrankenstein",
-    storageBucket: "refrankenstein.firebasestorage.app",
-    messagingSenderId: "575434538832",
-    appId: "1:575434538832:web:615f850a61c54ddd9d3655"
+            apiKey: "AIzaSyAdoPUF-cCyvpfiCJiBfCRv3ZYtwu1W4tc",
+            authDomain: "refrankenstein.firebaseapp.com",
+            projectId: "refrankenstein",
+            storageBucket: "refrankenstein.firebasestorage.app",
+            messagingSenderId: "575434538832",
+            appId: "1:575434538832:web:615f850a61c54ddd9d3655"
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // Cargar datos
+        // Datos
         let inicios = [];
         let remates = [];
-        
+
+        // Cargar datos
         db.collection("tradicionales").get().then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
                 if(data.tipo === "inicio") inicios.push(data.texto);
                 if(data.tipo === "remate") remates.push(data.texto);
             });
-            actualizarSelectores();
+            llenarSelectores();
         });
 
-        // Funcionalidad
-        function actualizarSelectores() {
-            const modo = document.querySelector('input[name="modo"]:checked').value;
-            const parteA = modo.split("-")[0];
-            const parteB = modo.split("-")[1];
+        // Llenar todos los selectores
+        function llenarSelectores() {
+            // Inicio + Remate
+            llenarSelector('inicio-remate-inicio', inicios);
+            llenarSelector('inicio-remate-remate', remates);
             
-            const opcionesA = parteA === "inicio" ? inicios : remates;
-            const opcionesB = parteB === "remate" ? remates : inicios;
+            // Remate + Remate
+            llenarSelector('remate-remate-1', remates);
+            llenarSelector('remate-remate-2', remates);
             
-            llenarSelector(document.getElementById('selector-parte-a'), opcionesA);
-            llenarSelector(document.getElementById('selector-parte-b'), opcionesB);
+            // Remate + Inicio
+            llenarSelector('remate-inicio-remate', remates);
+            llenarSelector('remate-inicio-inicio', inicios);
+            
+            // Inicio + Inicio
+            llenarSelector('inicio-inicio-1', inicios);
+            llenarSelector('inicio-inicio-2', inicios);
         }
 
-        function llenarSelector(select, opciones) {
-            select.innerHTML = '';
-            opciones.forEach((opcion, index) => {
-                const option = document.createElement('option');
-                option.value = index;
-                option.textContent = opcion;
-                select.appendChild(option);
-            });
+        function llenarSelector(id, opciones) {
+            const selector = document.getElementById(id);
+            selector.innerHTML = opciones.map((texto, index) => 
+                `<option value="${index}">${texto}</option>`
+            ).join('');
         }
 
-        document.getElementById('generar-refran').addEventListener('click', () => {
-            const modo = document.querySelector('input[name="modo"]:checked').value;
-            const [parteA, parteB] = modo.split("-");
+        // Generar refrán
+        function generar(tipo) {
+            let parte1, parte2;
             
-            const textoA = parteA === "inicio" 
-                ? inicios[document.getElementById('selector-parte-a').value]
-                : remates[document.getElementById('selector-parte-a').value];
+            switch(tipo) {
+                case 'inicio-remate':
+                    parte1 = inicios[document.getElementById('inicio-remate-inicio').value];
+                    parte2 = remates[document.getElementById('inicio-remate-remate').value];
+                    break;
+                case 'remate-remate':
+                    parte1 = remates[document.getElementById('remate-remate-1').value];
+                    parte2 = remates[document.getElementById('remate-remate-2').value];
+                    break;
+                case 'remate-inicio':
+                    parte1 = remates[document.getElementById('remate-inicio-remate').value];
+                    parte2 = inicios[document.getElementById('remate-inicio-inicio').value];
+                    break;
+                case 'inicio-inicio':
+                    parte1 = inicios[document.getElementById('inicio-inicio-1').value];
+                    parte2 = inicios[document.getElementById('inicio-inicio-2').value];
+                    break;
+            }
             
-            const textoB = parteB === "remate" 
-                ? remates[document.getElementById('selector-parte-b').value]
-                : inicios[document.getElementById('selector-parte-b').value];
-            
-            document.getElementById('resultado').textContent = `${textoA} ${textoB}`;
-        });
+            document.getElementById('resultado').textContent = `${parte1} ${parte2}`;
+        }
 
         // Control del menú
         document.querySelector('.menu-btn').addEventListener('click', function() {
@@ -220,11 +258,6 @@
                 const menu = document.querySelector('.menu-contenido');
                 if (menu) menu.style.display = 'none';
             }
-        });
-
-        // Inicializar selectores
-        document.querySelectorAll('input[name="modo"]').forEach(radio => {
-            radio.addEventListener('change', actualizarSelectores);
         });
     </script>
 </body>
