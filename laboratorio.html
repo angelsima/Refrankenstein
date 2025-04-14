@@ -201,11 +201,19 @@
         // Datos
         let inicios = [];
         let remates = [];
-// Función para eliminar duplicados
+// Función mejorada para eliminar duplicados (considera mayúsculas y acentos)
     function eliminarDuplicados(arr) {
-        return [...new Set(arr)];
+        const vistos = new Set();
+        return arr.filter(item => {
+            const normalizado = item
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .trim();
+            return vistos.has(normalizado) ? false : vistos.add(normalizado);
+        });
     }
-      // Cargar datos (VERSIÓN CORREGIDA)
+   // Cargar datos (VERSIÓN CORREGIDA)
     db.collection("tradicionales").get().then((querySnapshot) => {
         const tempInicios = [];
         const tempRemates = [];
@@ -213,26 +221,27 @@
         querySnapshot.forEach((doc) => {
             const data = doc.data();
             
-            // Limpiar y validar inicios
-            if(data.inicio && data.inicio.trim() !== "") {
-                tempInicios.push(data.inicio.trim());
+            // Limpiar inicios
+            if(data.inicio) {
+                const inicioLimpio = data.inicio.trim();
+                if(inicioLimpio !== "") tempInicios.push(inicioLimpio);
             }
             
-            // Limpiar y validar remates
-            if(data.remate && data.remate.trim() !== "") {
-                tempRemates.push(data.remate.trim());
+            // Limpiar remates
+            if(data.remate) {
+                const remateLimpio = data.remate.trim();
+                if(remateLimpio !== "") tempRemates.push(remateLimpio);
             }
         });
 
         // Procesar datos
-        inicios = ordenarAlfabetico(eliminarDuplicados(tempInicios));
-        remates = ordenarAlfabetico(eliminarDuplicados(tempRemates));
+        inicios = eliminarDuplicados(tempInicios).sort((a, b) => a.localeCompare(b, 'es'));
+        remates = eliminarDuplicados(tempRemates).sort((a, b) => a.localeCompare(b, 'es'));
 
         // Actualizar UI
         actualizarContenido(1);
         actualizarContenido(2);
     });
-
 
         // Actualizar selectores de contenido
         function actualizarContenido(parte) {
