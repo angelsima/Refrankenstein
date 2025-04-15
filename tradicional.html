@@ -8,7 +8,7 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      max-width: 800px;
+      max-width: 600px;
       margin: 0 auto;
       padding: 20px;
       touch-action: pan-y;
@@ -252,15 +252,14 @@
   <p>Proverbio proverbial</p>
   <div class="contenedor">
     <div class="modo-selector">
-      <button class="modo-btn activo" onclick="mostrarModo('juego')">🧠¡Ponte a prueba!</button>
+      <button class="modo-btn activo" onclick="mostrarModo('juego')">🧠¿Cuánto sabes?</button>
       <button class="modo-btn" onclick="mostrarModo('lista')">📜Refranero popular</button>
     </div>
 
     <!-- Modo Juego -->
     <div id="modo-juego" class="modo-contenido activo">
       <div class="juego-container">
-         <p class="subtitulo">¡Adivina el refrán original🪑!</p>
-        <div class="refran-inicio" id="refran-inicio"></div>
+               <div class="refran-inicio" id="refran-inicio"></div>
         <div class="opciones-container" id="opciones-container"></div>
         <button class="nuevo-refran-btn" onclick="nuevoRefran()" id="nuevo-btn">Nuevo Refrán</button>
       </div>
