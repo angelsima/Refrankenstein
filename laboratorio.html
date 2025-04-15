@@ -368,18 +368,6 @@
             document.getElementById('resultado').textContent = refranCompleto;
             guardarRefran(refranCompleto);
         }
-        // Control del menú
-        document.querySelector('.menu-btn').addEventListener('click', function() {
-            const menu = document.querySelector('.menu-contenido');
-            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-        });
-
-        window.addEventListener('click', function(e) {
-            if (!e.target.matches('.menu-btn') && !e.target.closest('.menu-contenido')) {
-                const menu = document.querySelector('.menu-contenido');
-                if (menu) menu.style.display = 'none';
-            }
-        });
     </script>
 <a href="publicos.html" class="floating-button">
     📜 Refránkensteins creados→
