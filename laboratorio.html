@@ -63,7 +63,404 @@
             background: #ddd;
         }
 
-        /* Estilos del Laboratorio */
+    </style>
+<style>
+/* Añade estos estilos al CSS existente */
+.menu-flotante {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 1000;
+}
+
+.menu-btn {    
+  background: #2c3e50;
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%; /* ← corrección aquí */
+  font-size: 20px;
+  cursor: pointer;
+  border: none; /* ← elimina el borde del botón */
+}
+
+.menu-contenido {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  border-radius: 12px; /* ← más redondeado si quieres */
+  padding: 10px 0;
+  border: none; /* ← elimina cualquier borde */
+}
+
+.menu-contenido a {
+  display: block;
+  padding: 8px 16px;
+  text-decoration: none;
+  color: #333;
+}
+
+.menu-contenido a.activo {
+  font-weight: bold;
+  background: #eee;
+}
+
+.menu-contenido a:hover {
+  background: #ddd;
+}	
+</style>
+</head>
+<body>
+<div class="menu-flotante">
+    <button class="menu-btn">☰</button>
+    <div class="menu-contenido">
+        <div class="menu-grupo">
+            <div class="menu-titulo">Modos de juego</div>
+            <a href="index.html">Random</a>
+            <a href="laboratorio.html" class="activo">Laboratorio</a>
+            <a href="tradicional.html">Tradicional</a>
+        </div>
+        <div class="menu-grupo">
+            <a href="publicos.html">Leer refrankensteins</a>
+            <a href="about.html">¿Qué es Refránkenstein?</a>
+        </div>
+    </div>
+</div>
+    <!-- Menú -->
+     <div class="title-container">
+        <h1>Refránkenstein</h1>
+	    <h5>¡Reinventa el refranero!</h5>
+	        </div>
+<!-- Agrega esto después del título -->
+<div class="modo-container">
+    <div class="modo-selector">
+        <button class="modo-btn activo" onclick="mostrarModo('random')">🎲 Random</button>
+        <button class="modo-btn" onclick="mostrarModo('laboratorio')">🔬 Laboratorio</button>
+    </div>
+</div>
+
+<!-- Contenedores para los modos -->
+<div id="modo-random" class="modo-contenido activo">
+  <style> .inicio-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .change-inicio {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2em;
+            padding: 5px;
+        }
+        
+        .swipe-container {
+            position: relative;
+            height: 150px;
+            margin: 30px 0;
+            overflow: hidden;
+        }
+        
+        .remate-card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            text-align: center;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            transition: transform 0.3s;
+            background: white;
+            touch-action: none;
+        }
+        
+        .nav-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2em;
+            background: none;
+            border: none;
+            cursor: pointer;
+            z-index: 1;
+        }
+        
+        .prev { left: 10px; }
+        .next { right: 10px; }
+        
+        .heart-button {
+            font-size: 2em;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #ccc;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .heart-button.liked {
+            color: #ff3366;
+        }
+
+        @media (hover: hover) {
+            .nav-arrow {
+                display: block;
+            }
+        }
+    </style>
+	 <div class="inicio-container">
+        <button class="change-inicio" onclick="cambiarInicio()">↻</button>
+        <div id="inicio-refran" class="inicio-texto"></div>
+    </div>
+
+    <div class="swipe-container">
+        <button class="nav-arrow prev" onclick="previousRemate()">❮</button>
+        <button class="nav-arrow next" onclick="nextRemate()">❯</button>
+        <div class="remate-card" id="remate-card"></div>
+    </div>
+
+    <button class="heart-button" onclick="toggleLike()">🧪</button>
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    <script>
+ const firebaseConfig = {
+    apiKey: "AIzaSyAdoPUF-cCyvpfiCJiBfCRv3ZYtwu1W4tc",
+    authDomain: "refrankenstein.firebaseapp.com",
+    projectId: "refrankenstein",
+    storageBucket: "refrankenstein.firebasestorage.app",
+    messagingSenderId: "575434538832",
+    appId: "1:575434538832:web:615f850a61c54ddd9d3655"
+};
+
+// Inicialización única de Firebase
+const app = firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+let iniciosRefran = [];
+let rematesRefran = [];
+let inicioActual = '';
+let remateActual = '';
+let remateHistory = [];
+let currentIndex = -1;
+let likedCombinations = JSON.parse(localStorage.getItem('likedCombinations')) || [];
+
+async function cargarRefranesTradicionales() {
+    try {
+        const snapshot = await db.collection('tradicionales').get();
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            // Verificar estructura de datos
+            if(data.inicio && data.remate) {
+                iniciosRefran.push(data.inicio);
+                rematesRefran.push(data.remate);
+            }
+        });
+        console.log('Refranes cargados:', iniciosRefran.length, iniciosRefran);
+    } catch (error) {
+        console.error('Error cargando refranes:', error);
+        showToast("Error cargando refranes", 5000);
+    }
+}
+
+        function actualizarStorage() {
+            localStorage.setItem('likedCombinations', JSON.stringify(likedCombinations));
+        }
+
+        // Modificar función de cambio de inicio
+function cambiarInicio() {
+    if(iniciosRefran.length === 0) return;
+    inicioActual = iniciosRefran[Math.floor(Math.random() * iniciosRefran.length)];
+    document.getElementById('inicio-refran').textContent = inicioActual;
+    generarNuevoRemate();
+}
+
+        function generarNuevoRemate() {
+            if(rematesRefran.length === 0) return;
+            const nuevoRemate = rematesRefran[Math.floor(Math.random() * rematesRefran.length)];
+            remateHistory = remateHistory.slice(0, currentIndex + 1);
+            remateHistory.push(nuevoRemate);
+            currentIndex++;
+            actualizarRemate();
+        }
+
+        function actualizarRemate() {
+            const card = document.getElementById('remate-card');
+            card.textContent = remateHistory[currentIndex];
+            actualizarCorazon();
+        }
+
+       async function toggleLike() {
+    const combination = `${inicioActual} ${remateHistory[currentIndex]}`;
+    const heart = document.querySelector('.heart-button');
+	        // Verificar si es un refrán tradicional
+    const esTradicional = await esRefranTradicional(inicioActual, remateHistory[currentIndex]);
+    
+    if(esTradicional) {
+        showToast("¡Este es un refrán tradicional! Usa otro", 3000);
+        return;
+    }
+    
+    // Referencia a la colección en Firestore
+    const refranesRef = firebase.firestore().collection('refranes');
+    
+    if (heart.classList.contains('liked')) {
+        // Eliminar de Firestore (opcional)
+        refranesRef.where('texto', '==', combination).get()
+            .then(querySnapshot => {
+                querySnapshot.forEach(doc => {
+                    doc.ref.delete();
+                });
+            });
+        heart.classList.remove('liked');
+        showToast("Refránkenstein eliminado❌");
+    } else {
+        // Guardar en Firestore
+        refranesRef.add({
+            texto: combination,
+            fecha: firebase.firestore.FieldValue.serverTimestamp(),
+            votos: 0
+        })
+        .then(() => {
+            heart.classList.add('liked');
+            showToast("Refránkenstein guardado✔");
+        })
+        .catch(error => {
+            console.error("Error al guardar:", error);
+            alert("Error al guardar. Revisa la consola.");
+        });
+    }
+}
+        function actualizarCorazon() {
+            const heart = document.querySelector('.heart-button');
+            const combination = `${inicioActual} ${remateHistory[currentIndex]}`;
+            heart.classList.toggle('liked', likedCombinations.includes(combination));
+        }
+
+        // Navegación
+        function nextRemate() {
+            if (currentIndex < remateHistory.length - 1) {
+                currentIndex++;
+            } else {
+                generarNuevoRemate();
+            }
+            actualizarRemate();
+        }
+
+        function previousRemate() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                actualizarRemate();
+            }
+        }
+
+        // Manejo de Swipe para móviles
+        let touchStartX = 0;
+        let touchEndX = 0;
+        const swipeThreshold = 50;
+
+        document.getElementById('remate-card').addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.getElementById('remate-card').addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const deltaX = touchEndX - touchStartX;
+
+            if (Math.abs(deltaX) > swipeThreshold) {
+                deltaX > 0 ? previousRemate() : nextRemate();
+            }
+        }
+	    function showToast(message, duration = 3000) {
+    const toast = document.getElementById('custom-toast');
+    document.getElementById('toast-message').textContent = message;
+    
+    toast.classList.add('toast-visible');
+    setTimeout(() => {
+        toast.classList.remove('toast-visible');
+    }, duration);
+}
+// Nueva función de verificación
+async function esRefranTradicional(inicio, remate) {
+    try {
+        const tradRef = firebase.firestore().collection('tradicionales');
+        const snapshot = await tradRef
+            .where('inicio', '==', inicio)
+            .where('remate', '==', remate)
+            .limit(1)
+            .get();
+        
+        return !snapshot.empty;
+    } catch (error) {
+        console.error("Error verificando refrán tradicional:", error);
+        return false;
+    }
+}
+	    
+function guardarRefran(refran) {
+    db.collection("refranes").add({
+      texto: refran,
+      fecha: new Date()
+    });
+  }
+        // Inicialización async
+       async function inicializarApp() {
+    await cargarRefranesTradicionales();
+    if(iniciosRefran.length > 0 && rematesRefran.length > 0) {
+        cambiarInicio();
+    } else {
+        showToast("No se encontraron refranes", 5000);
+    }
+}
+        // Añadir loader mientras carga
+function toggleLoader(show) {
+    document.getElementById('loading').style.display = show ? 'block' : 'none';
+}
+
+
+        // Iniciar la aplicación
+        inicializarApp();
+    </script>
+	<style>
+    /* Añadir estas reglas al CSS existente */
+    
+    .inicio-texto {
+        font-size: 1.2em;
+        font-weight: bold;
+        margin: 10px 0;
+    }
+
+    #remate-card {
+        font-size: 1.2em;
+        font-weight: bold;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    /* Modificar la altura del contenedor para mejor ajuste */
+    .swipe-container {
+        height: 180px; /* Aumentado de 150px */
+    }
+</style>
+</div>
+
+<div id="modo-laboratorio" class="modo-contenido">
+	<style>
+            /* Estilos del Laboratorio */
         .laboratorio {
             max-width: 800px;
             margin: 70px auto 20px;
@@ -137,78 +534,8 @@
             from { bottom: -50px; }
             to { bottom: 20px; }
         }
-    </style>
-<style>
-/* Añade estos estilos al CSS existente */
-.menu-flotante {
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  z-index: 1000;
-}
-
-.menu-btn {    
-  background: #2c3e50;
-  color: white;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%; /* ← corrección aquí */
-  font-size: 20px;
-  cursor: pointer;
-  border: none; /* ← elimina el borde del botón */
-}
-
-.menu-contenido {
-  display: none;
-  position: absolute;
-  background-color: #f9f9f9;
-  min-width: 160px;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-  border-radius: 12px; /* ← más redondeado si quieres */
-  padding: 10px 0;
-  border: none; /* ← elimina cualquier borde */
-}
-
-.menu-contenido a {
-  display: block;
-  padding: 8px 16px;
-  text-decoration: none;
-  color: #333;
-}
-
-.menu-contenido a.activo {
-  font-weight: bold;
-  background: #eee;
-}
-
-.menu-contenido a:hover {
-  background: #ddd;
-}	
 </style>
-</head>
-<body>
-<div class="menu-flotante">
-    <button class="menu-btn">☰</button>
-    <div class="menu-contenido">
-        <div class="menu-grupo">
-            <div class="menu-titulo">Modos de juego</div>
-            <a href="index.html">Random</a>
-            <a href="laboratorio.html" class="activo">Laboratorio</a>
-            <a href="tradicional.html">Tradicional</a>
-        </div>
-        <div class="menu-grupo">
-            <a href="publicos.html">Leer refrankensteins</a>
-            <a href="about.html">¿Qué es Refránkenstein?</a>
-        </div>
-    </div>
 </div>
-    <!-- Menú -->
-     <div class="title-container">
-        <h1>Refránkenstein</h1>
-	    <h5>¡Reinventa el refranero!</h5>
-	      <h3> Modo Laboratorio🔬</h3>
-    </div>
-	
        <!-- Laboratorio -->
     <div class="laboratorio">
         <div class="grupo-combinacion">
@@ -392,6 +719,7 @@ async function esRefranTradicional(inicio, remate) {
             guardarRefran(parte1, parte2);
         }
     </script>
+	
 <a href="publicos.html" class="floating-button">
     📜 Refránkensteins creados→
 </a>
