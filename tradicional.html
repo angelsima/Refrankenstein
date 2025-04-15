@@ -9,7 +9,7 @@
         /* Estilos específicos del modo Tradicional */
         .juego-container {
             max-width: 600px;
-            margin: 80px auto 20px;
+            margin: 20px auto 20px;
             padding: 20px;
         }
 
@@ -48,23 +48,20 @@
             box-shadow: 0 3px 6px rgba(0,0,0,0.1);
         }
 
-        .correcto {
+        .opcion-remate.correcto {
             background: #27ae60 !important;
             color: white;
             border-color: #219653;
+            pointer-events: none;
         }
 
-        .incorrecto {
+        .opcion-remate.incorrecto {
             background: #e74c3c !important;
             color: white;
             border-color: #c0392b;
+            animation: shake 0.3s ease-in-out;
         }
-
-        .disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
-
+       
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             25% { transform: translateX(-5px); }
@@ -168,7 +165,6 @@
         <h1>Refránkenstein</h1>
         <h5>¡Adivina el refrán tradicional!</h5>
     </div>
-
     <div class="juego-container">
         <div class="puntuacion" id="puntuacion">Aciertos: 0</div>
         
@@ -228,12 +224,13 @@
             }
             opciones.sort(() => Math.random() - 0.5); // Mezclar opciones
 
-            // Crear botones de opciones
+           // Crear botones de opciones
             opciones.forEach(opcion => {
                 const boton = document.createElement('div');
                 boton.className = 'opcion-remate';
                 boton.textContent = opcion;
-                boton.onclick = () => verificarRespuesta(opcion === refran.remate, boton);
+                boton.style.pointerEvents = 'auto'; // Resetear interactividad
+                boton.onclick = () => verificarRespuesta(opcion === respuestaCorrecta, boton);
                 opcionesContainer.appendChild(boton);
             });
 
@@ -241,24 +238,27 @@
         }
 
         function verificarRespuesta(esCorrecta, elemento) {
-            const opciones = document.querySelectorAll('.opcion-remate');
-            opciones.forEach(opcion => {
-                opcion.classList.add('disabled');
-                opcion.onclick = null;
-                if(opcion.textContent === respuestaCorrecta) {
-                    opcion.classList.add('correcto');
-                }
-            });
-
             if(esCorrecta) {
+                // Marcar correcto
                 elemento.classList.add('correcto');
                 aciertos++;
+                document.getElementById('puntuacion').textContent = `Aciertos: ${aciertos}`;
+                
+                // Deshabilitar todas las opciones
+                const opciones = document.querySelectorAll('.opcion-remate');
+                opciones.forEach(opcion => {
+                    opcion.style.pointerEvents = 'none';
+                });
+                
+                // Mostrar botón nuevo refrán
+                document.getElementById('nuevo-btn').style.display = 'block';
             } else {
-                elemento.classList.add('incorrecto', 'shake');
+                // Marcar incorrecto temporalmente
+                elemento.classList.add('incorrecto');
+                setTimeout(() => {
+                    elemento.classList.remove('incorrecto');
+                }, 1000);
             }
-
-            document.getElementById('puntuacion').textContent = `Aciertos: ${aciertos}`;
-            document.getElementById('nuevo-btn').style.display = 'block';
         }
 
         // Control del menú
