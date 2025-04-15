@@ -4,9 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Refránkenstein - Tradicional</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <style>
-        /* Estilos específicos del modo Tradicional */
+        <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            touch-action: pan-y;
+        }
+        
+        .title-container {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+	     .modo-container {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+            /* Estilos específicos del modo Tradicional */
         .juego-container {
             max-width: 600px;
             margin: 20px auto 20px;
@@ -163,7 +178,8 @@
 
     <div class="title-container">
         <h1>Refránkenstein</h1>
-        <h5>¡Adivina el refrán tradicional!</h5>
+        <h3> 🧠Modo Tradicional🪑</h3>
+        <h5>¡Adivina el refrán original!</h5>
     </div>
     <div class="juego-container">
         <div class="puntuacion" id="puntuacion">Aciertos: 0</div>
