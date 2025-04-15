@@ -1,27 +1,29 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Refránkenstein - Laboratorio</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/picker-wheel@1.0.0/dist/picker-wheel.min.css">
     <style>
-	    body {
+        body {
             font-family: Arial, sans-serif;
             max-width: 600px;
             margin: 0 auto;
             padding: 20px;
             touch-action: pan-y;
         }
-      .title-container {
+        
+        .title-container {
             text-align: center;
-            margin-bottom: 80px;
+            margin-bottom: 20px;
         }
-    .modo-container {
+        
+        .modo-container {
             text-align: center;
-            margin-bottom: 0px;
+            margin-bottom: 40px;
         }
-	    
+        
         /* Estilos del menú */
         .menu-flotante {
             position: fixed;
@@ -29,96 +31,127 @@
             left: 10px;
             z-index: 1000;
         }
+        
         .menu-btn {
-            background: #fff;
-            border: 2px solid #000;
-            border-radius: 50%;
+            background: #2c3e50;
+            color: white;
             width: 40px;
             height: 40px;
+            border-radius: 50%;
             font-size: 20px;
             cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            border: none;
         }
+        
         .menu-contenido {
             display: none;
             position: absolute;
             background-color: #f9f9f9;
             min-width: 160px;
             box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-            border-radius: 5px;
+            border-radius: 12px;
             padding: 10px 0;
+            border: none;
         }
+        
+        .menu-grupo {
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .menu-titulo {
+            color: #2c3e50;
+            font-weight: bold;
+            padding: 8px 16px;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
         .menu-contenido a {
             display: block;
-            padding: 8px 16px;
+            padding: 8px 16px 8px 25px;
             text-decoration: none;
             color: #333;
+            position: relative;
         }
+        
+        .menu-contenido a::before {
+            content: "•";
+            color: #3498db;
+            position: absolute;
+            left: 12px;
+        }
+        
         .menu-contenido a.activo {
             font-weight: bold;
             background: #eee;
         }
+        
         .menu-contenido a:hover {
             background: #ddd;
         }
-
+        
         /* Estilos del Laboratorio */
         .laboratorio {
-            max-width: 800px;
-            margin: 70px auto 20px;
+            max-width: 600px;
+            margin: 80px auto 20px;
             padding: 20px;
         }
+        
         .grupo-combinacion {
             background: #f5f5f5;
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 20px;
         }
-        .selector-tipo {
-            display: flex;
-            justify-content: space-between;
+        
+        .selector-columna {
+            margin-bottom: 25px;
+        }
+        
+        .selector-titulo {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+        
+        .picker-container {
+            width: 100%;
+            height: 200px;
             margin-bottom: 15px;
-        }
-        .selector-tipo select {
-            width: 48%;
-            padding: 8px;
             border: 2px solid #bdc3c7;
-            border-radius: 5px;
+            border-radius: 10px;
+            overflow: hidden;
         }
-        .selector-contenido {
-            display: flex;
-            justify-content: space-between;
-        }
-        .selector-contenido select {
-            width: 48%;
-            padding: 8px;
-            border: 2px solid #bdc3c7;
-            border-radius: 5px;
-            margin-bottom: 15px;
-            height: 150px;
-        }
+        
         .boton-generar {
-           font-size: 2em;
+            font-size: 2em;
             background: none;
             border: none;
             cursor: pointer;
-            color: #ccc;
+            color: #2c3e50;
             display: block;
-            margin: 0 auto;
+            margin: 30px auto;
+            transition: transform 0.3s;
         }
+        
         .boton-generar:hover {
-            background: #2980b9;
+            transform: scale(1.1);
         }
+        
         .resultado {
-            font-size: 24px;
+            font-size: 1.5em;
             padding: 20px;
-            border: 2px dashed #bdc3c7;
-            border-radius: 10px;
-            margin-top: 20px;
+            margin: 20px 0;
             text-align: center;
-            background: #fff;
+            background: white;
+            border-radius: 10px;
+            border: 2px dashed #bdc3c7;
+            min-height: 100px;
         }
-     .notificacion {
+        
+        .notificacion {
             position: fixed;
             bottom: 20px;
             left: 50%;
@@ -130,140 +163,103 @@
             box-shadow: 0 3px 6px rgba(0,0,0,0.16);
             display: none;
             animation: slideUp 0.3s ease-out;
+            z-index: 1000;
         }
-
+        
         @keyframes slideUp {
             from { bottom: -50px; }
             to { bottom: 20px; }
         }
+        
+        .floating-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #2c3e50;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 1000;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+        
+        .floating-button:hover {
+            background: #1a252f;
+            transform: translateY(-3px);
+        }
     </style>
-<style>
-/* Añade estos estilos al CSS existente */
-.menu-flotante {
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  z-index: 1000;
-}
-
-.menu-btn {    
-  background: #2c3e50;
-  color: white;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%; /* ← corrección aquí */
-  font-size: 20px;
-  cursor: pointer;
-  border: none; /* ← elimina el borde del botón */
-}
-
-.menu-contenido {
-  display: none;
-  position: absolute;
-  background-color: #f9f9f9;
-  min-width: 160px;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-  border-radius: 12px; /* ← más redondeado si quieres */
-  padding: 10px 0;
-  border: none; /* ← elimina cualquier borde */
-}
-
-.menu-contenido a {
-  display: block;
-  padding: 8px 16px;
-  text-decoration: none;
-  color: #333;
-}
-
-.menu-contenido a.activo {
-  font-weight: bold;
-  background: #eee;
-}
-
-.menu-contenido a:hover {
-  background: #ddd;
-}	
-</style>
 </head>
 <body>
-<div class="menu-flotante">
-    <button class="menu-btn">☰</button>
-    <div class="menu-contenido">
-        <div class="menu-grupo">
-            <div class="menu-titulo">Modos de juego</div>
-            <a href="index.html" class="activo">Random</a>
-            <a href="laboratorio.html">Laboratorio</a>
-            <a href="tradicional.html">Tradicional</a>
-        </div>
-        <div class="menu-grupo">
-            <div class="menu-titulo">-----</div>
-            <a href="publicos.html">Leer refrankensteins</a>
-            <a href="about.html">¿Qué es Refránkenstein?</a>
-        </div>
-    </div>
-</div>
-	<script>
-// Mostrar/ocultar menú
-document.querySelector('.menu-btn').addEventListener('click', function() {
-  const menu = document.querySelector('.menu-contenido');
-  menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-});
-
-// Cerrar menú al hacer clic fuera
-window.addEventListener('click', function(e) {
-  if (!e.target.matches('.menu-btn') && !e.target.closest('.menu-contenido')) {
-    const menu = document.querySelector('.menu-contenido');
-    if (menu && menu.style.display === 'block') {
-      menu.style.display = 'none';
-    }
-  }
-});
-</script>
     <!-- Menú -->
-     <div class="title-container">
-        <h1>Refránkenstein</h1>
-	    <h5>¡Reinventa el refranero!</h5>
-    </div>
-	 <div class="modo-container">
-        <h2>Modo Laboratorio</h2>
-    </div>
     <div class="menu-flotante">
         <button class="menu-btn">☰</button>
         <div class="menu-contenido">
-            <a href="index.html">Random</a>
-            <a href="laboratorio.html" class="activo">Laboratorio</a>
-            <a href="tradicional.html">Tradicional</a>
+            <div class="menu-grupo">
+                <div class="menu-titulo">Modos de juego</div>
+                <a href="index.html">Random</a>
+                <a href="laboratorio.html" class="activo">Laboratorio</a>
+                <a href="tradicional.html">Tradicional</a>
+            </div>
+            <div class="menu-grupo">
+                <div class="menu-titulo">Otras secciones</div>
+                <a href="publicos.html">Leer refrankensteins</a>
+                <a href="about.html">¿Qué es Refránkenstein?</a>
+            </div>
         </div>
     </div>
 
-    <!-- Laboratorio -->
+    <div class="title-container">
+        <h1>Refránkenstein</h1>
+        <h5>¡Reinventa el refranero!</h5>
+    </div>
+    
+    <div class="modo-container">
+        <h2>Modo Laboratorio</h2>
+    </div>
+
+    <!-- Laboratorio con Picker Wheels -->
     <div class="laboratorio">
         <div class="grupo-combinacion">
-            <div class="selector-tipo">
-                <select id="tipo-parte-1" onchange="actualizarContenido(1)">
+            <!-- Parte 1 -->
+            <div class="selector-columna">
+                <div class="selector-titulo">Primera parte:</div>
+                <select id="tipo-parte-1" class="selector-tipo" onchange="actualizarPicker(1)">
                     <option value="inicio" selected>Inicio</option>
                     <option value="remate">Remate</option>
                 </select>
-                <select id="tipo-parte-2" onchange="actualizarContenido(2)">
+                <div id="picker-container-1" class="picker-container"></div>
+            </div>
+            
+            <!-- Parte 2 -->
+            <div class="selector-columna">
+                <div class="selector-titulo">Segunda parte:</div>
+                <select id="tipo-parte-2" class="selector-tipo" onchange="actualizarPicker(2)">
                     <option value="inicio">Inicio</option>
                     <option value="remate" selected>Remate</option>
                 </select>
-            </div>
-            
-            <div class="selector-contenido">
-                <select id="contenido-parte-1" size="5"></select>
-                <select id="contenido-parte-2" size="5"></select>
+                <div id="picker-container-2" class="picker-container"></div>
             </div>
             
             <button class="boton-generar" onclick="generarRefran()">
-                🧪
+                🧪 Generar Refrán
             </button>
+            
+            <div class="resultado" id="resultado"></div>
         </div>
-        
-        <div class="resultado" id="resultado"></div>
     </div>
-<div class="notificacion" id="notificacion">¡Refrán guardado!</div>
-    <!-- Firebase + Scripts -->
+
+    <div class="notificacion" id="notificacion">¡Refrán guardado!</div>
+    
+    <a href="publicos.html" class="floating-button">
+        📜 Refránkensteins creados→
+    </a>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/picker-wheel@1.0.0/dist/picker-wheel.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
     <script>
@@ -282,80 +278,92 @@ window.addEventListener('click', function(e) {
         // Datos
         let inicios = [];
         let remates = [];
-// Función mejorada para eliminar duplicados (considera mayúsculas y acentos)
-    function eliminarDuplicados(arr) {
-        const vistos = new Set();
-        return arr.filter(item => {
-            const normalizado = item
-                .toLowerCase()
-                .normalize("NFD")
-                .replace(/[\u0300-\u036f]/g, "")
-                .trim();
-            return vistos.has(normalizado) ? false : vistos.add(normalizado);
-        });
-    }
-   // Cargar datos (VERSIÓN CORREGIDA)
-    db.collection("tradicionales").get().then((querySnapshot) => {
-        const tempInicios = [];
-        const tempRemates = [];
+        let picker1, picker2;
+        let selectedPart1, selectedPart2;
 
-        querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            
-            // Limpiar inicios
-            if(data.inicio) {
-                const inicioLimpio = data.inicio.trim();
-                if(inicioLimpio !== "") tempInicios.push(inicioLimpio);
-            }
-            
-            // Limpiar remates
-            if(data.remate) {
-                const remateLimpio = data.remate.trim();
-                if(remateLimpio !== "") tempRemates.push(remateLimpio);
-            }
-        });
-
-        // Procesar datos
-        inicios = eliminarDuplicados(tempInicios).sort((a, b) => a.localeCompare(b, 'es'));
-        remates = eliminarDuplicados(tempRemates).sort((a, b) => a.localeCompare(b, 'es'));
-
-        // Actualizar UI
-        actualizarContenido(1);
-        actualizarContenido(2);
-    });
-
-        // Actualizar selectores de contenido
-        function actualizarContenido(parte) {
-            const tipoSelector = document.getElementById(`tipo-parte-${parte}`);
-            const contenidoSelector = document.getElementById(`contenido-parte-${parte}`);
-            
-            const tipo = tipoSelector.value;
-            const opciones = tipo === "inicio" ? inicios : remates;
-            
-            contenidoSelector.innerHTML = opciones.map((texto, index) => 
-                `<option value="${index}">${texto}</option>`
-            ).join('');
+        // Función para eliminar duplicados
+        function eliminarDuplicados(arr) {
+            const vistos = new Set();
+            return arr.filter(item => {
+                const normalizado = item.toLowerCase()
+                    .normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+                return vistos.has(normalizado) ? false : vistos.add(normalizado);
+            });
         }
-// Función para ordenar
-    function ordenarAlfabetico(arr) {
-        return arr.sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }));
-    }
+
+        // Cargar datos
+        db.collection("tradicionales").get().then((querySnapshot) => {
+            const tempInicios = [];
+            const tempRemates = [];
+
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                if(data.inicio) {
+                    const inicioLimpio = data.inicio.trim();
+                    if(inicioLimpio !== "") tempInicios.push(inicioLimpio);
+                }
+                if(data.remate) {
+                    const remateLimpio = data.remate.trim();
+                    if(remateLimpio !== "") tempRemates.push(remateLimpio);
+                }
+            });
+
+            // Procesar datos
+            inicios = eliminarDuplicados(tempInicios).sort((a, b) => a.localeCompare(b, 'es'));
+            remates = eliminarDuplicados(tempRemates).sort((a, b) => a.localeCompare(b, 'es'));
+
+            // Inicializar pickers
+            inicializarPickers();
+        });
+
+        // Inicializar pickers
+        function inicializarPickers() {
+            const opciones1 = inicios.map(texto => ({ id: texto, value: texto }));
+            const opciones2 = remates.map(texto => ({ id: texto, value: texto }));
+            
+            picker1 = new PickerWheel({
+                container: '#picker-container-1',
+                items: opciones1,
+                itemHeight: 40,
+                radius: 150,
+                onChange: (item) => { selectedPart1 = item.value; }
+            });
+            
+            picker2 = new PickerWheel({
+                container: '#picker-container-2',
+                items: opciones2,
+                itemHeight: 40,
+                radius: 150,
+                onChange: (item) => { selectedPart2 = item.value; }
+            });
+            
+            // Seleccionar primeros valores por defecto
+            selectedPart1 = inicios[0];
+            selectedPart2 = remates[0];
+        }
+
+        // Actualizar picker cuando cambia el tipo
+        function actualizarPicker(parte) {
+            const tipo = document.getElementById(`tipo-parte-${parte}`).value;
+            const opciones = (tipo === "inicio" ? inicios : remates).map(texto => ({ id: texto, value: texto }));
+            
+            if(parte === 1) {
+                picker1.updateItems(opciones);
+                selectedPart1 = opciones[0]?.value || '';
+            } else {
+                picker2.updateItems(opciones);
+                selectedPart2 = opciones[0]?.value || '';
+            }
+        }
+
         // Generar refrán
         function generarRefran() {
-            const tipo1 = document.getElementById('tipo-parte-1').value;
-            const tipo2 = document.getElementById('tipo-parte-2').value;
-            
-            const index1 = document.getElementById('contenido-parte-1').value;
-            const index2 = document.getElementById('contenido-parte-2').value;
-            
-            const parte1 = tipo1 === "inicio" ? inicios[index1] : remates[index1];
-            const parte2 = tipo2 === "inicio" ? inicios[index2] : remates[index2];
-            
-            document.getElementById('resultado').textContent = `${parte1} ${parte2}`;
+            const refranCompleto = `${selectedPart1} ${selectedPart2}`;
+            document.getElementById('resultado').textContent = refranCompleto;
+            guardarRefran(refranCompleto);
         }
 
-
-        // Función para guardar en Firebase (nueva)
+        // Guardar en Firebase
         async function guardarRefran(refran) {
             try {
                 await db.collection("refranes").add({
@@ -368,7 +376,7 @@ window.addEventListener('click', function(e) {
             }
         }
 
-        // Función de notificación (nueva)
+        // Mostrar notificación
         function mostrarNotificacion() {
             const notificacion = document.getElementById('notificacion');
             notificacion.style.display = 'block';
@@ -377,23 +385,6 @@ window.addEventListener('click', function(e) {
             }, 2000);
         }
 
-        // Generar refrán modificado para guardar
-        function generarRefran() {
-            const tipo1 = document.getElementById('tipo-parte-1').value;
-            const tipo2 = document.getElementById('tipo-parte-2').value;
-            
-            const index1 = document.getElementById('contenido-parte-1').value;
-            const index2 = document.getElementById('contenido-parte-2').value;
-            
-            const parte1 = tipo1 === "inicio" ? inicios[index1] : remates[index1];
-            const parte2 = tipo2 === "inicio" ? inicios[index2] : remates[index2];
-            
-            const refranCompleto = `${parte1} ${parte2}`;
-            
-            // Mostrar y guardar
-            document.getElementById('resultado').textContent = refranCompleto;
-            guardarRefran(refranCompleto);
-        }
         // Control del menú
         document.querySelector('.menu-btn').addEventListener('click', function() {
             const menu = document.querySelector('.menu-contenido');
@@ -407,54 +398,5 @@ window.addEventListener('click', function(e) {
             }
         });
     </script>
-<a href="publicos.html" class="floating-button">
-    📜 Refránkensteins creados→
-</a>
-
-<style>
-    .floating-button {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: #2c3e50;
-        color: white;
-        padding: 12px 20px;
-        border-radius: 50px;
-        text-decoration: none;
-	    text-align: center;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        z-index: 1000;
-        font-size: 0.9em;
-        transition: all 0.3s;
-    }
-    .floating-button:hover {
-        background: #1a252f;
-        transform: translateY(-3px);
-    }
-</style>
-<div id="custom-toast" class="toast-hidden">
-    <span id="toast-message"></span>
-	<div id="toast-message" class="toast-message-container"></div>
-</div>
-
-<style>
-#custom-toast {
-        position: fixed;
-        bottom: 70px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: #2c3e50;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 30px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        z-index: 10000;
-        opacity: 0;
-        transition: opacity 0.3s;
-    }
-    .toast-visible {
-        opacity: 1 !important;
-}
-</style>
 </body>
 </html>
