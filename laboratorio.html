@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Refránkenstein - Laboratorio</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/picker-wheel@1.0.0/dist/picker-wheel.min.css">
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -13,15 +12,13 @@
       padding: 20px;
       touch-action: pan-y;
     }
-    
     .title-container {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 80px;
     }
-    
     .modo-container {
       text-align: center;
-      margin-bottom: 40px;
+      margin-bottom: 0px;
     }
     
     /* Estilos del menú */
@@ -31,8 +28,7 @@
       left: 10px;
       z-index: 1000;
     }
-    
-    .menu-btn {    
+    .menu-btn {
       background: #2c3e50;
       color: white;
       width: 40px;
@@ -42,7 +38,6 @@
       cursor: pointer;
       border: none;
     }
-    
     .menu-contenido {
       display: none;
       position: absolute;
@@ -53,104 +48,78 @@
       padding: 10px 0;
       border: none;
     }
-    
-    .menu-grupo {
-      padding: 5px 0;
-      border-bottom: 1px solid #eee;
-    }
-    
-    .menu-titulo {
-      color: #2c3e50;
-      font-weight: bold;
-      padding: 8px 16px;
-      font-size: 0.9em;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    
     .menu-contenido a {
       display: block;
-      padding: 8px 16px 8px 25px;
+      padding: 8px 16px;
       text-decoration: none;
       color: #333;
-      position: relative;
     }
-    
-    .menu-contenido a::before {
-      content: "•";
-      color: #3498db;
-      position: absolute;
-      left: 12px;
-    }
-    
     .menu-contenido a.activo {
       font-weight: bold;
       background: #eee;
     }
-    
     .menu-contenido a:hover {
       background: #ddd;
     }
     
     /* Estilos del Laboratorio */
     .laboratorio {
-      max-width: 600px;
-      margin: 80px auto 20px;
+      max-width: 800px;
+      margin: 70px auto 20px;
       padding: 20px;
     }
-    
     .grupo-combinacion {
       background: #f5f5f5;
       padding: 20px;
       border-radius: 10px;
       margin-bottom: 20px;
     }
-    
-    .selector-columna {
-      margin-bottom: 25px;
-    }
-    
-    .selector-titulo {
-      font-weight: bold;
-      margin-bottom: 8px;
-      color: #2c3e50;
-    }
-    
-    .picker-container {
-      width: 100%;
-      height: 200px;
+    .selector-tipo {
+      display: flex;
+      justify-content: space-between;
       margin-bottom: 15px;
-      border: 2px solid #bdc3c7;
-      border-radius: 10px;
-      overflow: hidden;
     }
-    
+    .selector-tipo select {
+      width: 48%;
+      padding: 8px;
+      border: 2px solid #bdc3c7;
+      border-radius: 5px;
+    }
+    .selector-contenido {
+      display: flex;
+      justify-content: space-between;
+    }
+    /* Los select que simulan la ruleta */
+    .selector-contenido select {
+      width: 48%;
+      padding: 8px;
+      border: 2px solid #bdc3c7;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      height: 150px; /* para mostrar 5 elementos aproximadamente */
+      overflow-y: scroll;
+    }
     .boton-generar {
       font-size: 2em;
       background: none;
       border: none;
       cursor: pointer;
-      color: #2c3e50;
+      color: #ccc;
       display: block;
-      margin: 30px auto;
-      transition: transform 0.3s;
+      margin: 0 auto;
     }
-    
     .boton-generar:hover {
-      transform: scale(1.1);
+      background: #2980b9;
     }
-    
     .resultado {
-      font-size: 1.5em;
+      font-size: 24px;
       padding: 20px;
-      margin: 20px 0;
-      text-align: center;
-      background: white;
-      border-radius: 10px;
       border: 2px dashed #bdc3c7;
-      min-height: 100px;
+      border-radius: 10px;
+      margin-top: 20px;
+      text-align: center;
+      background: #fff;
     }
-    
     .notificacion {
       position: fixed;
       bottom: 20px;
@@ -163,14 +132,11 @@
       box-shadow: 0 3px 6px rgba(0,0,0,0.16);
       display: none;
       animation: slideUp 0.3s ease-out;
-      z-index: 1000;
     }
-    
     @keyframes slideUp {
       from { bottom: -50px; }
       to { bottom: 20px; }
     }
-    
     .floating-button {
       position: fixed;
       bottom: 20px;
@@ -186,27 +152,9 @@
       font-size: 0.9em;
       transition: all 0.3s;
     }
-    
     .floating-button:hover {
       background: #1a252f;
       transform: translateY(-3px);
-    }
-    
-    .picker-wheel {
-      width: 100% !important;
-      height: 200px !important;
-    }
-    
-    .picker-item {
-      font-size: 16px !important;
-      color: #2c3e50 !important;
-      padding: 12px !important;
-      white-space: normal !important;
-      text-align: center !important;
-    }
-    
-    .picker-center-highlight {
-      border-color: #3498db !important;
     }
   </style>
 </head>
@@ -217,8 +165,8 @@
     <div class="menu-contenido">
       <div class="menu-grupo">
         <div class="menu-titulo">Modos de juego</div>
-        <a href="index.html">Random</a>
-        <a href="laboratorio.html" class="activo">Laboratorio</a>
+        <a href="index.html" class="activo">Random</a>
+        <a href="laboratorio.html">Laboratorio</a>
         <a href="tradicional.html">Tradicional</a>
       </div>
       <div class="menu-grupo">
@@ -238,54 +186,51 @@
     <h2>Modo Laboratorio</h2>
   </div>
 
-  <!-- Laboratorio con Picker Wheels -->
+  <!-- Laboratorio -->
   <div class="laboratorio">
     <div class="grupo-combinacion">
-      <!-- Parte 1 -->
-      <div class="selector-columna">
-        <div class="selector-titulo">Primera parte:</div>
-        <select id="tipo-parte-1" class="selector-tipo" onchange="actualizarPicker(1)">
+      <div class="selector-tipo">
+        <select id="tipo-parte-1" onchange="actualizarContenido(1)">
           <option value="inicio" selected>Inicio</option>
           <option value="remate">Remate</option>
         </select>
-        <div id="picker-container-1" class="picker-container"></div>
-      </div>
-      
-      <!-- Parte 2 -->
-      <div class="selector-columna">
-        <div class="selector-titulo">Segunda parte:</div>
-        <select id="tipo-parte-2" class="selector-tipo" onchange="actualizarPicker(2)">
+        <select id="tipo-parte-2" onchange="actualizarContenido(2)">
           <option value="inicio">Inicio</option>
           <option value="remate" selected>Remate</option>
         </select>
-        <div id="picker-container-2" class="picker-container"></div>
+      </div>
+      
+      <div class="selector-contenido">
+        <select id="contenido-parte-1" size="5" onchange="centrarSelect(this)"></select>
+        <select id="contenido-parte-2" size="5" onchange="centrarSelect(this)"></select>
       </div>
       
       <button class="boton-generar" onclick="generarRefran()">
         🧪
       </button>
-      
-      <div class="resultado" id="resultado"></div>
     </div>
+    
+    <div class="resultado" id="resultado"></div>
   </div>
-
   <div class="notificacion" id="notificacion">¡Refrán guardado!</div>
-  
+
   <a href="publicos.html" class="floating-button">
     📜 Refránkensteins creados →
   </a>
 
-  <!-- Scripts -->
- <script src="https://cdn.jsdelivr.net/npm/picker-wheel@1.0.0/dist/picker-wheel.min.js" defer></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
-  <script>
-  window.addEventListener("load", function() {
-
-    // Verifica que PickerWheel esté definido
-    if (typeof PickerWheel === "undefined") {
-      console.error("PickerWheel no se cargó. Revisa el enlace CDN o la versión de la librería.");
-      return;
+  <!-- Firebase + Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js" defer></script>
+  <!-- Usar la URL de unpkg para PickerWheel -->
+  <script src="https://unpkg.com/pickerwheel@1.0.2/dist/pickerwheel.min.js" defer></script>
+  <script defer>
+    // Función para centrar el select de modo que el elemento seleccionado quede en el centro
+    function centrarSelect(selectElement) {
+      const selectedIndex = selectElement.selectedIndex;
+      // Suponiendo que cada opción tiene una altura constante:
+      const optionHeight = selectElement.scrollHeight / selectElement.options.length;
+      // Coloca el elemento seleccionado en la posición central (aproximadamente)
+      selectElement.scrollTop = (selectedIndex - Math.floor(selectElement.size / 2)) * optionHeight;
     }
 
     // Configuración de Firebase
@@ -300,11 +245,9 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // Datos globales para pickers
+    // Datos globales
     let inicios = [];
     let remates = [];
-    let picker1, picker2;
-    let selectedPart1, selectedPart2;
 
     // Función para eliminar duplicados
     function eliminarDuplicados(arr) {
@@ -320,99 +263,55 @@
     db.collection("tradicionales").get().then((querySnapshot) => {
       const tempInicios = [];
       const tempRemates = [];
-
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        if(data.inicio) tempInicios.push(data.inicio.trim());
-        if(data.remate) tempRemates.push(data.remate.trim());
+        if(data.inicio) {
+          const inicioLimpio = data.inicio.trim();
+          if(inicioLimpio !== "") tempInicios.push(inicioLimpio);
+        }
+        if(data.remate) {
+          const remateLimpio = data.remate.trim();
+          if(remateLimpio !== "") tempRemates.push(remateLimpio);
+        }
       });
-
-      // Procesar datos y eliminar duplicados
       inicios = eliminarDuplicados(tempInicios).sort((a, b) => a.localeCompare(b, 'es'));
       remates = eliminarDuplicados(tempRemates).sort((a, b) => a.localeCompare(b, 'es'));
       console.log('Datos cargados:', { inicios, remates });
-      
-      // Inicializar pickers tras un breve retraso
-      setTimeout(inicializarPickers, 100);
+      actualizarContenido(1);
+      actualizarContenido(2);
     }).catch(error => {
       console.error("Error cargando datos:", error);
       mostrarNotificacion("Error cargando datos", 5000);
     });
 
-    // Función para inicializar pickers
-    function inicializarPickers() {
-      if (inicios.length === 0 || remates.length === 0) {
-        console.error("No hay datos para mostrar");
-        return;
-      }
-      
-      if(picker1 && typeof picker1.destroy === 'function') picker1.destroy();
-      if(picker2 && typeof picker2.destroy === 'function') picker2.destroy();
-      
-      const crearItems = (arr) => arr.map(texto => ({
-        id: texto,
-        value: texto,
-        html: `<div class="picker-item">${texto}</div>`
-      }));
-      
-      picker1 = new PickerWheel({
-        container: '#picker-container-1',
-        items: crearItems(inicios),
-        itemHeight: 50,
-        radius: 180,
-        visibleItems: 5,
-        onChange: (item) => {
-          selectedPart1 = item.value;
-          console.log('Parte 1 seleccionada:', selectedPart1);
-        }
-      });
-      
-      picker2 = new PickerWheel({
-        container: '#picker-container-2',
-        items: crearItems(remates),
-        itemHeight: 50,
-        radius: 180,
-        visibleItems: 5,
-        onChange: (item) => {
-          selectedPart2 = item.value;
-          console.log('Parte 2 seleccionada:', selectedPart2);
-        }
-      });
-      
-      selectedPart1 = inicios[0];
-      selectedPart2 = remates[0];
-      
-      picker1.render();
-      picker2.render();
-    }
-
-    // Actualizar picker al cambiar el desplegable
-    function actualizarPicker(parte) {
-      const tipo = document.getElementById(`tipo-parte-${parte}`).value;
-      const datos = tipo === 'inicio' ? inicios : remates;
-      
-      const picker = parte === 1 ? picker1 : picker2;
-      picker.updateItems(datos.map(texto => ({
-        id: texto,
-        value: texto,
-        html: `<div class="picker-item">${texto}</div>`
-      })));
-      
-      if (parte === 1) {
-        selectedPart1 = datos[0];
-      } else {
-        selectedPart2 = datos[0];
-      }
+    // Función para actualizar selectores de contenido
+    function actualizarContenido(parte) {
+      const tipoSelector = document.getElementById(`tipo-parte-${parte}`);
+      const contenidoSelector = document.getElementById(`contenido-parte-${parte}`);
+      const tipo = tipoSelector.value;
+      const opciones = tipo === "inicio" ? inicios : remates;
+      contenidoSelector.innerHTML = opciones.map((texto, index) => 
+        `<option value="${index}">${texto}</option>`
+      ).join('');
+      // Seleccionar el primer elemento por defecto y centrar el select
+      contenidoSelector.selectedIndex = 0;
+      centrarSelect(contenidoSelector);
     }
 
     // Función para generar el refrán
     function generarRefran() {
-      const refranCompleto = `${selectedPart1} ${selectedPart2}`;
+      const tipo1 = document.getElementById('tipo-parte-1').value;
+      const tipo2 = document.getElementById('tipo-parte-2').value;
+      const index1 = document.getElementById('contenido-parte-1').value;
+      const index2 = document.getElementById('contenido-parte-2').value;
+      const parte1 = tipo1 === "inicio" ? inicios[index1] : remates[index1];
+      const parte2 = tipo2 === "inicio" ? inicios[index2] : remates[index2];
+      const refranCompleto = `${parte1} ${parte2}`;
       document.getElementById('resultado').textContent = refranCompleto;
       guardarRefran(refranCompleto);
     }
 
-    // Guardar refrán en Firebase
+    // Función para guardar el refrán en Firebase
     async function guardarRefran(refran) {
       try {
         await db.collection("refranes").add({
@@ -425,7 +324,7 @@
       }
     }
 
-    // Mostrar notificación
+    // Función para mostrar una notificación
     function mostrarNotificacion(texto, duracion = 2000) {
       const notificacion = document.getElementById('notificacion');
       notificacion.textContent = texto;
@@ -441,16 +340,12 @@
       const menu = document.querySelector('.menu-contenido');
       menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
     });
-
     window.addEventListener('click', function(e) {
       if (!e.target.matches('.menu-btn') && !e.target.closest('.menu-contenido')) {
         const menu = document.querySelector('.menu-contenido');
         if (menu) menu.style.display = 'none';
       }
     });
-
-  }); // Fin de window.load
-</script>
-
+  </script>
 </body>
 </html>
