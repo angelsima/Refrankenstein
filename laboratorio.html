@@ -1,811 +1,258 @@
-
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Refránkenstein - Laboratorio</title>
-    <style>
-	    body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            touch-action: pan-y;
-        }
-      .title-container {
-            text-align: center;
-            margin-bottom: 80px;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Refránkenstein - Creativo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      touch-action: pan-y;
+    }
+    .title-container {
+      text-align: center;
+      margin-bottom: 30px;
+    }
     .modo-container {
-            text-align: center;
-            margin-bottom: 0px;
-        }
-	    
-        /* Estilos del menú */
-        .menu-flotante {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            z-index: 1000;
-        }
-        .menu-btn {
-            background: #fff;
-            border: 2px solid #000;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            font-size: 20px;
-            cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-        .menu-contenido {
-            display: none;
-            position: absolute;
-            background-color: #f9f9f9;
-            min-width: 160px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-            border-radius: 5px;
-            padding: 10px 0;
-        }
-        .menu-contenido a {
-            display: block;
-            padding: 8px 16px;
-            text-decoration: none;
-            color: #333;
-        }
-        .menu-contenido a.activo {
-            font-weight: bold;
-            background: #eee;
-        }
-        .menu-contenido a:hover {
-            background: #ddd;
-        }
-
-    </style>
-<style>
-/* Añade estos estilos al CSS existente */
-.menu-flotante {
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  z-index: 1000;
-}
-
-.menu-btn {    
-  background: #2c3e50;
-  color: white;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%; /* ← corrección aquí */
-  font-size: 20px;
-  cursor: pointer;
-  border: none; /* ← elimina el borde del botón */
-}
-
-.menu-contenido {
-  display: none;
-  position: absolute;
-  background-color: #f9f9f9;
-  min-width: 160px;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-  border-radius: 12px; /* ← más redondeado si quieres */
-  padding: 10px 0;
-  border: none; /* ← elimina cualquier borde */
-}
-
-.menu-contenido a {
-  display: block;
-  padding: 8px 16px;
-  text-decoration: none;
-  color: #333;
-}
-
-.menu-contenido a.activo {
-  font-weight: bold;
-  background: #eee;
-}
-
-.menu-contenido a:hover {
-  background: #ddd;
-}	
-
-/* Selector de modos */
-.modo-selector {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 30px;
-    justify-content: center;
-}
-
-.modo-btn {
-    padding: 12px 25px;
-    border: 2px solid #2c3e50;
-    border-radius: 30px;
-    background: white;
-    cursor: pointer;
-    font-size: 1.1em;
-    transition: all 0.3s;
-}
-
-.modo-btn.activo {
-    background: #2c3e50;
-    color: white;
-    transform: scale(1.05);
-}
-
-.modo-contenido {
-    display: none;
-}
-
-.modo-contenido.activo {
-    display: block;
-}
-</style>
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .modo-selector {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+    .modo-btn {
+      padding: 10px 20px;
+      border: 2px solid #2c3e50;
+      border-radius: 30px;
+      background: white;
+      cursor: pointer;
+      font-size: 1em;
+      transition: all 0.3s;
+    }
+    .modo-btn.activo {
+      background: #2c3e50;
+      color: white;
+    }
+    .modo-contenido {
+      display: none;
+    }
+    .modo-contenido.activo {
+      display: block;
+    }
+    .grupo-combinacion {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+    .selector-tipo,
+    .selector-contenido {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+    select {
+      width: 48%;
+      padding: 8px;
+      border: 2px solid #bdc3c7;
+      border-radius: 5px;
+    }
+    .boton-generar {
+      font-size: 2em;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #2c3e50;
+      display: block;
+      margin: 0 auto;
+    }
+    .resultado {
+      font-size: 24px;
+      padding: 20px;
+      border: 2px dashed #bdc3c7;
+      border-radius: 10px;
+      margin-top: 20px;
+      text-align: center;
+      background: #fff;
+    }
+    .notificacion {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #27ae60;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 25px;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+      display: none;
+      animation: slideUp 0.3s ease-out;
+    }
+    @keyframes slideUp {
+      from {
+        bottom: -50px;
+      }
+      to {
+        bottom: 20px;
+      }
+    }
+  </style>
 </head>
 <body>
-<div class="menu-flotante">
-    <button class="menu-btn">☰</button>
-    <div class="menu-contenido">
-        <div class="menu-grupo">
-            <div class="menu-titulo">Modos de juego</div>
-            <a href="index.html">Random</a>
-            <a href="laboratorio.html" class="activo">Laboratorio</a>
-            <a href="tradicional.html">Tradicional</a>
-        </div>
-        <div class="menu-grupo">
-            <a href="publicos.html">Leer refrankensteins</a>
-            <a href="about.html">¿Qué es Refránkenstein?</a>
-        </div>
-    </div>
-</div>
-    <!-- Menú -->
-     <div class="title-container">
-        <h1>Refránkenstein</h1>
-	    <h5>¡Reinventa el refranero!</h5>
-	        </div>
-<!-- Agrega esto después del título -->
-<div class="modo-container">
+  <div class="title-container">
+    <h1>Refránkenstein</h1>
+    <h5>¡Reinventa el refranero!</h5>
+  </div>
+
+  <div class="modo-container">
     <div class="modo-selector">
-        <button class="modo-btn activo" onclick="mostrarModo('random')">🎲 Random</button>
-        <button class="modo-btn" onclick="mostrarModo('laboratorio')">🔬 Laboratorio</button>
+      <button class="modo-btn activo" onclick="mostrarModo('random')">🎲 Random</button>
+      <button class="modo-btn" onclick="mostrarModo('laboratorio')">🔬 Laboratorio</button>
     </div>
-</div>
+  </div>
 
-<!-- Contenedores para los modos -->
-<div id="modo-random" class="modo-contenido activo">
-  <style> .inicio-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin: 20px 0;
-            position: relative;
-        }
-        
-        .change-inicio {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 1.2em;
-            padding: 5px;
-        }
-        
-        .swipe-container {
-            position: relative;
-            height: 150px;
-            margin: 30px 0;
-            overflow: hidden;
-        }
-        
-        .remate-card {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2em;
-            text-align: center;
-            border: 2px solid #ccc;
-            border-radius: 10px;
-            transition: transform 0.3s;
-            background: white;
-            touch-action: none;
-        }
-        
-        .nav-arrow {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 2em;
-            background: none;
-            border: none;
-            cursor: pointer;
-            z-index: 1;
-        }
-        
-        .prev { left: 10px; }
-        .next { right: 10px; }
-        
-        .heart-button {
-            font-size: 2em;
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #ccc;
-            display: block;
-            margin: 0 auto;
-        }
-        
-        .heart-button.liked {
-            color: #ff3366;
-        }
-
-        @media (hover: hover) {
-            .nav-arrow {
-                display: block;
-            }
-        }
-    </style>
-	 <div class="inicio-container">
-        <button class="change-inicio" onclick="cambiarInicio()">↻</button>
-        <div id="inicio-refran" class="inicio-texto"></div>
+  <!-- RANDOM -->
+  <div id="modo-random" class="modo-contenido activo">
+    <div class="grupo-combinacion">
+      <div class="resultado" id="resultado-random">Cargando...</div>
+      <button class="boton-generar" onclick="generarRandom()">🧪</button>
     </div>
+  </div>
 
-    <div class="swipe-container">
-        <button class="nav-arrow prev" onclick="previousRemate()">❮</button>
-        <button class="nav-arrow next" onclick="nextRemate()">❯</button>
-        <div class="remate-card" id="remate-card"></div>
+  <!-- LABORATORIO -->
+  <div id="modo-laboratorio" class="modo-contenido">
+    <div class="grupo-combinacion">
+      <div class="selector-tipo">
+        <select id="tipo-parte-1" onchange="actualizarContenido(1)">
+          <option value="inicio" selected>Inicio</option>
+          <option value="remate">Remate</option>
+        </select>
+        <select id="tipo-parte-2" onchange="actualizarContenido(2)">
+          <option value="inicio">Inicio</option>
+          <option value="remate" selected>Remate</option>
+        </select>
+      </div>
+      <div class="selector-contenido">
+        <select id="contenido-parte-1" size="5"></select>
+        <select id="contenido-parte-2" size="5"></select>
+      </div>
+      <button class="boton-generar" onclick="generarRefran()">🧪</button>
+      <div class="resultado" id="resultado-lab"></div>
     </div>
+  </div>
 
-    <button class="heart-button" onclick="toggleLike()">🧪</button>
-<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
-    <script>
- const firebaseConfig = {
-    apiKey: "AIzaSyAdoPUF-cCyvpfiCJiBfCRv3ZYtwu1W4tc",
-    authDomain: "refrankenstein.firebaseapp.com",
-    projectId: "refrankenstein",
-    storageBucket: "refrankenstein.firebasestorage.app",
-    messagingSenderId: "575434538832",
-    appId: "1:575434538832:web:615f850a61c54ddd9d3655"
-};
+  <div class="notificacion" id="notificacion">Guardado</div>
 
-// Inicialización única de Firebase
-const app = firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-window.inicios = []; // Hacerlas globales
-window.remates = [];
-let inicios = [];
-let remates = [];
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAdoPUF-cCyvpfiCJiBfCRv3ZYtwu1W4tc",
+      authDomain: "refrankenstein.firebaseapp.com",
+      projectId: "refrankenstein",
+      storageBucket: "refrankenstein.firebasestorage.app",
+      messagingSenderId: "575434538832",
+      appId: "1:575434538832:web:615f850a61c54ddd9d3655"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-let inicioActual = '';
-let remateActual = '';
-let remateHistory = [];
-let currentIndex = -1;
-let likedCombinations = JSON.parse(localStorage.getItem('likedCombinations')) || [];
+    let inicios = [], remates = [];
 
-async function cargarRefranesTradicionales() {
-    try {
-        const snapshot = await db.collection('tradicionales').get();
-        snapshot.forEach(doc => {
-            const data = doc.data();
-            // Verificar estructura de datos
-            if(data.inicio && data.remate) {
-                iniciosRefran.push(data.inicio);
-                rematesRefran.push(data.remate);
-            }
-        });
-        console.log('Refranes cargados:', iniciosRefran.length, iniciosRefran);
-    } catch (error) {
-        console.error('Error cargando refranes:', error);
-        showToast("Error cargando refranes", 5000);
-    }
-}
-
-        function actualizarStorage() {
-            localStorage.setItem('likedCombinations', JSON.stringify(likedCombinations));
-        }
-
-        // Modificar función de cambio de inicio
-function cambiarInicio() {
-    if(iniciosRefran.length === 0) return;
-    inicioActual = iniciosRefran[Math.floor(Math.random() * iniciosRefran.length)];
-    document.getElementById('inicio-refran').textContent = inicioActual;
-    generarNuevoRemate();
-}
-
-        function generarNuevoRemate() {
-            if(rematesRefran.length === 0) return;
-            const nuevoRemate = rematesRefran[Math.floor(Math.random() * rematesRefran.length)];
-            remateHistory = remateHistory.slice(0, currentIndex + 1);
-            remateHistory.push(nuevoRemate);
-            currentIndex++;
-            actualizarRemate();
-        }
-
-        function actualizarRemate() {
-            const card = document.getElementById('remate-card');
-            card.textContent = remateHistory[currentIndex];
-            actualizarCorazon();
-        }
-
-       async function toggleLike() {
-    const combination = `${inicioActual} ${remateHistory[currentIndex]}`;
-    const heart = document.querySelector('.heart-button');
-	        // Verificar si es un refrán tradicional
-    const esTradicional = await esRefranTradicional(inicioActual, remateHistory[currentIndex]);
-    
-    if(esTradicional) {
-        showToast("¡Este es un refrán tradicional! Usa otro", 3000);
-        return;
-    }
-    
-    // Referencia a la colección en Firestore
-    const refranesRef = firebase.firestore().collection('refranes');
-    
-    if (heart.classList.contains('liked')) {
-        // Eliminar de Firestore (opcional)
-        refranesRef.where('texto', '==', combination).get()
-            .then(querySnapshot => {
-                querySnapshot.forEach(doc => {
-                    doc.ref.delete();
-                });
-            });
-        heart.classList.remove('liked');
-        showToast("Refránkenstein eliminado❌");
-    } else {
-        // Guardar en Firestore
-        refranesRef.add({
-            texto: combination,
-            fecha: firebase.firestore.FieldValue.serverTimestamp(),
-            votos: 0
-        })
-        .then(() => {
-            heart.classList.add('liked');
-            showToast("Refránkenstein guardado✔");
-        })
-        .catch(error => {
-            console.error("Error al guardar:", error);
-            alert("Error al guardar. Revisa la consola.");
-        });
-    }
-}
-        function actualizarCorazon() {
-            const heart = document.querySelector('.heart-button');
-            const combination = `${inicioActual} ${remateHistory[currentIndex]}`;
-            heart.classList.toggle('liked', likedCombinations.includes(combination));
-        }
-
-        // Navegación
-        function nextRemate() {
-            if (currentIndex < remateHistory.length - 1) {
-                currentIndex++;
-            } else {
-                generarNuevoRemate();
-            }
-            actualizarRemate();
-        }
-
-        function previousRemate() {
-            if (currentIndex > 0) {
-                currentIndex--;
-                actualizarRemate();
-            }
-        }
-
-        // Manejo de Swipe para móviles
-        let touchStartX = 0;
-        let touchEndX = 0;
-        const swipeThreshold = 50;
-
-        document.getElementById('remate-card').addEventListener('touchstart', e => {
-            touchStartX = e.changedTouches[0].screenX;
-        });
-
-        document.getElementById('remate-card').addEventListener('touchend', e => {
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-        });
-
-        function handleSwipe() {
-            const deltaX = touchEndX - touchStartX;
-
-            if (Math.abs(deltaX) > swipeThreshold) {
-                deltaX > 0 ? previousRemate() : nextRemate();
-            }
-        }
-	    function showToast(message, duration = 3000) {
-    const toast = document.getElementById('custom-toast');
-    document.getElementById('toast-message').textContent = message;
-    
-    toast.classList.add('toast-visible');
-    setTimeout(() => {
-        toast.classList.remove('toast-visible');
-    }, duration);
-}
-	    
-function guardarRefran(refran) {
-    db.collection("refranes").add({
-      texto: refran,
-      fecha: new Date()
-    });
-  }
-        // Inicialización async
-       async function inicializarApp() {
-    await cargarRefranesTradicionales();
-    if(iniciosRefran.length > 0 && rematesRefran.length > 0) {
-        cambiarInicio();
-    } else {
-        showToast("No se encontraron refranes", 5000);
-    }
-}
-        // Añadir loader mientras carga
-function toggleLoader(show) {
-    document.getElementById('loading').style.display = show ? 'block' : 'none';
-}
-
-function cargarDatosLaboratorio() {
-    return db.collection("tradicionales").get().then((querySnapshot) => {
-        const tempInicios = [];
-        const tempRemates = [];
-
-        querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            if (data.inicio) tempInicios.push(data.inicio.trim());
-            if (data.remate) tempRemates.push(data.remate.trim());
-        });
-
-        inicios = eliminarDuplicados(tempInicios).sort((a, b) => a.localeCompare(b, 'es'));
-        remates = eliminarDuplicados(tempRemates).sort((a, b) => a.localeCompare(b, 'es'));
-
-        actualizarContenido(1);
-        actualizarContenido(2);
-    });
-}
-
-        // Iniciar la aplicación
-        inicializarApp();
-   function mostrarModo(modo) {
-    document.querySelectorAll('.modo-btn').forEach(btn => btn.classList.remove('activo'));
-    document.querySelector(`[onclick="mostrarModo('${modo}')"]`).classList.add('activo');
-
-    document.querySelectorAll('.modo-contenido').forEach(div => div.classList.remove('activo'));
-    document.getElementById(`modo-${modo}`).classList.add('activo');
-
-    if (modo === "laboratorio" && inicios.length === 0 && remates.length === 0) {
-        cargarDatosLaboratorio();
-    }
-}
-
-    </script>
-	<style>
-    /* Añadir estas reglas al CSS existente */
-    
-    .inicio-texto {
-        font-size: 1.2em;
-        font-weight: bold;
-        margin: 10px 0;
-    }
-
-    #remate-card {
-        font-size: 1.2em;
-        font-weight: bold;
-        padding: 15px;
-        background: #f8f9fa;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    /* Modificar la altura del contenedor para mejor ajuste */
-    .swipe-container {
-        height: 180px; /* Aumentado de 150px */
-    }
-</style>
-</div>
-
-<div id="modo-laboratorio" class="modo-contenido">
-	<style>
-            /* Estilos del Laboratorio */
-        .laboratorio {
-            max-width: 800px;
-            margin: 70px auto 20px;
-            padding: 20px;
-        }
-        .grupo-combinacion {
-            background: #f5f5f5;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-        .selector-tipo {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
-        .selector-tipo select {
-            width: 48%;
-            padding: 8px;
-            border: 2px solid #bdc3c7;
-            border-radius: 5px;
-        }
-        .selector-contenido {
-            display: flex;
-            justify-content: space-between;
-        }
-        .selector-contenido select {
-            width: 48%;
-            padding: 8px;
-            border: 2px solid #bdc3c7;
-            border-radius: 5px;
-            margin-bottom: 15px;
-            height: 150px;
-        }
-        .boton-generar {
-           font-size: 2em;
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #ccc;
-            display: block;
-            margin: 0 auto;
-        }
-        .boton-generar:hover {
-            background: #2980b9;
-        }
-        .resultado {
-            font-size: 24px;
-            padding: 20px;
-            border: 2px dashed #bdc3c7;
-            border-radius: 10px;
-            margin-top: 20px;
-            text-align: center;
-            background: #fff;
-        }
-     .notificacion {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #27ae60;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 25px;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.16);
-            display: none;
-            animation: slideUp 0.3s ease-out;
-        }
-
-        @keyframes slideUp {
-            from { bottom: -50px; }
-            to { bottom: 20px; }
-        }
-</style>
-       <!-- Laboratorio -->
-    <div class="laboratorio">
-        <div class="grupo-combinacion">
-            <div class="selector-tipo">
-                <select id="tipo-parte-1" onchange="actualizarContenido(1)">
-                    <option value="inicio" selected>Inicio</option>
-                    <option value="remate">Remate</option>
-                </select>
-                <select id="tipo-parte-2" onchange="actualizarContenido(2)">
-                    <option value="inicio">Inicio</option>
-                    <option value="remate" selected>Remate</option>
-                </select>
-            </div>
-            
-            <div class="selector-contenido">
-                <select id="contenido-parte-1" size="5"></select>
-                <select id="contenido-parte-2" size="5"></select>
-            </div>
-            
-            <button class="boton-generar" onclick="generarRefran()">
-                🧪
-            </button>
-        </div>
-        
-        <div class="resultado" id="resultado"></div>
-    </div>
-<div class="notificacion" id="notificacion">¡Refrán guardado!</div>
-    <!-- Firebase + Scripts -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
-    <script>
-        // Configuración Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyAdoPUF-cCyvpfiCJiBfCRv3ZYtwu1W4tc",
-            authDomain: "refrankenstein.firebaseapp.com",
-            projectId: "refrankenstein",
-            storageBucket: "refrankenstein.firebasestorage.app",
-            messagingSenderId: "575434538832",
-            appId: "1:575434538832:web:615f850a61c54ddd9d3655"
-        };
-       
-// Función mejorada para eliminar duplicados (considera mayúsculas y acentos)
     function eliminarDuplicados(arr) {
-        const vistos = new Set();
-        return arr.filter(item => {
-            const normalizado = item
-                .toLowerCase()
-                .normalize("NFD")
-                .replace(/[\u0300-\u036f]/g, "")
-                .trim();
-            return vistos.has(normalizado) ? false : vistos.add(normalizado);
-        });
+      const vistos = new Set();
+      return arr.filter(item => {
+        const normalizado = item.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "").trim();
+        return vistos.has(normalizado) ? false : vistos.add(normalizado);
+      });
     }
-   // Cargar datos (VERSIÓN CORREGIDA)
-    db.collection("tradicionales").get().then((querySnapshot) => {
-        const tempInicios = [];
-        const tempRemates = [];
 
-        querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            
-            // Limpiar inicios
-            if(data.inicio) {
-                const inicioLimpio = data.inicio.trim();
-                if(inicioLimpio !== "") tempInicios.push(inicioLimpio);
-            }
-            
-            // Limpiar remates
-            if(data.remate) {
-                const remateLimpio = data.remate.trim();
-                if(remateLimpio !== "") tempRemates.push(remateLimpio);
-            }
-        });
+    async function cargarDatos() {
+      const snapshot = await db.collection("tradicionales").get();
+      const tempInicios = [], tempRemates = [];
 
-       
-        // Actualizar selectores de contenido
-       function actualizarContenido(parte) {
-    const tipoSelector = document.getElementById(`tipo-parte-${parte}`);
-    const contenidoSelector = document.getElementById(`contenido-parte-${parte}`);
-    const tipo = tipoSelector.value;
-    const opciones = tipo === "inicio" ? inicios : remates;
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        if (data.inicio) tempInicios.push(data.inicio.trim());
+        if (data.remate) tempRemates.push(data.remate.trim());
+      });
 
-    contenidoSelector.innerHTML = opciones.map((texto, index) => 
-        `<option value="${index}">${texto}</option>`
-    ).join('');
-}
+      inicios = eliminarDuplicados(tempInicios).sort((a, b) => a.localeCompare(b, 'es'));
+      remates = eliminarDuplicados(tempRemates).sort((a, b) => a.localeCompare(b, 'es'));
 
-// Función para ordenar
-    function ordenarAlfabetico(arr) {
-        return arr.sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }));
+      actualizarContenido(1);
+      actualizarContenido(2);
+      generarRandom();
     }
-   
-      async function guardarRefran(parte1, parte2) {
-    try {
-        // Verificar si es tradicional usando las partes reales
-        const esTradicional = await esRefranTradicional(parte1, parte2);
-        
-        if(esTradicional) {
-            mostrarNotificacion("¡Este es un refrán tradicional! Crea uno nuevo", 3000);
-            return;
-        }
 
-        // Guardar el refrán combinado
-        await db.collection("refranes").add({
-            texto: `${parte1} ${parte2}`,
-            fecha: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        mostrarNotificacion("¡Refránkenstein guardado!");
-    } catch (error) {
-        console.error("Error guardando refrán:", error);
-        mostrarNotificacion("Error al guardar", 3000);
+    function actualizarContenido(parte) {
+      const tipo = document.getElementById(`tipo-parte-${parte}`).value;
+      const select = document.getElementById(`contenido-parte-${parte}`);
+      const datos = tipo === "inicio" ? inicios : remates;
+      select.innerHTML = datos.map((d, i) => `<option value="${i}">${d}</option>`).join("");
     }
-}
-	    // Añadir la misma función de verificación
-async function esRefranTradicional(inicio, remate) {
-    try {
-        const tradRef = firebase.firestore().collection('tradicionales');
-        const snapshot = await tradRef
-            .where('inicio', '==', inicio)
-            .where('remate', '==', remate)
-            .limit(1)
-            .get();
-        
-        return !snapshot.empty;
-    } catch (error) {
-        console.error("Error verificando refrán tradicional:", error);
-        return false;
-    }
-}
-        // Función de notificación (nueva)
-      function mostrarNotificacion(mensaje = "¡Refrán guardado!", duracion = 2000) {
-    const notificacion = document.getElementById('notificacion');
-    notificacion.textContent = mensaje;
-    notificacion.style.display = 'block';
-    setTimeout(() => {
-        notificacion.style.display = 'none';
-    }, duracion);
-}
-        // Generar refrán modificado para guardar
-        function generarRefran() {
-            const tipo1 = document.getElementById('tipo-parte-1').value;
-            const tipo2 = document.getElementById('tipo-parte-2').value;
-            
-            const index1 = document.getElementById('contenido-parte-1').value;
-            const index2 = document.getElementById('contenido-parte-2').value;
-            
-            const parte1 = tipo1 === "inicio" ? inicios[index1] : remates[index1];
-            const parte2 = tipo2 === "inicio" ? inicios[index2] : remates[index2];
-            
-            const refranCompleto = `${parte1} ${parte2}`;
-            
-            // Mostrar y guardar
-            document.getElementById('resultado').textContent = refranCompleto;
-            guardarRefran(parte1, parte2);
-        }
-    </script>
-</div>	
-<a href="publicos.html" class="floating-button">
-    📜 Refránkensteins creados→
-</a>
 
-<style>
-    .floating-button {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: #2c3e50;
-        color: white;
-        padding: 12px 20px;
-        border-radius: 50px;
-        text-decoration: none;
-	    text-align: center;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        z-index: 1000;
-        font-size: 0.9em;
-        transition: all 0.3s;
+    function mostrarNotificacion(mensaje = "¡Guardado!", duracion = 2000) {
+      const n = document.getElementById("notificacion");
+      n.textContent = mensaje;
+      n.style.display = "block";
+      setTimeout(() => n.style.display = "none", duracion);
     }
-    .floating-button:hover {
-        background: #1a252f;
-        transform: translateY(-3px);
-    }
-</style>
-<div id="custom-toast" class="toast-hidden">
-    <span id="toast-message"></span>
-	<div id="toast-message" class="toast-message-container"></div>
-</div>
 
-<style>
-#custom-toast {
-        position: fixed;
-        bottom: 70px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: #2c3e50;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 30px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        z-index: 10000;
-        opacity: 0;
-        transition: opacity 0.3s;
+    function generarRandom() {
+      const inicio = inicios[Math.floor(Math.random() * inicios.length)] || "";
+      const remate = remates[Math.floor(Math.random() * remates.length)] || "";
+      document.getElementById("resultado-random").textContent = `${inicio} ${remate}`;
     }
-    .toast-visible {
-        opacity: 1 !important;
-}
-</style>
-	</style>
-	<script>
-// Mostrar/ocultar menú
-document.querySelector('.menu-btn').addEventListener('click', function() {
-  const menu = document.querySelector('.menu-contenido');
-  menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-});
 
-// Cerrar menú al hacer clic fuera
-window.addEventListener('click', function(e) {
-  if (!e.target.matches('.menu-btn') && !e.target.closest('.menu-contenido')) {
-    const menu = document.querySelector('.menu-contenido');
-    if (menu && menu.style.display === 'block') {
-      menu.style.display = 'none';
+    async function guardarRefran(completo) {
+      const [inicio, ...resto] = completo.split(" ");
+      const remate = resto.join(" ");
+      const existe = await db.collection("tradicionales")
+        .where("inicio", "==", inicio)
+        .where("remate", "==", remate)
+        .get();
+
+      if (!existe.empty) {
+        mostrarNotificacion("Es un refrán tradicional");
+        return;
+      }
+
+      await db.collection("refranes").add({
+        texto: completo,
+        fecha: firebase.firestore.FieldValue.serverTimestamp(),
+        votos: 0
+      });
+
+      mostrarNotificacion("¡Refránkenstein guardado!");
     }
-  }
-});
-</script>
+
+    function generarRefran() {
+      const tipo1 = document.getElementById("tipo-parte-1").value;
+      const tipo2 = document.getElementById("tipo-parte-2").value;
+      const idx1 = +document.getElementById("contenido-parte-1").value;
+      const idx2 = +document.getElementById("contenido-parte-2").value;
+      const parte1 = tipo1 === "inicio" ? inicios[idx1] : remates[idx1];
+      const parte2 = tipo2 === "inicio" ? inicios[idx2] : remates[idx2];
+      const combinado = `${parte1} ${parte2}`;
+      document.getElementById("resultado-lab").textContent = combinado;
+      guardarRefran(combinado);
+    }
+
+    function mostrarModo(modo) {
+      document.querySelectorAll(".modo-btn").forEach(btn => btn.classList.remove("activo"));
+      document.querySelector(`[onclick="mostrarModo('${modo}')"]`).classList.add("activo");
+      document.querySelectorAll(".modo-contenido").forEach(div => div.classList.remove("activo"));
+      document.getElementById(`modo-${modo}`).classList.add("activo");
+    }
+
+    document.addEventListener("DOMContentLoaded", cargarDatos);
+  </script>
 </body>
 </html>
