@@ -276,10 +276,18 @@
   </a>
 
   <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/picker-wheel@1.0.0/dist/picker-wheel.min.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/picker-wheel@1.0.0/dist/picker-wheel.min.js" defer></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
   <script>
+  window.addEventListener("load", function() {
+
+    // Verifica que PickerWheel esté definido
+    if (typeof PickerWheel === "undefined") {
+      console.error("PickerWheel no se cargó. Revisa el enlace CDN o la versión de la librería.");
+      return;
+    }
+
     // Configuración de Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyAdoPUF-cCyvpfiCJiBfCRv3ZYtwu1W4tc",
@@ -322,34 +330,31 @@
       // Procesar datos y eliminar duplicados
       inicios = eliminarDuplicados(tempInicios).sort((a, b) => a.localeCompare(b, 'es'));
       remates = eliminarDuplicados(tempRemates).sort((a, b) => a.localeCompare(b, 'es'));
-      console.log('Datos cargados:', {inicios, remates});
+      console.log('Datos cargados:', { inicios, remates });
       
-      // Inicializar pickers después de un breve retraso
+      // Inicializar pickers tras un breve retraso
       setTimeout(inicializarPickers, 100);
     }).catch(error => {
       console.error("Error cargando datos:", error);
       mostrarNotificacion("Error cargando datos", 5000);
     });
 
-    // Función para inicializar los pickers
+    // Función para inicializar pickers
     function inicializarPickers() {
-      if(inicios.length === 0 || remates.length === 0) {
+      if (inicios.length === 0 || remates.length === 0) {
         console.error("No hay datos para mostrar");
         return;
       }
       
-      // Si hay pickers ya existentes, destrúyelos
       if(picker1 && typeof picker1.destroy === 'function') picker1.destroy();
       if(picker2 && typeof picker2.destroy === 'function') picker2.destroy();
       
-      // Función para crear items para el picker
       const crearItems = (arr) => arr.map(texto => ({
         id: texto,
         value: texto,
         html: `<div class="picker-item">${texto}</div>`
       }));
-
-      // Inicializar Picker 1
+      
       picker1 = new PickerWheel({
         container: '#picker-container-1',
         items: crearItems(inicios),
@@ -362,7 +367,6 @@
         }
       });
       
-      // Inicializar Picker 2
       picker2 = new PickerWheel({
         container: '#picker-container-2',
         items: crearItems(remates),
@@ -375,11 +379,9 @@
         }
       });
       
-      // Establecer valores iniciales
       selectedPart1 = inicios[0];
       selectedPart2 = remates[0];
       
-      // Forzar renderizado inicial
       picker1.render();
       picker2.render();
     }
@@ -410,7 +412,7 @@
       guardarRefran(refranCompleto);
     }
 
-    // Función para guardar el refrán en Firebase
+    // Guardar refrán en Firebase
     async function guardarRefran(refran) {
       try {
         await db.collection("refranes").add({
@@ -423,7 +425,7 @@
       }
     }
 
-    // Función para mostrar notificación
+    // Mostrar notificación
     function mostrarNotificacion(texto, duracion = 2000) {
       const notificacion = document.getElementById('notificacion');
       notificacion.textContent = texto;
@@ -446,6 +448,9 @@
         if (menu) menu.style.display = 'none';
       }
     });
-  </script>
+
+  }); // Fin de window.load
+</script>
+
 </body>
 </html>
