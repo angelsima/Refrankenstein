@@ -207,11 +207,28 @@
 
         .selector-contenido select {
             width: 48%;
-            height: 150px;
-            padding: 8px;
-            border: 2px solid #bdc3c7;
-            border-radius: 5px;
+        height: 150px !important; /* Altura fija */
+        padding: 8px;
+        border: 2px solid #bdc3c7;
+        border-radius: 5px;
+        -webkit-appearance: none; /* Elimina el estilo nativo en móviles */
+        -moz-appearance: none;
+        appearance: none;
+        overflow-y: auto; /* Scroll vertical */
+        display: block !important; /* Fuerza visualización */
+    }
+         /* Para móviles */
+    @media (max-width: 768px) {
+        .selector-contenido {
+            flex-direction: column;
+            gap: 15px;
         }
+        
+        .selector-contenido select {
+            width: 100% !important;
+            height: 120px !important;
+        }
+    }
 
         .boton-generar {
             font-size: 2em;
@@ -542,7 +559,10 @@
             const tipo = document.getElementById(`tipo-parte-${parte}`).value;
             const selector = document.getElementById(`contenido-parte-${parte}`);
             const datos = tipo === 'inicio' ? inicios : remates;
-            
+            // Forzar atributos para mostrar lista
+        selector.size = 5; // Mostrar 5 elementos
+        selector.multiple = false; // No permitir selección múltiple
+        selector.setAttribute('aria-expanded', 'true'); // Para accesibilidad
             selector.innerHTML = datos.map((texto, index) => 
                 `<option value="${index}">${texto}</option>`
             ).join('');
