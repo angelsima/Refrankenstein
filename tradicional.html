@@ -35,7 +35,6 @@
     }
     /* Estilos del juego */
     .juego-container {
-      max-width: 600px;
       margin: 20px auto;
       padding: 20px;
     }
@@ -211,23 +210,22 @@
     <nav class="nav-menu">
         <a href="laboratorio.html" class="nav-link">🧪 Crear</a>
         <a href="publicos.html" class="nav-link">🔍 Explorar</a>
-        <a href="tradicional.html" class="nav-link">🧠 Recordar</a>
+        <a href="tradicional.html" class="nav-link">🧠 Conservar</a>
         <a href="about.html" class="nav-link">❓ About</a>
     </nav>
 </div>
-     <p class="subtitulo">¡Adivina el refrán original🪑!</p>
-
-   </header>
+       </header>
 
   <div class="contenedor">
     <div class="modo-selector">
-      <button class="modo-btn activo" onclick="mostrarModo('juego')">🎮 Jugar</button>
+      <button class="modo-btn activo" onclick="mostrarModo('juego')">¡Ponte a prueba!</button>
       <button class="modo-btn" onclick="mostrarModo('lista')">📜 Lista Completa</button>
     </div>
 
     <!-- Modo Juego -->
     <div id="modo-juego" class="modo-contenido activo">
       <div class="juego-container">
+         <p class="subtitulo">¡Adivina el refrán original🪑!</p>
         <div class="refran-inicio" id="refran-inicio"></div>
         <div class="opciones-container" id="opciones-container"></div>
         <button class="nuevo-refran-btn" onclick="nuevoRefran()" id="nuevo-btn">Nuevo Refrán</button>
