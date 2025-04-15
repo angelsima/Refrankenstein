@@ -235,8 +235,7 @@
 
     <!-- Modo Lista -->
     <div id="modo-lista" class="modo-contenido">
-      <h1>Refranes Tradicionales Completos</h1>
-      <div class="contador" id="contador"></div>
+          <div class="contador" id="contador"></div>
       <ul class="lista-refranes" id="lista-refranes"></ul>
     </div>
   </div>
@@ -353,25 +352,25 @@
         respuestaCorrecta = refran.remate;
     }
 
-    function verificarRespuesta(esCorrecta, elemento) {
-        const opciones = document.querySelectorAll('.opcion-remate');
-        opciones.forEach(opcion => opcion.style.pointerEvents = 'none');
-
-        if(esCorrecta) {
-            elemento.classList.add('correcto');
-            showToast('¡Correcto! 🎉', 2000);
-            document.getElementById('nuevo-btn').style.display = 'block';
-        } else {
-            elemento.classList.add('incorrecto');
-            showToast('❌ Incorrecto - La respuesta era: ' + respuestaCorrecta, 3000);
-            setTimeout(() => {
-                opciones.forEach(opcion => {
-                    if(opcion.textContent === respuestaCorrecta) opcion.classList.add('correcto');
-                });
-            }, 500);
-        }
-    }
-
+   
+      function verificarRespuesta(esCorrecta, elemento) {
+          if (esCorrecta) {
+              elemento.classList.add('correcto');
+              // Deshabilitar todas las opciones
+              const opciones = document.querySelectorAll('.opcion-remate');
+              opciones.forEach(opcion => {
+                  opcion.style.pointerEvents = 'none';
+              });
+              // Mostrar botón "Nuevo Refrán"
+              document.getElementById('nuevo-btn').style.display = 'block';
+          } else {
+              elemento.classList.add('incorrecto');
+              setTimeout(() => {
+                  elemento.classList.remove('incorrecto');
+              }, 1000);
+          }
+      }
+    
     // Modo Lista
     async function cargarListaRefranes() {
         if(!refranesCargados) {
