@@ -245,7 +245,7 @@
             </div>
             
             <button class="boton-generar" onclick="generarRefran()">
-                🧪 Generar Refrán
+                🧪
             </button>
             
             <div class="resultado" id="resultado"></div>
@@ -296,51 +296,95 @@
             const tempInicios = [];
             const tempRemates = [];
 
-            querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                if(data.inicio) {
-                    const inicioLimpio = data.inicio.trim();
-                    if(inicioLimpio !== "") tempInicios.push(inicioLimpio);
-                }
-                if(data.remate) {
-                    const remateLimpio = data.remate.trim();
-                    if(remateLimpio !== "") tempRemates.push(remateLimpio);
-                }
-            });
+             querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        if(data.inicio) tempInicios.push(data.inicio.trim());
+        if(data.remate) tempRemates.push(data.remate.trim());
+    });
 
             // Procesar datos
             inicios = eliminarDuplicados(tempInicios).sort((a, b) => a.localeCompare(b, 'es'));
-            remates = eliminarDuplicados(tempRemates).sort((a, b) => a.localeCompare(b, 'es'));
+    remates = eliminarDuplicados(tempRemates).sort((a, b) => a.localeCompare(b, 'es'));
+  
+            // Verificar datos cargados
+    console.log('Inicios:', inicios);
+    console.log('Remates:', remates);
+         
+            // Inicializar pickers con datos reales
+    inicializarPickers();
+}).catch(error => {
+    console.error("Error cargando datos:", error);
+});
+        // Modifica la función de inicialización de pickers:
+function inicializarPickers() {
+    // Verificar que hay datos
+    if(inicios.length === 0 || remates.length === 0) {
+        console.error("No hay datos para mostrar");
+        return;
+    }
 
-            // Inicializar pickers
-            inicializarPickers();
-        });
+    // Crear opciones para los pickers
+    const opciones1 = inicios.map(texto => ({ 
+        id: texto, 
+        value: texto,
+        text: texto // Añadir esta propiedad
+    }));
+    
+    const opciones2 = remates.map(texto => ({
+        id: texto,
+        value: texto,
+        text: texto // Añadir esta propiedad
+    }));
 
-        // Inicializar pickers
-        function inicializarPickers() {
-            const opciones1 = inicios.map(texto => ({ id: texto, value: texto }));
-            const opciones2 = remates.map(texto => ({ id: texto, value: texto }));
-            
-            picker1 = new PickerWheel({
-                container: '#picker-container-1',
-                items: opciones1,
-                itemHeight: 40,
-                radius: 150,
-                onChange: (item) => { selectedPart1 = item.value; }
-            });
-            
-            picker2 = new PickerWheel({
-                container: '#picker-container-2',
-                items: opciones2,
-                itemHeight: 40,
-                radius: 150,
-                onChange: (item) => { selectedPart2 = item.value; }
-            });
-            
-            // Seleccionar primeros valores por defecto
-            selectedPart1 = inicios[0];
-            selectedPart2 = remates[0];
+    // Destruir pickers existentes si los hay
+    if(picker1) picker1.destroy();
+    if(picker2) picker2.destroy();
+
+    // Inicializar nuevos pickers
+    picker1 = new PickerWheel({
+        container: '#picker-container-1',
+        items: opciones1,
+        itemHeight: 40,
+        radius: 150,
+        visibleItems: 5,
+        onChange: (item) => { 
+            selectedPart1 = item.value;
+            console.log('Seleccionado 1:', selectedPart1);
         }
+    });
+    
+    picker2 = new PickerWheel({
+        container: '#picker-container-2',
+        items: opciones2,
+        itemHeight: 40,
+        radius: 150,
+        visibleItems: 5,
+        onChange: (item) => { 
+            selectedPart2 = item.value;
+            console.log('Seleccionado 2:', selectedPart2);
+        }
+    });
+    
+    // Establecer valores iniciales
+    selectedPart1 = inicios[0];
+    selectedPart2 = remates[0];
+    
+    // Forzar renderizado inicial
+    picker1.render();
+    picker2.render();
+}
+
+// Añade este estilo para los pickers:
+.picker-wheel {
+    font-size: 16px !important;
+    color: #2c3e50 !important;
+}
+
+.picker-item {
+    padding: 10px 15px !important;
+    white-space: normal !important;
+    text-align: center !important;
+}
 
         // Actualizar picker cuando cambia el tipo
         function actualizarPicker(parte) {
