@@ -110,6 +110,38 @@
 .menu-contenido a:hover {
   background: #ddd;
 }	
+
+/* Selector de modos */
+.modo-selector {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+    justify-content: center;
+}
+
+.modo-btn {
+    padding: 12px 25px;
+    border: 2px solid #2c3e50;
+    border-radius: 30px;
+    background: white;
+    cursor: pointer;
+    font-size: 1.1em;
+    transition: all 0.3s;
+}
+
+.modo-btn.activo {
+    background: #2c3e50;
+    color: white;
+    transform: scale(1.05);
+}
+
+.modo-contenido {
+    display: none;
+}
+
+.modo-contenido.activo {
+    display: block;
+}
 </style>
 </head>
 <body>
@@ -432,6 +464,24 @@ function toggleLoader(show) {
 
         // Iniciar la aplicación
         inicializarApp();
+   function mostrarModo(modo) {
+    // Botones
+    document.querySelectorAll('.modo-btn').forEach(btn => {
+        btn.classList.remove('activo');
+    });
+    document.querySelector(`[onclick="mostrarModo('${modo}')"]`).classList.add('activo');
+    
+    // Contenidos
+    document.querySelectorAll('.modo-contenido').forEach(contenido => {
+        contenido.classList.remove('activo');
+    });
+    document.getElementById(`modo-${modo}`).classList.add('activo');
+    
+    // Si es laboratorio, cargar datos si no estaban cargados
+    if(modo === 'laboratorio' && inicios.length === 0) {
+        cargarDatosLaboratorio();
+    }
+}
     </script>
 	<style>
     /* Añadir estas reglas al CSS existente */
