@@ -328,13 +328,9 @@
         }
 
 
-        // Función para guardar en Firebase (nueva)
-       async function guardarRefran(refran) {
+      async function guardarRefran(parte1, parte2) {
     try {
-        // Obtener las partes del refrán
-        const [parte1, parte2] = refran.split(' ');
-        
-        // Verificar si es tradicional
+        // Verificar si es tradicional usando las partes reales
         const esTradicional = await esRefranTradicional(parte1, parte2);
         
         if(esTradicional) {
@@ -342,9 +338,9 @@
             return;
         }
 
-        // Si no es tradicional, guardar
+        // Guardar el refrán combinado
         await db.collection("refranes").add({
-            texto: refran,
+            texto: `${parte1} ${parte2}`,
             fecha: firebase.firestore.FieldValue.serverTimestamp()
         });
         mostrarNotificacion("¡Refránkenstein guardado!");
@@ -393,7 +389,7 @@ async function esRefranTradicional(inicio, remate) {
             
             // Mostrar y guardar
             document.getElementById('resultado').textContent = refranCompleto;
-            guardarRefran(refranCompleto);
+            guardarRefran(parte1, parte2);
         }
     </script>
 <a href="publicos.html" class="floating-button">
