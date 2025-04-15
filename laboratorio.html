@@ -330,18 +330,46 @@
 
 
         // Función para guardar en Firebase (nueva)
-        async function guardarRefran(refran) {
-            try {
-                await db.collection("refranes").add({
-                    texto: refran,
-                    fecha: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                mostrarNotificacion();
-            } catch (error) {
-                console.error("Error guardando refrán:", error);
-            }
+       async function guardarRefran(refran) {
+    try {
+        // Obtener las partes del refrán
+        const [parte1, parte2] = refran.split(' ');
+        
+        // Verificar si es tradicional
+        const esTradicional = await esRefranTradicional(parte1, parte2);
+        
+        if(esTradicional) {
+            mostrarNotificacion("¡Este es un refrán tradicional! Crea uno nuevo", 3000);
+            return;
         }
 
+        // Si no es tradicional, guardar
+        await db.collection("refranes").add({
+            texto: refran,
+            fecha: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        mostrarNotificacion("¡Refránkenstein guardado!");
+    } catch (error) {
+        console.error("Error guardando refrán:", error);
+        mostrarNotificacion("Error al guardar", 3000);
+    }
+}
+	    // Añadir la misma función de verificación
+async function esRefranTradicional(inicio, remate) {
+    try {
+        const tradRef = firebase.firestore().collection('tradicionales');
+        const snapshot = await tradRef
+            .where('inicio', '==', inicio)
+            .where('remate', '==', remate)
+            .limit(1)
+            .get();
+        
+        return !snapshot.empty;
+    } catch (error) {
+        console.error("Error verificando refrán tradicional:", error);
+        return false;
+    }
+}
         // Función de notificación (nueva)
         function mostrarNotificacion() {
             const notificacion = document.getElementById('notificacion');
