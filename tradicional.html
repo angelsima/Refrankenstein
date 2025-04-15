@@ -268,9 +268,9 @@
     <!-- Modo Lista -->
     <div id="modo-lista" class="modo-contenido">
       <div class="suggestion-box">
-    <h3>¿Falta algún refrán?</h3>
+    <h3>¿Echas en falta algún refrán?</h3>
     <form id="suggestion-form">
-        <textarea placeholder="Escribe aquí el refrán tradicional que falta..." required></textarea>
+        <textarea placeholder="Escribe aquí" required></textarea>
         <button type="submit">Enviar sugerencia</button>
         <div class="form-feedback"></div>
     </form>
@@ -431,7 +431,7 @@
             });
             
             document.getElementById('contador').textContent = 
-                `Mostrando ${refranesUnicos.size} refranes únicos`;
+                `Mostrando ${refranesUnicos.size} refranes`;
             refranesCargados = true;
         }
     }
