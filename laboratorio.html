@@ -413,7 +413,72 @@
                 card.textContent = remateHistory[currentIndex];
             }
         }
+// Manejo de Swipe mejorado
+    let touchStartX = 0;
+    let touchEndX = 0;
+    const swipeThreshold = 100; // Aumentamos el umbral para mejor detección
+    const swipeContainer = document.getElementById('remate-card');
 
+    swipeContainer.addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+        e.preventDefault(); // Previene el desplazamiento horizontal
+    }, { passive: false });
+
+    swipeContainer.addEventListener('touchmove', function(e) {
+        e.preventDefault(); // Previene el desplazamiento durante el swipe
+    }, { passive: false });
+
+    swipeContainer.addEventListener('touchend', function(e) {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+        e.preventDefault();
+    }, { passive: false });
+
+    function handleSwipe() {
+        const deltaX = touchEndX - touchStartX;
+        
+        if (Math.abs(deltaX) > swipeThreshold) {
+            if (deltaX > 0) {
+                previousRemate();
+            } else {
+                nextRemate();
+            }
+        }
+    }
+
+    // Función nextRemate actualizada
+    function nextRemate() {
+        if (currentIndex < remateHistory.length - 1) {
+            currentIndex++;
+            actualizarRemate();
+        } else {
+            generarNuevoRemate();
+        }
+        // Efecto visual de deslizamiento
+        aplicarEfectoSwipe('derecha');
+    }
+
+    // Función previousRemate actualizada
+    function previousRemate() {
+        if (currentIndex > 0) {
+            currentIndex--;
+            actualizarRemate();
+            // Efecto visual de deslizamiento
+            aplicarEfectoSwipe('izquierda');
+        }
+    }
+
+    // Efectos de transición
+    function aplicarEfectoSwipe(direccion) {
+        const card = document.getElementById('remate-card');
+        card.style.transition = 'transform 0.3s ease-out';
+        card.style.transform = `translateX(${direccion === 'derecha' ? '100%' : '-100%'})`;
+        
+        setTimeout(() => {
+            card.style.transition = 'none';
+            card.style.transform = 'translateX(0)';
+        }, 300);
+    }
         async function toggleLike() {
             const combination = `${inicioActual} ${remateHistory[currentIndex]}`;
             const heart = document.querySelector('.heart-button');
