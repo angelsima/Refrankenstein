@@ -454,8 +454,7 @@
         } else {
             generarNuevoRemate();
         }
-        // Efecto visual de deslizamiento
-        aplicarEfectoSwipe('derecha');
+ 
     }
 
     // Función previousRemate actualizada
@@ -463,22 +462,9 @@
         if (currentIndex > 0) {
             currentIndex--;
             actualizarRemate();
-            // Efecto visual de deslizamiento
-            aplicarEfectoSwipe('izquierda');
-        }
+                    }
     }
 
-    // Efectos de transición
-    function aplicarEfectoSwipe(direccion) {
-        const card = document.getElementById('remate-card');
-        card.style.transition = 'transform 0.3s ease-out';
-        card.style.transform = `translateX(${direccion === 'derecha' ? '100%' : '-100%'})`;
-        
-        setTimeout(() => {
-            card.style.transition = 'none';
-            card.style.transform = 'translateX(0)';
-        }, 300);
-    }
         async function toggleLike() {
             const combination = `${inicioActual} ${remateHistory[currentIndex]}`;
             const heart = document.querySelector('.heart-button');
