@@ -276,6 +276,8 @@
 // Inicialización única de Firebase
 const app = firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+window.inicios = []; // Hacerlas globales
+window.remates = [];
 
 let iniciosRefran = [];
 let rematesRefran = [];
@@ -424,22 +426,6 @@ function cambiarInicio() {
         toast.classList.remove('toast-visible');
     }, duration);
 }
-// Nueva función de verificación
-async function esRefranTradicional(inicio, remate) {
-    try {
-        const tradRef = firebase.firestore().collection('tradicionales');
-        const snapshot = await tradRef
-            .where('inicio', '==', inicio)
-            .where('remate', '==', remate)
-            .limit(1)
-            .get();
-        
-        return !snapshot.empty;
-    } catch (error) {
-        console.error("Error verificando refrán tradicional:", error);
-        return false;
-    }
-}
 	    
 function guardarRefran(refran) {
     db.collection("refranes").add({
@@ -461,7 +447,16 @@ function toggleLoader(show) {
     document.getElementById('loading').style.display = show ? 'block' : 'none';
 }
 
-
+function cargarDatosLaboratorio() {
+    return new Promise((resolve) => {
+        db.collection("tradicionales").get().then((querySnapshot) => {
+            // ... código existente ...
+            actualizarContenido(1);
+            actualizarContenido(2);
+            resolve();
+        });
+    });
+}
         // Iniciar la aplicación
         inicializarApp();
    function mostrarModo(modo) {
@@ -477,9 +472,10 @@ function toggleLoader(show) {
     });
     document.getElementById(`modo-${modo}`).classList.add('activo');
     
-    // Si es laboratorio, cargar datos si no estaban cargados
-    if(modo === 'laboratorio' && inicios.length === 0) {
-        cargarDatosLaboratorio();
+   if(modo === 'laboratorio' && inicios.length === 0) {
+       	   cargarDatosLaboratorio().then(() => {
+            console.log('Datos del laboratorio cargados:', inicios.length, remates.length);
+        });
     }
 }
     </script>
@@ -585,7 +581,6 @@ function toggleLoader(show) {
             to { bottom: 20px; }
         }
 </style>
-</div>
        <!-- Laboratorio -->
     <div class="laboratorio">
         <div class="grupo-combinacion">
@@ -630,8 +625,8 @@ function toggleLoader(show) {
         const db = firebase.firestore();
 
         // Datos
-        let inicios = [];
-        let remates = [];
+        window.inicios = [];
+window.remates = [];
 // Función mejorada para eliminar duplicados (considera mayúsculas y acentos)
     function eliminarDuplicados(arr) {
         const vistos = new Set();
@@ -690,21 +685,7 @@ function toggleLoader(show) {
     function ordenarAlfabetico(arr) {
         return arr.sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }));
     }
-        // Generar refrán
-        function generarRefran() {
-            const tipo1 = document.getElementById('tipo-parte-1').value;
-            const tipo2 = document.getElementById('tipo-parte-2').value;
-            
-            const index1 = document.getElementById('contenido-parte-1').value;
-            const index2 = document.getElementById('contenido-parte-2').value;
-            
-            const parte1 = tipo1 === "inicio" ? inicios[index1] : remates[index1];
-            const parte2 = tipo2 === "inicio" ? inicios[index2] : remates[index2];
-            
-            document.getElementById('resultado').textContent = `${parte1} ${parte2}`;
-        }
-
-
+   
       async function guardarRefran(parte1, parte2) {
     try {
         // Verificar si es tradicional usando las partes reales
@@ -769,7 +750,7 @@ async function esRefranTradicional(inicio, remate) {
             guardarRefran(parte1, parte2);
         }
     </script>
-	
+</div>	
 <a href="publicos.html" class="floating-button">
     📜 Refránkensteins creados→
 </a>
