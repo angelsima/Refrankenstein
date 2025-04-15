@@ -1,299 +1,343 @@
-
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Refránkenstein - Tradicional</title>
-        <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            touch-action: pan-y;
-        }
-        
-        .title-container {
-            text-align: center;
-            margin-bottom: 10px;
-        }
-	     .modo-container {
-            text-align: center;
-            margin-bottom: 60px;
-        }
-            /* Estilos específicos del modo Tradicional */
-        .juego-container {
-            max-width: 600px;
-            margin: 20px auto 20px;
-            padding: 20px;
-        }
-
-        .refran-inicio {
-            font-size: 1.5em;
-            text-align: center;
-            margin: 30px 0;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            min-height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .opciones-container {
-            display: grid;
-            gap: 15px;
-            margin: 30px 0;
-        }
-
-        .opcion-remate {
-            padding: 15px;
-            border: 2px solid #bdc3c7;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            background: white;
-            font-size: 1.1em;
-            text-align: center;
-        }
-
-        .opcion-remate:hover:not(.disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-        }
-
-        .opcion-remate.correcto {
-            background: #27ae60 !important;
-            color: white;
-            border-color: #219653;
-            pointer-events: none;
-        }
-
-        .opcion-remate.incorrecto {
-            background: #e74c3c !important;
-            color: white;
-            border-color: #c0392b;
-            animation: shake 0.3s ease-in-out;
-        }
-       
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-
-        .shake {
-            animation: shake 0.3s ease-in-out;
-        }
-
-        .puntuacion {
-            text-align: center;
-            font-size: 1.2em;
-            margin: 20px 0;
-            color: #2c3e50;
-        }
-
-        .nuevo-refran-btn {
-            display: block;
-            margin: 20px auto;
-            padding: 10px 30px;
-            background: #3498db;
-            color: white;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 1.1em;
-            transition: all 0.3s;
-        }
-
-        .nuevo-refran-btn:hover {
-            background: #2980b9;
-            transform: scale(1.05);
-        }
-    </style>
-<style>
-        .menu-flotante {
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  z-index: 1000;
-}
-
-.menu-btn {    
-  background: #2c3e50;
-  color: white;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%; /* ← corrección aquí */
-  font-size: 20px;
-  cursor: pointer;
-  border: none; /* ← elimina el borde del botón */
-}
-
-.menu-contenido {
-  display: none;
-  position: absolute;
-  background-color: #f9f9f9;
-  min-width: 160px;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-  border-radius: 12px; /* ← más redondeado si quieres */
-  padding: 10px 0;
-  border: none; /* ← elimina cualquier borde */
-}
-
-.menu-contenido a {
-  display: block;
-  padding: 8px 16px;
-  text-decoration: none;
-  color: #333;
-}
-
-.menu-contenido a.activo {
-  font-weight: bold;
-  background: #eee;
-}
-
-.menu-contenido a:hover {
-  background: #ddd;
-}	
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Refránkenstein - Tradicional</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      touch-action: pan-y;
+    }
+    .title-container {
+      text-align: center;
+      margin-bottom: 80px;
+    }
+    .modo-container {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+    /* Estilos específicos del modo Tradicional */
+    .juego-container {
+      max-width: 600px;
+      margin: 20px auto 20px;
+      padding: 20px;
+    }
+    .refran-inicio {
+      font-size: 1.5em;
+      text-align: center;
+      margin: 30px 0;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      min-height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .opciones-container {
+      display: grid;
+      gap: 15px;
+      margin: 30px 0;
+    }
+    .opcion-remate {
+      padding: 15px;
+      border: 2px solid #bdc3c7;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+      background: white;
+      font-size: 1.1em;
+      text-align: center;
+    }
+    .opcion-remate:hover:not(.disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    }
+    .opcion-remate.correcto {
+      background: #27ae60 !important;
+      color: white;
+      border-color: #219653;
+      pointer-events: none;
+    }
+    .opcion-remate.incorrecto {
+      background: #e74c3c !important;
+      color: white;
+      border-color: #c0392b;
+      animation: shake 0.3s ease-in-out;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+    .shake {
+      animation: shake 0.3s ease-in-out;
+    }
+    /* Se quita el div de puntuación */
+    .nuevo-refran-btn {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 30px;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 1.1em;
+      transition: all 0.3s;
+    }
+    .nuevo-refran-btn:hover {
+      background: #2980b9;
+      transform: scale(1.05);
+    }
+    .resultado {
+      font-size: 24px;
+      padding: 20px;
+      border: 2px dashed #bdc3c7;
+      border-radius: 10px;
+      margin-top: 20px;
+      text-align: center;
+      background: #fff;
+    }
+    .notificacion {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #27ae60;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 25px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+      display: none;
+      animation: slideUp 0.3s ease-out;
+    }
+    @keyframes slideUp {
+      from { bottom: -50px; }
+      to { bottom: 20px; }
+    }
+  </style>
+  <style>
+    /* Estilos del menú desplegable */
+    .menu-flotante {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 1000;
+    }
+    .menu-btn {    
+      background: #2c3e50;
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+      border: none;
+    }
+    .menu-contenido {
+      display: none;
+      position: absolute;
+      background-color: #f9f9f9;
+      min-width: 160px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      border-radius: 12px;
+      padding: 10px 0;
+      border: none;
+    }
+    .menu-contenido a {
+      display: block;
+      padding: 8px 16px;
+      text-decoration: none;
+      color: #333;
+    }
+    .menu-contenido a.activo {
+      font-weight: bold;
+      background: #eee;
+    }
+    .menu-contenido a:hover {
+      background: #ddd;
+    }	
+  </style>
 </head>
 <body>
- <div class="menu-flotante">
-    <button class="menu-btn">☰</button>
-    <div class="menu-contenido">
-        <div class="menu-grupo">
-            <div class="menu-titulo">Modos de juego</div>
-            <a href="index.html">Random</a>
-            <a href="laboratorio.html">Laboratorio</a>
-            <a href="tradicional.html" class="activo">Tradicional</a>
-        </div>
-        <div class="menu-grupo">
-            <a href="publicos.html">Leer refrankensteins</a>
-            <a href="about.html">¿Qué es Refránkenstein?</a>
-        </div>
-    </div>
-</div>
+  <div class="menu-flotante">
+      <button class="menu-btn">☰</button>
+      <div class="menu-contenido">
+          <div class="menu-grupo">
+              <div class="menu-titulo">Modos de juego</div>
+              <a href="index.html">Random</a>
+              <a href="laboratorio.html">Laboratorio</a>
+              <a href="tradicional.html" class="activo">Tradicional</a>
+          </div>
+          <div class="menu-grupo">
+              <a href="publicos.html">Leer refrankensteins</a>
+              <a href="about.html">¿Qué es Refránkenstein?</a>
+          </div>
+      </div>
+  </div>
 
-    <div class="title-container">
-        <h1>Refránkenstein</h1>
-        <h3> Modo Tradicional🪑</h3>
-        <h5>¡Adivina el refrán original!</h5>
-    </div>
-    <div class="juego-container">
-        <div class="puntuacion" id="puntuacion">Aciertos: 0</div>
-        
-        <div class="refran-inicio" id="refran-inicio"></div>
-        
-        <div class="opciones-container" id="opciones-container"></div>
-        
-        <button class="nuevo-refran-btn" onclick="nuevoRefran()" id="nuevo-btn">Nuevo Refrán</button>
-    </div>
+  <div class="title-container">
+      <h1>Refránkenstein</h1>
+      <h3>Modo Tradicional 🪑</h3>
+      <h5>¡Adivina el refrán original!</h5>
+  </div>
+  <!-- Se eliminó el div de puntuación -->
+  <div class="juego-container">
+      <div class="refran-inicio" id="refran-inicio"></div>
+      <div class="opciones-container" id="opciones-container"></div>
+      <button class="nuevo-refran-btn" onclick="nuevoRefran()" id="nuevo-btn">Nuevo Refrán</button>
+  </div>
 
-    <!-- Firebase + Scripts -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyAdoPUF-cCyvpfiCJiBfCRv3ZYtwu1W4tc",
-            authDomain: "refrankenstein.firebaseapp.com",
-            projectId: "refrankenstein",
-            storageBucket: "refrankenstein.firebasestorage.app",
-            messagingSenderId: "575434538832",
-            appId: "1:575434538832:web:615f850a61c54ddd9d3655"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+  <!-- Firebase + Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+  <script>
+      // Configuración Firebase
+      const firebaseConfig = {
+          apiKey: "AIzaSyAdoPUF-cCyvpfiCJiBfCRv3ZYtwu1W4tc",
+          authDomain: "refrankenstein.firebaseapp.com",
+          projectId: "refrankenstein",
+          storageBucket: "refrankenstein.firebasestorage.app",
+          messagingSenderId: "575434538832",
+          appId: "1:575434538832:web:615f850a61c54ddd9d3655"
+      };
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
 
-        let refranes = [];
-        let aciertos = 0;
-        let rematesDisponibles = [];
-        let respuestaCorrecta;
+      let refranes = [];
+      // Eliminamos la variable "aciertos" ya que ya no se necesita
 
-        async function cargarRefranes() {
-            try {
-                const snapshot = await db.collection('tradicionales').get();
-                refranes = snapshot.docs.map(doc => doc.data());
-                rematesDisponibles = refranes.map(r => r.remate);
-                nuevoRefran();
-            } catch (error) {
-                console.error('Error cargando refranes:', error);
-            }
-        }
+      let rematesDisponibles = [];
+      let respuestaCorrecta;
 
-        function nuevoRefran() {
-            // Reiniciar interfaz
-            document.getElementById('nuevo-btn').style.display = 'none';
-            const opcionesContainer = document.getElementById('opciones-container');
-            opcionesContainer.innerHTML = '';
+      async function cargarRefranes() {
+          try {
+              const snapshot = await db.collection('tradicionales').get();
+              refranes = snapshot.docs.map(doc => doc.data());
+              rematesDisponibles = refranes.map(r => r.remate);
+              nuevoRefran();
+          } catch (error) {
+              console.error('Error cargando refranes:', error);
+          }
+      }
 
-            // Seleccionar refrán aleatorio
-            const refran = refranes[Math.floor(Math.random() * refranes.length)];
-            document.getElementById('refran-inicio').textContent = refran.inicio;
+      function nuevoRefran() {
+          // Ocultar botón de nuevo refrán
+          document.getElementById('nuevo-btn').style.display = 'none';
+          const opcionesContainer = document.getElementById('opciones-container');
+          opcionesContainer.innerHTML = '';
 
-            // Generar opciones (3 incorrectas + 1 correcta)
-            const opciones = [refran.remate];
-            while(opciones.length < 4) {
-                const randomRemate = rematesDisponibles[Math.floor(Math.random() * rematesDisponibles.length)];
-                if(!opciones.includes(randomRemate)) opciones.push(randomRemate);
-            }
-            opciones.sort(() => Math.random() - 0.5); // Mezclar opciones
+          // Seleccionar refrán aleatorio
+          const refran = refranes[Math.floor(Math.random() * refranes.length)];
+          document.getElementById('refran-inicio').textContent = refran.inicio;
 
-           // Crear botones de opciones
-            opciones.forEach(opcion => {
-                const boton = document.createElement('div');
-                boton.className = 'opcion-remate';
-                boton.textContent = opcion;
-                boton.style.pointerEvents = 'auto'; // Resetear interactividad
-                boton.onclick = () => verificarRespuesta(opcion === respuestaCorrecta, boton);
-                opcionesContainer.appendChild(boton);
-            });
+          // Generar opciones (1 correcta + 3 incorrectas)
+          const opciones = [refran.remate];
+          while (opciones.length < 4) {
+              const randomRemate = rematesDisponibles[Math.floor(Math.random() * rematesDisponibles.length)];
+              if (!opciones.includes(randomRemate)) {
+                  opciones.push(randomRemate);
+              }
+          }
+          opciones.sort(() => Math.random() - 0.5);
 
-            respuestaCorrecta = refran.remate;
-        }
+          // Crear botones de opciones
+          opciones.forEach(opcion => {
+              const boton = document.createElement('div');
+              boton.className = 'opcion-remate';
+              boton.textContent = opcion;
+              boton.style.pointerEvents = 'auto';
+              boton.onclick = () => verificarRespuesta(opcion === refran.remate, boton);
+              opcionesContainer.appendChild(boton);
+          });
 
-        function verificarRespuesta(esCorrecta, elemento) {
-            if(esCorrecta) {
-                // Marcar correcto
-                elemento.classList.add('correcto');
-                aciertos++;
-                document.getElementById('puntuacion').textContent = `Aciertos: ${aciertos}`;
-                
-                // Deshabilitar todas las opciones
-                const opciones = document.querySelectorAll('.opcion-remate');
-                opciones.forEach(opcion => {
-                    opcion.style.pointerEvents = 'none';
-                });
-                
-                // Mostrar botón nuevo refrán
-                document.getElementById('nuevo-btn').style.display = 'block';
-            } else {
-                // Marcar incorrecto temporalmente
-                elemento.classList.add('incorrecto');
-                setTimeout(() => {
-                    elemento.classList.remove('incorrecto');
-                }, 1000);
-            }
-        }
+          respuestaCorrecta = refran.remate;
+      }
 
-        // Control del menú
-        document.querySelector('.menu-btn').addEventListener('click', function() {
-            const menu = document.querySelector('.menu-contenido');
-            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-        });
+      function verificarRespuesta(esCorrecta, elemento) {
+          if (esCorrecta) {
+              elemento.classList.add('correcto');
+              // Deshabilitar todas las opciones
+              const opciones = document.querySelectorAll('.opcion-remate');
+              opciones.forEach(opcion => {
+                  opcion.style.pointerEvents = 'none';
+              });
+              // Mostrar botón "Nuevo Refrán"
+              document.getElementById('nuevo-btn').style.display = 'block';
+          } else {
+              elemento.classList.add('incorrecto');
+              setTimeout(() => {
+                  elemento.classList.remove('incorrecto');
+              }, 1000);
+          }
+      }
 
-        window.addEventListener('click', function(e) {
-            if (!e.target.matches('.menu-btn') && !e.target.closest('.menu-contenido')) {
-                const menu = document.querySelector('.menu-contenido');
-                if (menu) menu.style.display = 'none';
-            }
-        });
-
-        // Iniciar el juego
-        cargarRefranes();
-    </script>
+      // Control del menú
+      document.querySelector('.menu-btn').addEventListener('click', function() {
+          const menu = document.querySelector('.menu-contenido');
+          menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+      });
+      window.addEventListener('click', function(e) {
+          if (!e.target.matches('.menu-btn') && !e.target.closest('.menu-contenido')) {
+              const menu = document.querySelector('.menu-contenido');
+              if (menu) menu.style.display = 'none';
+          }
+      });
+      
+      // Iniciar el juego
+      cargarRefranes();
+  </script>
+  <a href="publicos.html" class="floating-button">
+      📜 Refránkensteins creados →
+  </a>
+  <style>
+      .floating-button {
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          background: #2c3e50;
+          color: white;
+          padding: 12px 20px;
+          border-radius: 50px;
+          text-decoration: none;
+          text-align: center;
+          box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+          z-index: 1000;
+          font-size: 0.9em;
+          transition: all 0.3s;
+      }
+      .floating-button:hover {
+          background: #1a252f;
+          transform: translateY(-3px);
+      }
+  </style>
+  <div id="custom-toast" class="toast-hidden">
+      <span id="toast-message"></span>
+      <div id="toast-message" class="toast-message-container"></div>
+  </div>
+  <style>
+      #custom-toast {
+          position: fixed;
+          bottom: 70px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: #2c3e50;
+          color: white;
+          padding: 12px 24px;
+          border-radius: 30px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+          z-index: 10000;
+          opacity: 0;
+          transition: opacity 0.3s;
+      }
+      .toast-visible {
+          opacity: 1 !important;
+      }
+  </style>
 </body>
 </html>
