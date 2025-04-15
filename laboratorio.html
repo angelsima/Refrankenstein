@@ -278,9 +278,9 @@ const app = firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 window.inicios = []; // Hacerlas globales
 window.remates = [];
+let inicios = [];
+let remates = [];
 
-let iniciosRefran = [];
-let rematesRefran = [];
 let inicioActual = '';
 let remateActual = '';
 let remateHistory = [];
@@ -448,44 +448,38 @@ function toggleLoader(show) {
 }
 
 function cargarDatosLaboratorio() {
-    return new Promise((resolve) => {
-        db.collection("tradicionales").get().then((querySnapshot) => {
-           const tempInicios = [];
-            const tempRemates = [];
-            
-            querySnapshot.forEach((doc) => { // Procesar datos
+    return db.collection("tradicionales").get().then((querySnapshot) => {
+        const tempInicios = [];
+        const tempRemates = [];
+
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            if (data.inicio) tempInicios.push(data.inicio.trim());
+            if (data.remate) tempRemates.push(data.remate.trim());
+        });
+
         inicios = eliminarDuplicados(tempInicios).sort((a, b) => a.localeCompare(b, 'es'));
         remates = eliminarDuplicados(tempRemates).sort((a, b) => a.localeCompare(b, 'es'));
 
-        // Actualizar UI
         actualizarContenido(1);
         actualizarContenido(2);
     });
-
-        });
-    });
 }
+
         // Iniciar la aplicación
         inicializarApp();
    function mostrarModo(modo) {
-    // Botones
-    document.querySelectorAll('.modo-btn').forEach(btn => {
-        btn.classList.remove('activo');
-    });
+    document.querySelectorAll('.modo-btn').forEach(btn => btn.classList.remove('activo'));
     document.querySelector(`[onclick="mostrarModo('${modo}')"]`).classList.add('activo');
-    
-    // Contenidos
-    document.querySelectorAll('.modo-contenido').forEach(contenido => {
-        contenido.classList.remove('activo');
-    });
+
+    document.querySelectorAll('.modo-contenido').forEach(div => div.classList.remove('activo'));
     document.getElementById(`modo-${modo}`).classList.add('activo');
-    
-   if(modo === 'laboratorio' && window.inicios.length === 0) {
-       	   cargarDatosLaboratorio().then(() => {
-            console.log('Datos del laboratorio cargados:', inicios.length, remates.length);
-        });
+
+    if (modo === "laboratorio" && inicios.length === 0 && remates.length === 0) {
+        cargarDatosLaboratorio();
     }
 }
+
     </script>
 	<style>
     /* Añadir estas reglas al CSS existente */
@@ -665,17 +659,17 @@ function cargarDatosLaboratorio() {
 
        
         // Actualizar selectores de contenido
-        function actualizarContenido(parte) {
-            const tipoSelector = document.getElementById(`tipo-parte-${parte}`);
-            const contenidoSelector = document.getElementById(`contenido-parte-${parte}`);
-            
-            const tipo = tipoSelector.value;
-            const opciones = tipo === "inicio" ? inicios : remates;
-            
-            contenidoSelector.innerHTML = opciones.map((texto, index) => 
-                `<option value="${index}">${texto}</option>`
-            ).join('');
-        }
+       function actualizarContenido(parte) {
+    const tipoSelector = document.getElementById(`tipo-parte-${parte}`);
+    const contenidoSelector = document.getElementById(`contenido-parte-${parte}`);
+    const tipo = tipoSelector.value;
+    const opciones = tipo === "inicio" ? inicios : remates;
+
+    contenidoSelector.innerHTML = opciones.map((texto, index) => 
+        `<option value="${index}">${texto}</option>`
+    ).join('');
+}
+
 // Función para ordenar
     function ordenarAlfabetico(arr) {
         return arr.sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }));
