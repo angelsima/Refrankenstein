@@ -30,33 +30,60 @@
             list-style-type: none;
             padding: 0;
             margin: 0;
-            column-count: 2;
-            column-gap: 40px;
         }
 
         .refran-item {
-            padding: 10px 0;
+            padding: 15px 0;
             border-bottom: 1px solid #eee;
-            break-inside: avoid;
             font-size: 1.1em;
-        }
-
-        @media (max-width: 768px) {
-            .lista-refranes {
-                column-count: 1;
-            }
+            line-height: 1.6;
         }
 
         .cargando {
             text-align: center;
             font-style: italic;
             color: #7f8c8d;
+            padding: 20px;
         }
+
+        .contador {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+        .menu-separador {
+  border: none;
+  border-top: 1px solid #ccc;
+  margin: 8px 0;
+}
     </style>
 </head>
 <body>
+        <div class="menu-flotante">
+        <button class="menu-btn">☰</button>
+        <div class="menu-contenido">
+            <div class="menu-grupo">
+                <a href="laboratorio.html" class="activo">🧪Crear Refránkensteins</a>
+                </div>
+            <hr class="menu-separador">
+           <div class="menu-grupo">
+                <a href="publicos.html">👀Leer Refránkensteins</a>
+           </div>
+            <hr class="menu-separador">
+            <div class="menu-grupo">
+                <div class="menu-titulo">🧠Refranes originales</div>
+                <a href="tradicional.html">🧩¡Ponte a prueba!</a>
+                <a href="listaoriginales.html">🪑Lista de refranes originales</a>
+            </div>
+            <hr class="menu-separador">
+              <div class="menu-grupo">
+                <a href="about.html">¿Qué es Refránkenstein?</a>
+            </div>
+        </div>
+    </div>
     <div class="contenedor">
         <h1>Refranes Tradicionales Completos</h1>
+        <div class="contador" id="contador"></div>
         <ul class="lista-refranes" id="lista-refranes">
             <div class="cargando">Cargando refranes...</div>
         </ul>
@@ -77,42 +104,44 @@
         const app = firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // Función para normalizar texto
+        // Función mejorada para normalizar texto
         function normalizarTexto(texto) {
             return texto.toLowerCase()
                         .normalize("NFD")
                         .replace(/[\u0300-\u036f]/g, "")
+                        .replace(/[¿¡!.,;:]/g, "")  // Elimina signos de puntuación
                         .trim();
         }
 
         async function cargarRefranes() {
             try {
-                const snapshot = await db.collection("tradicionales")
-                                         .where("completo", "!=", "")
-                                         .get();
+                const querySnapshot = await db.collection("tradicionales").get();
+                const refranesMap = new Map();
                 
-                const refranesUnicos = new Set();
-                const refranes = [];
-                
-                snapshot.forEach(doc => {
-                    const refran = doc.data().completo.trim();
-                    const normalizado = normalizarTexto(refran);
-                    
-                    if (refran && !refranesUnicos.has(normalizado)) {
-                        refranesUnicos.add(normalizado);
-                        refranes.push(refran);
+                // Procesar todos los documentos
+                querySnapshot.forEach(doc => {
+                    const data = doc.data();
+                    if(data.completo) {
+                        const refran = data.completo.trim();
+                        const clave = normalizarTexto(refran);
+                        
+                        if(refran.length > 0 && !refranesMap.has(clave)) {
+                            refranesMap.set(clave, refran);
+                        }
                     }
                 });
-                
-                // Ordenar alfabéticamente
-                refranes.sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }));
+
+                // Convertir a array y ordenar
+                const refranes = Array.from(refranesMap.values())
+                                    .sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }));
                 
                 mostrarRefranes(refranes);
-                
+                document.getElementById('contador').textContent = `Mostrando ${refranes.length} refranes únicos`;
+
             } catch (error) {
                 console.error("Error cargando refranes:", error);
                 document.getElementById("lista-refranes").innerHTML = 
-                    "<p style='color: red; text-align: center;'>Error cargando los refranes</p>";
+                    "<div class='cargando' style='color: red;'>Error cargando los refranes. Recarga la página.</div>";
             }
         }
 
