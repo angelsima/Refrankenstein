@@ -1,460 +1,451 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Refránkenstein - Laboratorio</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/picker-wheel@1.0.0/dist/picker-wheel.min.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            touch-action: pan-y;
-        }
-        
-        .title-container {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        
-        .modo-container {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        
-        /* Estilos del menú */
-        .menu-flotante {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            z-index: 1000;
-        }
-        
-        .menu-btn {
-            background: #2c3e50;
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            font-size: 20px;
-            cursor: pointer;
-            border: none;
-        }
-        
-        .menu-contenido {
-            display: none;
-            position: absolute;
-            background-color: #f9f9f9;
-            min-width: 160px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-            border-radius: 12px;
-            padding: 10px 0;
-            border: none;
-        }
-        
-        .menu-grupo {
-            padding: 5px 0;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .menu-titulo {
-            color: #2c3e50;
-            font-weight: bold;
-            padding: 8px 16px;
-            font-size: 0.9em;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .menu-contenido a {
-            display: block;
-            padding: 8px 16px 8px 25px;
-            text-decoration: none;
-            color: #333;
-            position: relative;
-        }
-        
-        .menu-contenido a::before {
-            content: "•";
-            color: #3498db;
-            position: absolute;
-            left: 12px;
-        }
-        
-        .menu-contenido a.activo {
-            font-weight: bold;
-            background: #eee;
-        }
-        
-        .menu-contenido a:hover {
-            background: #ddd;
-        }
-        
-        /* Estilos del Laboratorio */
-        .laboratorio {
-            max-width: 600px;
-            margin: 80px auto 20px;
-            padding: 20px;
-        }
-        
-        .grupo-combinacion {
-            background: #f5f5f5;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .selector-columna {
-            margin-bottom: 25px;
-        }
-        
-        .selector-titulo {
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: #2c3e50;
-        }
-        
-        .picker-container {
-            width: 100%;
-            height: 200px;
-            margin-bottom: 15px;
-            border: 2px solid #bdc3c7;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        
-        .boton-generar {
-            font-size: 2em;
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #2c3e50;
-            display: block;
-            margin: 30px auto;
-            transition: transform 0.3s;
-        }
-        
-        .boton-generar:hover {
-            transform: scale(1.1);
-        }
-        
-        .resultado {
-            font-size: 1.5em;
-            padding: 20px;
-            margin: 20px 0;
-            text-align: center;
-            background: white;
-            border-radius: 10px;
-            border: 2px dashed #bdc3c7;
-            min-height: 100px;
-        }
-        
-        .notificacion {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #27ae60;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 25px;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.16);
-            display: none;
-            animation: slideUp 0.3s ease-out;
-            z-index: 1000;
-        }
-        
-        @keyframes slideUp {
-            from { bottom: -50px; }
-            to { bottom: 20px; }
-        }
-        
-        .floating-button {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #2c3e50;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 50px;
-            text-decoration: none;
-            text-align: center;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            z-index: 1000;
-            font-size: 0.9em;
-            transition: all 0.3s;
-        }
-        
-        .floating-button:hover {
-            background: #1a252f;
-            transform: translateY(-3px);
-        }
-           .picker-wheel {
-            width: 100% !important;
-            height: 200px !important;
-        }
-        
-        .picker-item {
-            font-size: 16px !important;
-            color: #2c3e50 !important;
-            padding: 12px !important;
-            white-space: normal !important;
-            text-align: center !important;
-        }
-        
-        .picker-center-highlight {
-            border-color: #3498db !important;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Refránkenstein - Laboratorio</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/picker-wheel@1.0.0/dist/picker-wheel.min.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      touch-action: pan-y;
+    }
+    
+    .title-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    .modo-container {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    
+    /* Estilos del menú */
+    .menu-flotante {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 1000;
+    }
+    
+    .menu-btn {    
+      background: #2c3e50;
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+      border: none;
+    }
+    
+    .menu-contenido {
+      display: none;
+      position: absolute;
+      background-color: #f9f9f9;
+      min-width: 160px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      border-radius: 12px;
+      padding: 10px 0;
+      border: none;
+    }
+    
+    .menu-grupo {
+      padding: 5px 0;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .menu-titulo {
+      color: #2c3e50;
+      font-weight: bold;
+      padding: 8px 16px;
+      font-size: 0.9em;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .menu-contenido a {
+      display: block;
+      padding: 8px 16px 8px 25px;
+      text-decoration: none;
+      color: #333;
+      position: relative;
+    }
+    
+    .menu-contenido a::before {
+      content: "•";
+      color: #3498db;
+      position: absolute;
+      left: 12px;
+    }
+    
+    .menu-contenido a.activo {
+      font-weight: bold;
+      background: #eee;
+    }
+    
+    .menu-contenido a:hover {
+      background: #ddd;
+    }
+    
+    /* Estilos del Laboratorio */
+    .laboratorio {
+      max-width: 600px;
+      margin: 80px auto 20px;
+      padding: 20px;
+    }
+    
+    .grupo-combinacion {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .selector-columna {
+      margin-bottom: 25px;
+    }
+    
+    .selector-titulo {
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #2c3e50;
+    }
+    
+    .picker-container {
+      width: 100%;
+      height: 200px;
+      margin-bottom: 15px;
+      border: 2px solid #bdc3c7;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    
+    .boton-generar {
+      font-size: 2em;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #2c3e50;
+      display: block;
+      margin: 30px auto;
+      transition: transform 0.3s;
+    }
+    
+    .boton-generar:hover {
+      transform: scale(1.1);
+    }
+    
+    .resultado {
+      font-size: 1.5em;
+      padding: 20px;
+      margin: 20px 0;
+      text-align: center;
+      background: white;
+      border-radius: 10px;
+      border: 2px dashed #bdc3c7;
+      min-height: 100px;
+    }
+    
+    .notificacion {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #27ae60;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 25px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+      display: none;
+      animation: slideUp 0.3s ease-out;
+      z-index: 1000;
+    }
+    
+    @keyframes slideUp {
+      from { bottom: -50px; }
+      to { bottom: 20px; }
+    }
+    
+    .floating-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #2c3e50;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 50px;
+      text-decoration: none;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      z-index: 1000;
+      font-size: 0.9em;
+      transition: all 0.3s;
+    }
+    
+    .floating-button:hover {
+      background: #1a252f;
+      transform: translateY(-3px);
+    }
+    
+    .picker-wheel {
+      width: 100% !important;
+      height: 200px !important;
+    }
+    
+    .picker-item {
+      font-size: 16px !important;
+      color: #2c3e50 !important;
+      padding: 12px !important;
+      white-space: normal !important;
+      text-align: center !important;
+    }
+    
+    .picker-center-highlight {
+      border-color: #3498db !important;
+    }
+  </style>
 </head>
 <body>
-    <!-- Menú -->
-    <div class="menu-flotante">
-        <button class="menu-btn">☰</button>
-        <div class="menu-contenido">
-            <div class="menu-grupo">
-                <div class="menu-titulo">Modos de juego</div>
-                <a href="index.html">Random</a>
-                <a href="laboratorio.html" class="activo">Laboratorio</a>
-                <a href="tradicional.html">Tradicional</a>
-            </div>
-            <div class="menu-grupo">
-                <div class="menu-titulo">Otras secciones</div>
-                <a href="publicos.html">Leer refrankensteins</a>
-                <a href="about.html">¿Qué es Refránkenstein?</a>
-            </div>
-        </div>
+  <!-- Menú -->
+  <div class="menu-flotante">
+    <button class="menu-btn">☰</button>
+    <div class="menu-contenido">
+      <div class="menu-grupo">
+        <div class="menu-titulo">Modos de juego</div>
+        <a href="index.html">Random</a>
+        <a href="laboratorio.html" class="activo">Laboratorio</a>
+        <a href="tradicional.html">Tradicional</a>
+      </div>
+      <div class="menu-grupo">
+        <div class="menu-titulo">Otras secciones</div>
+        <a href="publicos.html">Leer refrankensteins</a>
+        <a href="about.html">¿Qué es Refránkenstein?</a>
+      </div>
     </div>
+  </div>
 
-    <div class="title-container">
-        <h1>Refránkenstein</h1>
-        <h5>¡Reinventa el refranero!</h5>
+  <div class="title-container">
+    <h1>Refránkenstein</h1>
+    <h5>¡Reinventa el refranero!</h5>
+  </div>
+  
+  <div class="modo-container">
+    <h2>Modo Laboratorio</h2>
+  </div>
+
+  <!-- Laboratorio con Picker Wheels -->
+  <div class="laboratorio">
+    <div class="grupo-combinacion">
+      <!-- Parte 1 -->
+      <div class="selector-columna">
+        <div class="selector-titulo">Primera parte:</div>
+        <select id="tipo-parte-1" class="selector-tipo" onchange="actualizarPicker(1)">
+          <option value="inicio" selected>Inicio</option>
+          <option value="remate">Remate</option>
+        </select>
+        <div id="picker-container-1" class="picker-container"></div>
+      </div>
+      
+      <!-- Parte 2 -->
+      <div class="selector-columna">
+        <div class="selector-titulo">Segunda parte:</div>
+        <select id="tipo-parte-2" class="selector-tipo" onchange="actualizarPicker(2)">
+          <option value="inicio">Inicio</option>
+          <option value="remate" selected>Remate</option>
+        </select>
+        <div id="picker-container-2" class="picker-container"></div>
+      </div>
+      
+      <button class="boton-generar" onclick="generarRefran()">
+        🧪
+      </button>
+      
+      <div class="resultado" id="resultado"></div>
     </div>
-    
-    <div class="modo-container">
-        <h2>Modo Laboratorio</h2>
-    </div>
+  </div>
 
-    <!-- Laboratorio con Picker Wheels -->
-    <div class="laboratorio">
-        <div class="grupo-combinacion">
-            <!-- Parte 1 -->
-            <div class="selector-columna">
-                <div class="selector-titulo">Primera parte:</div>
-                <select id="tipo-parte-1" class="selector-tipo" onchange="actualizarPicker(1)">
-                    <option value="inicio" selected>Inicio</option>
-                    <option value="remate">Remate</option>
-                </select>
-                <div id="picker-container-1" class="picker-container"></div>
-            </div>
-            
-            <!-- Parte 2 -->
-            <div class="selector-columna">
-                <div class="selector-titulo">Segunda parte:</div>
-                <select id="tipo-parte-2" class="selector-tipo" onchange="actualizarPicker(2)">
-                    <option value="inicio">Inicio</option>
-                    <option value="remate" selected>Remate</option>
-                </select>
-                <div id="picker-container-2" class="picker-container"></div>
-            </div>
-            
-            <button class="boton-generar" onclick="generarRefran()">
-                🧪
-            </button>
-            
-            <div class="resultado" id="resultado"></div>
-        </div>
-    </div>
+  <div class="notificacion" id="notificacion">¡Refrán guardado!</div>
+  
+  <a href="publicos.html" class="floating-button">
+    📜 Refránkensteins creados →
+  </a>
 
-    <div class="notificacion" id="notificacion">¡Refrán guardado!</div>
-    
-    <a href="publicos.html" class="floating-button">
-        📜 Refránkensteins creados→
-    </a>
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/picker-wheel@1.0.0/dist/picker-wheel.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+  <script>
+    // Configuración de Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyAdoPUF-cCyvpfiCJiBfCRv3ZYtwu1W4tc",
+      authDomain: "refrankenstein.firebaseapp.com",
+      projectId: "refrankenstein",
+      storageBucket: "refrankenstein.firebasestorage.app",
+      messagingSenderId: "575434538832",
+      appId: "1:575434538832:web:615f850a61c54ddd9d3655"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/picker-wheel@1.0.0/dist/picker-wheel.min.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
-    <script>
-        // Configuración Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyAdoPUF-cCyvpfiCJiBfCRv3ZYtwu1W4tc",
-            authDomain: "refrankenstein.firebaseapp.com",
-            projectId: "refrankenstein",
-            storageBucket: "refrankenstein.firebasestorage.app",
-            messagingSenderId: "575434538832",
-            appId: "1:575434538832:web:615f850a61c54ddd9d3655"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+    // Datos globales para pickers
+    let inicios = [];
+    let remates = [];
+    let picker1, picker2;
+    let selectedPart1, selectedPart2;
 
-        // Datos
-        let inicios = [];
-        let remates = [];
-        let picker1, picker2;
-        let selectedPart1, selectedPart2;
+    // Función para eliminar duplicados
+    function eliminarDuplicados(arr) {
+      const vistos = new Set();
+      return arr.filter(item => {
+        const normalizado = item.toLowerCase()
+          .normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+        return vistos.has(normalizado) ? false : vistos.add(normalizado);
+      });
+    }
 
-        // Función para eliminar duplicados
-        function eliminarDuplicados(arr) {
-            const vistos = new Set();
-            return arr.filter(item => {
-                const normalizado = item.toLowerCase()
-                    .normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
-                return vistos.has(normalizado) ? false : vistos.add(normalizado);
-            });
-        }
+    // Cargar datos desde Firestore
+    db.collection("tradicionales").get().then((querySnapshot) => {
+      const tempInicios = [];
+      const tempRemates = [];
 
-        // Cargar datos
-        db.collection("tradicionales").get().then((querySnapshot) => {
-            const tempInicios = [];
-            const tempRemates = [];
-
-             querySnapshot.forEach((doc) => {
+      querySnapshot.forEach((doc) => {
         const data = doc.data();
         if(data.inicio) tempInicios.push(data.inicio.trim());
         if(data.remate) tempRemates.push(data.remate.trim());
+      });
+
+      // Procesar datos y eliminar duplicados
+      inicios = eliminarDuplicados(tempInicios).sort((a, b) => a.localeCompare(b, 'es'));
+      remates = eliminarDuplicados(tempRemates).sort((a, b) => a.localeCompare(b, 'es'));
+      console.log('Datos cargados:', {inicios, remates});
+      
+      // Inicializar pickers después de un breve retraso
+      setTimeout(inicializarPickers, 100);
+    }).catch(error => {
+      console.error("Error cargando datos:", error);
+      mostrarNotificacion("Error cargando datos", 5000);
     });
 
-            // Procesar datos
-            inicios = eliminarDuplicados(tempInicios).sort((a, b) => a.localeCompare(b, 'es'));
-    remates = eliminarDuplicados(tempRemates).sort((a, b) => a.localeCompare(b, 'es'));
-  console.log('Datos cargados:', {inicios, remates});
-                    
-               // Inicializar pickers después de 100ms para asegurar renderizado
-            setTimeout(inicializarPickers, 100);
-        }).catch(error => {
-            console.error("Error cargando datos:", error);
-            mostrarNotificacion("Error cargando datos", 5000);
-        });
-            // Inicializar pickers con datos reales
-    inicializarPickers();
-}).catch(error => {
-    console.error("Error cargando datos:", error);
-});
-        // Modifica la función de inicialización de pickers:
-function inicializarPickers() {
-    // Verificar que hay datos
-    if(inicios.length === 0 || remates.length === 0) {
+    // Función para inicializar los pickers
+    function inicializarPickers() {
+      if(inicios.length === 0 || remates.length === 0) {
         console.error("No hay datos para mostrar");
         return;
+      }
+      
+      // Si hay pickers ya existentes, destrúyelos
+      if(picker1 && typeof picker1.destroy === 'function') picker1.destroy();
+      if(picker2 && typeof picker2.destroy === 'function') picker2.destroy();
+      
+      // Función para crear items para el picker
+      const crearItems = (arr) => arr.map(texto => ({
+        id: texto,
+        value: texto,
+        html: `<div class="picker-item">${texto}</div>`
+      }));
+
+      // Inicializar Picker 1
+      picker1 = new PickerWheel({
+        container: '#picker-container-1',
+        items: crearItems(inicios),
+        itemHeight: 50,
+        radius: 180,
+        visibleItems: 5,
+        onChange: (item) => {
+          selectedPart1 = item.value;
+          console.log('Parte 1 seleccionada:', selectedPart1);
+        }
+      });
+      
+      // Inicializar Picker 2
+      picker2 = new PickerWheel({
+        container: '#picker-container-2',
+        items: crearItems(remates),
+        itemHeight: 50,
+        radius: 180,
+        visibleItems: 5,
+        onChange: (item) => {
+          selectedPart2 = item.value;
+          console.log('Parte 2 seleccionada:', selectedPart2);
+        }
+      });
+      
+      // Establecer valores iniciales
+      selectedPart1 = inicios[0];
+      selectedPart2 = remates[0];
+      
+      // Forzar renderizado inicial
+      picker1.render();
+      picker2.render();
     }
-  // Destruir pickers existentes si los hay
-    if(picker1) picker1.destroy();
-    if(picker2) picker2.destroy();
-    // Crear items para pickers
-            const crearItems = (arr) => arr.map(texto => ({
-                id: texto,
-                value: texto,
-                html: `<div style="padding: 10px; text-align: center;">${texto}</div>`
-            }));
 
-      // Inicializar nuevos pickers
-     picker1 = new PickerWheel({
-                container: '#picker-container-1',
-                items: crearItems(inicios),
-                itemHeight: 50,
-                radius: 180,
-                visibleItems: 5,
-                onChange: (item) => {
-                    selectedPart1 = item.value;
-                    console.log('Parte 1 seleccionada:', selectedPart1);
-                }
-            });
-    
-    picker2 = new PickerWheel({
-                container: '#picker-container-2',
-                items: crearItems(remates),
-                itemHeight: 50,
-                radius: 180,
-                visibleItems: 5,
-                onChange: (item) => {
-                    selectedPart2 = item.value;
-                    console.log('Parte 2 seleccionada:', selectedPart2);
-                }
-            });
-    
-    // Establecer valores iniciales
-    selectedPart1 = inicios[0];
-    selectedPart2 = remates[0];
-    
-    // Forzar renderizado inicial
-    picker1.render();
-    picker2.render();
-}
+    // Actualizar picker al cambiar el desplegable
+    function actualizarPicker(parte) {
+      const tipo = document.getElementById(`tipo-parte-${parte}`).value;
+      const datos = tipo === 'inicio' ? inicios : remates;
+      
+      const picker = parte === 1 ? picker1 : picker2;
+      picker.updateItems(datos.map(texto => ({
+        id: texto,
+        value: texto,
+        html: `<div class="picker-item">${texto}</div>`
+      })));
+      
+      if (parte === 1) {
+        selectedPart1 = datos[0];
+      } else {
+        selectedPart2 = datos[0];
+      }
+    }
 
-// Añade este estilo para los pickers:
-.picker-wheel {
-    font-size: 16px !important;
-    color: #2c3e50 !important;
-}
+    // Función para generar el refrán
+    function generarRefran() {
+      const refranCompleto = `${selectedPart1} ${selectedPart2}`;
+      document.getElementById('resultado').textContent = refranCompleto;
+      guardarRefran(refranCompleto);
+    }
 
-.picker-item {
-    padding: 10px 15px !important;
-    white-space: normal !important;
-    text-align: center !important;
-}
-
-        // Actualizar picker (corregido)
-        function actualizarPicker(parte) {
-            const tipo = document.getElementById(`tipo-parte-${parte}`).value;
-            const datos = tipo === 'inicio' ? inicios : remates;
-            
-            const picker = parte === 1 ? picker1 : picker2;
-            picker.updateItems(datos.map(texto => ({
-                id: texto,
-                value: texto,
-                html: `<div style="padding: 10px; text-align: center;">${texto}</div>`
-            })));
-            
-            // Actualizar selección
-            if(parte === 1) selectedPart1 = datos[0];
-            else selectedPart2 = datos[0];
-        }
-
-        // Generar refrán
-        function generarRefran() {
-            const refranCompleto = `${selectedPart1} ${selectedPart2}`;
-            document.getElementById('resultado').textContent = refranCompleto;
-            guardarRefran(refranCompleto);
-        }
-
-        // Guardar en Firebase
-        async function guardarRefran(refran) {
-            try {
-                await db.collection("refranes").add({
-                    texto: refran,
-                    fecha: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                mostrarNotificacion();
-            } catch (error) {
-                console.error("Error guardando refrán:", error);
-            }
-        }
-
-        // Mostrar notificación
-        function mostrarNotificacion() {
-            const notificacion = document.getElementById('notificacion');
-            notificacion.style.display = 'block';
-            setTimeout(() => {
-                notificacion.style.display = 'none';
-            }, 2000);
-        }
-
-        // Control del menú
-        document.querySelector('.menu-btn').addEventListener('click', function() {
-            const menu = document.querySelector('.menu-contenido');
-            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    // Función para guardar el refrán en Firebase
+    async function guardarRefran(refran) {
+      try {
+        await db.collection("refranes").add({
+          texto: refran,
+          fecha: firebase.firestore.FieldValue.serverTimestamp()
         });
+        mostrarNotificacion("¡Refrán guardado!", 2000);
+      } catch (error) {
+        console.error("Error guardando refrán:", error);
+      }
+    }
 
-        window.addEventListener('click', function(e) {
-            if (!e.target.matches('.menu-btn') && !e.target.closest('.menu-contenido')) {
-                const menu = document.querySelector('.menu-contenido');
-                if (menu) menu.style.display = 'none';
-            }
-        });
-    </script>
+    // Función para mostrar notificación
+    function mostrarNotificacion(texto, duracion = 2000) {
+      const notificacion = document.getElementById('notificacion');
+      notificacion.textContent = texto;
+      notificacion.style.display = 'block';
+      setTimeout(() => {
+        notificacion.style.display = 'none';
+      }, duracion);
+    }
+
+    // Control del menú desplegable
+    document.querySelector('.menu-btn').addEventListener('click', function(e) {
+      e.stopPropagation();
+      const menu = document.querySelector('.menu-contenido');
+      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    });
+
+    window.addEventListener('click', function(e) {
+      if (!e.target.matches('.menu-btn') && !e.target.closest('.menu-contenido')) {
+        const menu = document.querySelector('.menu-contenido');
+        if (menu) menu.style.display = 'none';
+      }
+    });
+  </script>
 </body>
 </html>
