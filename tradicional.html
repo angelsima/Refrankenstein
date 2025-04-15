@@ -202,6 +202,36 @@
     .toast-visible {
       opacity: 1 !important;
     }
+    .suggestion-box {
+    background: #f5f5f5;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.suggestion-box textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    min-height: 80px;
+}
+
+.suggestion-box button {
+    background: #2c3e50;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.form-feedback {
+    margin-top: 10px;
+    padding: 8px;
+    display: none;
+}
   </style>
 </head>
 <body>
@@ -236,6 +266,14 @@
 
     <!-- Modo Lista -->
     <div id="modo-lista" class="modo-contenido">
+      <div class="suggestion-box">
+    <h3>¿Falta algún refrán?</h3>
+    <form id="suggestion-form">
+        <textarea placeholder="Escribe aquí el refrán tradicional que falta..." required></textarea>
+        <button type="submit">Enviar sugerencia</button>
+        <div class="form-feedback"></div>
+    </form>
+</div>
           <div class="contador" id="contador"></div>
       <ul class="lista-refranes" id="lista-refranes"></ul>
     </div>
@@ -432,6 +470,37 @@
 
     // Iniciar
     cargarDatos().catch(error => console.error('Error inicial:', error));
-</script>
+document.getElementById('suggestion-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const feedback = form.querySelector('.form-feedback');
+    const text = form.querySelector('textarea').value.trim();
+    
+    if (!text) {
+        showFeedback('Por favor escribe un refrán', 'error');
+        return;
+    }
+    
+    try {
+        await firebase.firestore().collection('sugerencias').add({
+            texto: text,
+            tipo: 'tradicional',
+            fecha: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        showFeedback('¡Gracias! Hemos recibido tu sugerencia', 'success');
+        form.reset();
+    } catch (error) {
+        console.error(error);
+        showFeedback('Error al enviar. Intenta nuevamente.', 'error');
+    }
+    
+    function showFeedback(message, type) {
+        feedback.textContent = message;
+        feedback.className = `form-feedback ${type}`;
+        feedback.style.display = 'block';
+        setTimeout(() => feedback.style.display = 'none', 4000);
+    }
+});
+  </script>
 </body>
 </html>
