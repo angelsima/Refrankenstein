@@ -1,4 +1,271 @@
-<script>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Refránkenstein - Tradicional</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      touch-action: pan-y;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    h1 {
+      font-size: 3.5em;
+      margin-bottom: 10px;
+      color: #2c3e50;
+    }
+    .subtitulo {
+      font-size: 1.2em;
+      color: #7f8c8d;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .contenedor {
+      background: white;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    /* Estilos del juego */
+    .juego-container {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+    }
+    .refran-inicio {
+      font-size: 1.5em;
+      text-align: center;
+      margin: 30px 0;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .opciones-container {
+      display: grid;
+      gap: 15px;
+      margin: 30px 0;
+    }
+    .opcion-remate {
+      padding: 15px;
+      border: 2px solid #bdc3c7;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+      background: white;
+      font-size: 1.1em;
+      text-align: center;
+    }
+    .opcion-remate:hover:not(.disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    }
+    .opcion-remate.correcto {
+      background: #27ae60 !important;
+      color: white;
+      border-color: #219653;
+    }
+    .opcion-remate.incorrecto {
+      background: #e74c3c !important;
+      color: white;
+      border-color: #c0392b;
+      animation: shake 0.3s ease-in-out;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+    .nuevo-refran-btn {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 30px;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 1.1em;
+      transition: all 0.3s;
+    }
+    .nuevo-refran-btn:hover {
+      background: #2980b9;
+      transform: scale(1.05);
+    }
+    /* Estilos de la lista */
+    .lista-refranes {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+    .refran-item {
+      padding: 15px 0;
+      border-bottom: 1px solid #eee;
+      font-size: 1.1em;
+      line-height: 1.6;
+    }
+    .contador {
+      text-align: center;
+      color: #7f8c8d;
+      margin-bottom: 20px;
+    }
+    /* Menú */
+    .menu-flotante {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 1000;
+    }
+    .menu-btn {    
+      background: #2c3e50;
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+      border: none;
+    }
+    .menu-contenido {
+      display: none;
+      position: absolute;
+      background-color: #f9f9f9;
+      min-width: 160px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      border-radius: 12px;
+      padding: 10px 0;
+    }
+    .menu-contenido a {
+      display: block;
+      padding: 8px 16px;
+      text-decoration: none;
+      color: #333;
+    }
+    .menu-contenido a.activo {
+      font-weight: bold;
+      background: #eee;
+    }
+    .menu-contenido a:hover {
+      background: #ddd;
+    }
+    .menu-separador {
+      border: none;
+      border-top: 1px solid #ccc;
+      margin: 8px 0;
+    }
+    /* Selector de modos */
+    .modo-selector {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    .modo-btn {
+      padding: 15px 30px;
+      border: 2px solid #2c3e50;
+      border-radius: 25px;
+      background: white;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 1.1em;
+    }
+    .modo-btn.activo {
+      background: #2c3e50;
+      color: white;
+    }
+    .modo-contenido {
+      display: none;
+    }
+    .modo-contenido.activo {
+      display: block;
+    }
+    /* Toast */
+    #custom-toast {
+      position: fixed;
+      bottom: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #2c3e50;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 10000;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .toast-visible {
+      opacity: 1 !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="menu-flotante">
+    <button class="menu-btn">☰</button>
+    <div class="menu-contenido">
+      <div class="menu-grupo">
+        <a href="laboratorio.html">🧪Crear Refránkensteins</a>
+      </div>
+      <hr class="menu-separador">
+      <div class="menu-grupo">
+        <a href="publicos.html">👀Leer Refránkensteins</a>
+      </div>
+      <hr class="menu-separador">
+      <div class="menu-grupo">
+        <a href="tradicional.html" class="activo">🧠Refranes originales</a>
+      </div>
+      <hr class="menu-separador">
+      <div class="menu-grupo">
+        <a href="about.html">¿Qué es Refránkenstein?</a>
+      </div>
+    </div>
+  </div>
+
+  <header>
+    <h1>Refránkenstein</h1>
+    <p class="subtitulo">¡Adivina el refrán original🪑!</p>
+  </header>
+
+  <div class="contenedor">
+    <div class="modo-selector">
+      <button class="modo-btn activo" onclick="mostrarModo('juego')">🎮 Jugar</button>
+      <button class="modo-btn" onclick="mostrarModo('lista')">📜 Lista Completa</button>
+    </div>
+
+    <!-- Modo Juego -->
+    <div id="modo-juego" class="modo-contenido activo">
+      <div class="juego-container">
+        <div class="refran-inicio" id="refran-inicio"></div>
+        <div class="opciones-container" id="opciones-container"></div>
+        <button class="nuevo-refran-btn" onclick="nuevoRefran()" id="nuevo-btn">Nuevo Refrán</button>
+      </div>
+    </div>
+
+    <!-- Modo Lista -->
+    <div id="modo-lista" class="modo-contenido">
+      <h1>Refranes Tradicionales Completos</h1>
+      <div class="contador" id="contador"></div>
+      <ul class="lista-refranes" id="lista-refranes"></ul>
+    </div>
+  </div>
+
+  <div id="custom-toast" class="toast-hidden">
+    <span id="toast-message"></span>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+  <script>
     // Configuración Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyAdoPUF-cCyvpfiCJiBfCRv3ZYtwu1W4tc",
@@ -184,3 +451,5 @@
     // Iniciar
     cargarDatos().catch(error => console.error('Error inicial:', error));
 </script>
+</body>
+</html>
