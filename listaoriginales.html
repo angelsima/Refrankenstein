@@ -148,14 +148,22 @@
         const app = firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // Función mejorada para normalizar texto
-        function normalizarTexto(texto) {
-            return texto.toLowerCase()
-                        .normalize("NFD")
-                        .replace(/[\u0300-\u036f]/g, "")
-                        .replace(/[¿¡!.,;:]/g, "")  // Elimina signos de puntuación
-                        .trim();
-        }
+        // Función de normalización MODIFICADA (solo para limpieza de duplicados)
+function normalizarTexto(texto) {
+    return texto.toLowerCase()
+               .normalize("NFD")
+               .replace(/[\u0300-\u036f]/g, "") // Elimina acentos
+               .replace(/[^a-zñ]/g, "") // Elimina caracteres no alfabéticos
+               .trim();
+}
+
+// Ordenación CORREGIDA (usando texto original)
+refranes.sort((a, b) => 
+    a.localeCompare(b, 'es', { 
+        sensitivity: 'base', // Ignora mayúsculas/acentos en la comparación
+        ignorePunctuation: true 
+    })
+);
 
         async function cargarRefranes() {
             try {
