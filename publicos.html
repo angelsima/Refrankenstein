@@ -163,85 +163,57 @@
             background: #1a252f;
             transform: translateX(-3px);
         }
-         </style>
-<style>
-/* Añade estos estilos al CSS existente */
-.menu-flotante {
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  z-index: 1000;
+   .nav-container {
+       left: 0;
+    right: 0;
+    background: white;
+    z-index: 1000;
+    border-bottom: 1px solid #eee;
+}  
+.nav-menu {
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-around;
+    padding: 15px 20px;
 }
 
-.menu-btn {    
-  background: #2c3e50;
-  color: white;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%; /* ← corrección aquí */
-  font-size: 20px;
-  cursor: pointer;
-  border: none; /* ← elimina el borde del botón */
+.nav-link {
+    text-decoration: none;
+    color: #2c3e50;
+    font-weight: 500;
+    padding: 10px 15px;
+    border-radius: 20px;
+    transition: all 0.3s;
+    font-size: 1.1em;
+}   
+.nav-link:hover {
+    background: #f8f9fa;
+    transform: translateY(-2px);
 }
 
-.menu-contenido {
-  display: none;
-  position: absolute;
-  background-color: #f9f9f9;
-  min-width: 160px;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-  border-radius: 12px; /* ← más redondeado si quieres */
-  padding: 10px 0;
-  border: none; /* ← elimina cualquier borde */
+.nav-link.activo {
+    background: #2c3e50;
+    color: white;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
 }
 
-.menu-contenido a {
-  display: block;
-  padding: 8px 16px;
-  text-decoration: none;
-  color: #333;
-}
-
-.menu-contenido a.activo {
-  font-weight: bold;
-  background: #eee;
-}
-
-.menu-contenido a:hover {
-  background: #ddd;
-}
-	.menu-separador {
-  border: none;
-  border-top: 1px solid #ccc;
-  margin: 8px 0;
+/* Ajustar contenido principal para el menú fijo */
+.contenedor {
+    margin-top: 100px; /* Espacio para el menú fijo */
 }
 </style>
 </head>
 <body>
-    <div class="menu-flotante">
-        <button class="menu-btn">☰</button>
-        <div class="menu-contenido">
-            <div class="menu-grupo">
-                <a href="laboratorio.html">🧪Crear Refránkensteins</a>
-                </div>
-            <hr class="menu-separador">
-           <div class="menu-grupo">
-                <a href="publicos.html" class="activo">👀Leer Refránkensteins</a>
-           </div>
-            <hr class="menu-separador">
-            <div class="menu-grupo">
-                <div class="menu-titulo">🧠Refranes originales</div>
-                <a href="tradicional.html">¡Ponte a prueba!🧩</a>
-                <a href="listaoriginales.html">Lista de refranes originales🪑</a>
-            </div>
-            <hr class="menu-separador">
-              <div class="menu-grupo">
-                <a href="about.html">¿Qué es Refránkenstein?</a>
-            </div>
-        </div>
-    </div>
-	 <header>
+   	 <header>
             <h1>Refránkensteins creados</h1>
+		<div class="nav-container">
+    <nav class="nav-menu">
+        <a href="laboratorio.html" class="nav-link">🧪 Crear</a>
+        <a href="publicos.html" class="nav-link">🔍 Explorar</a>
+        <a href="tradicional.html" class="nav-link">🧠 Conservar</a>
+        <a href="about.html" class="nav-link">❓ About</a>
+    </nav>
+</div>
             <p class="subtitulo">Lee, vota y comparte refránkensteins creados entre tod@s</p>
         </header>
 	<script>
@@ -545,6 +517,18 @@ window.addEventListener('click', function(e) {
         document.getElementById('error-message').textContent = 
             `Error crítico: ${error.message}. Recarga la página o intenta más tarde.`;
     }
+	  document.addEventListener('DOMContentLoaded', function() {
+    const currentPage = window.location.pathname.split('/').pop();
+    const navLinks = document.querySelectorAll('.nav-link');
+    
+    navLinks.forEach(link => {
+        const linkPage = link.getAttribute('href');
+        if(currentPage === linkPage) {
+            link.classList.add('activo');
+        }
+    });
+});
+
 </script>
 </body>
 </html>
