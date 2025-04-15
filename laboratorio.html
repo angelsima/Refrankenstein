@@ -359,13 +359,18 @@
         }
 
         async function esRefranTradicional(inicio, remate) {
-            const tradRef = db.collection('tradicionales');
-            const snapshot = await tradRef
-                .where('inicio', '==', inicio)
-                .where('remate', '==', remate)
-                .limit(1)
-                .get();
-            return !snapshot.empty;
+            try {
+                const tradRef = db.collection('tradicionales');
+                const snapshot = await tradRef
+                    .where('inicio', '==', inicio)
+                    .where('remate', '==', remate)
+                    .limit(1)
+                    .get();
+                return !snapshot.empty;
+            } catch (error) {
+                console.error("Error verificando refrán:", error);
+                return false;
+            }
         }
 
         // Modo Random
@@ -375,10 +380,12 @@
                 snapshot.forEach(doc => {
                     const data = doc.data();
                     if(data.inicio && data.remate) {
-                        iniciosRefran.push(data.inicio);
-                        rematesRefran.push(data.remate);
+                        iniciosRefran.push(data.inicio.trim());
+                        rematesRefran.push(data.remate.trim());
                     }
                 });
+                iniciosRefran = [...new Set(iniciosRefran)];
+                rematesRefran = [...new Set(rematesRefran)];
             } catch (error) {
                 mostrarNotificacion("Error cargando refranes", 5000);
             }
@@ -402,34 +409,38 @@
 
         function actualizarRemate() {
             const card = document.getElementById('remate-card');
-            card.textContent = remateHistory[currentIndex];
+            if(remateHistory[currentIndex]) {
+                card.textContent = remateHistory[currentIndex];
+            }
         }
 
         async function toggleLike() {
             const combination = `${inicioActual} ${remateHistory[currentIndex]}`;
             const heart = document.querySelector('.heart-button');
             
-            if(await esRefranTradicional(inicioActual, remateHistory[currentIndex])) {
-                mostrarNotificacion("¡Refrán tradicional! Usa otro", 3000);
-                return;
-            }
-
-            try {
-                if(heart.classList.contains('liked')) {
-                    await db.collection('refranes').where('texto', '==', combination).get()
-                        .then(querySnapshot => querySnapshot.forEach(doc => doc.ref.delete()));
-                    heart.classList.remove('liked');
-                    mostrarNotificacion("Refrán eliminado❌");
-                } else {
-                    await db.collection('refranes').add({
-                        texto: combination,
-                        fecha: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                    heart.classList.add('liked');
-                    mostrarNotificacion("Refrán guardado✔");
+            if(!combination.includes("undefined")) {
+                if(await esRefranTradicional(inicioActual, remateHistory[currentIndex])) {
+                    mostrarNotificacion("¡Refrán tradicional! Usa otro", 3000);
+                    return;
                 }
-            } catch (error) {
-                mostrarNotificacion("Error al guardar", 3000);
+
+                try {
+                    if(heart.classList.contains('liked')) {
+                        await db.collection('refranes').where('texto', '==', combination).get()
+                            .then(querySnapshot => querySnapshot.forEach(doc => doc.ref.delete()));
+                        heart.classList.remove('liked');
+                        mostrarNotificacion("Refrán eliminado❌");
+                    } else {
+                        await db.collection('refranes').add({
+                            texto: combination,
+                            fecha: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                        heart.classList.add('liked');
+                        mostrarNotificacion("Refrán guardado✔");
+                    }
+                } catch (error) {
+                    mostrarNotificacion("Error al guardar", 3000);
+                }
             }
         }
 
@@ -494,17 +505,25 @@
 
         // Control de modos
         function mostrarModo(modo) {
+            // Actualizar botones
             document.querySelectorAll('.modo-btn').forEach(btn => btn.classList.remove('activo'));
-            document.querySelectorAll('.modo-contenido').forEach(contenido => contenido.classList.remove('activo'));
-            
             document.querySelector(`[onclick="mostrarModo('${modo}')"]`).classList.add('activo');
+            
+            // Actualizar contenidos
+            document.querySelectorAll('.modo-contenido').forEach(contenido => {
+                contenido.classList.remove('activo');
+            });
             document.getElementById(`modo-${modo}`).classList.add('activo');
 
-            if(modo === 'laboratorio' && inicios.length === 0) cargarDatosLaboratorio();
+            // Cargar datos del laboratorio si es necesario
+            if(modo === 'laboratorio' && inicios.length === 0) {
+                cargarDatosLaboratorio();
+            }
         }
 
         // Inicialización
         (async () => {
+            // Cargar datos iniciales
             await cargarRefranesTradicionales();
             cambiarInicio();
             
@@ -514,5 +533,13 @@
                 menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
             });
 
+            // Cerrar menú al hacer click fuera
             window.addEventListener('click', (e) => {
                 if (!e.target.closest('.menu-flotante')) {
+                    document.querySelector('.menu-contenido').style.display = 'none';
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
