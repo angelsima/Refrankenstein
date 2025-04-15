@@ -198,6 +198,19 @@
 
         // Iniciar carga
         cargarRefranes();
+   // Control del menú
+            document.querySelector('.menu-btn').addEventListener('click', () => {
+                const menu = document.querySelector('.menu-contenido');
+                menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+            });
+
+            // Cerrar menú al hacer click fuera
+            window.addEventListener('click', (e) => {
+                if (!e.target.closest('.menu-flotante')) {
+                    document.querySelector('.menu-contenido').style.display = 'none';
+                }
+            });
+        })();
     </script>
 </body>
 </html>
