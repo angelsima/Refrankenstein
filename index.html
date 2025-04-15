@@ -1,6 +1,4 @@
 
-
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -251,9 +249,16 @@ function cambiarInicio() {
             actualizarCorazon();
         }
 
-        function toggleLike() {
+       async function toggleLike() {
     const combination = `${inicioActual} ${remateHistory[currentIndex]}`;
     const heart = document.querySelector('.heart-button');
+	        // Verificar si es un refrán tradicional
+    const esTradicional = await esRefranTradicional(inicioActual, remateHistory[currentIndex]);
+    
+    if(esTradicional) {
+        showToast("¡Este es un refrán tradicional! Usa otro", 3000);
+        return;
+    }
     
     // Referencia a la colección en Firestore
     const refranesRef = firebase.firestore().collection('refranes');
@@ -338,6 +343,23 @@ function cambiarInicio() {
         toast.classList.remove('toast-visible');
     }, duration);
 }
+// Nueva función de verificación
+async function esRefranTradicional(inicio, remate) {
+    try {
+        const tradRef = firebase.firestore().collection('tradicionales');
+        const snapshot = await tradRef
+            .where('inicio', '==', inicio)
+            .where('remate', '==', remate)
+            .limit(1)
+            .get();
+        
+        return !snapshot.empty;
+    } catch (error) {
+        console.error("Error verificando refrán tradicional:", error);
+        return false;
+    }
+}
+	    
 function guardarRefran(refran) {
     db.collection("refranes").add({
       texto: refran,
