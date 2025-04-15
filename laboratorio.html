@@ -274,6 +274,38 @@
     }
 
     document.addEventListener("DOMContentLoaded", cargarDatos);
+    function cambiarInicio() {
+    if(iniciosRefran.length === 0) return;
+    inicioActual = iniciosRefran[Math.floor(Math.random() * iniciosRefran.length)];
+    document.getElementById('inicio-refran').textContent = inicioActual;
+    generarNuevoRemate();
+}
+
+        function generarNuevoRemate() {
+            if(rematesRefran.length === 0) return;
+            const nuevoRemate = rematesRefran[Math.floor(Math.random() * rematesRefran.length)];
+            remateHistory = remateHistory.slice(0, currentIndex + 1);
+            remateHistory.push(nuevoRemate);
+            currentIndex++;
+            actualizarRemate();
+        }
+
+        function actualizarRemate() {
+            const card = document.getElementById('remate-card');
+            card.textContent = remateHistory[currentIndex];
+            actualizarCorazon();
+        }
+
+       async function toggleLike() {
+    const combination = `${inicioActual} ${remateHistory[currentIndex]}`;
+    const heart = document.querySelector('.heart-button');
+	        // Verificar si es un refrán tradicional
+    const esTradicional = await esRefranTradicional(inicioActual, remateHistory[currentIndex]);
+    
+    if(esTradicional) {
+        showToast("¡Este es un refrán tradicional! Usa otro", 3000);
+        return;
+    }
   </script>
 </body>
 </html>
