@@ -34,7 +34,7 @@
             font-weight: bold;
             margin-bottom: 5px;
         }
-        .refran-date {
+        .-date {
             color: #7f8c8d;
             font-size: 0.9em;
         }
@@ -57,7 +57,7 @@
             padding: 10px;
             border-radius: 8px;
         }
-        #refranes-counter {
+        #es-counter {
             font-weight: bold;
             color: #48bf67;
             font-size: 1.3em;
@@ -211,7 +211,7 @@
         </div>
         <div class="menu-grupo">
             <div class="menu-titulo">-----</div>
-            <a href="publicos.html" class="activo">Leer refrankensteins</a>
+            <a href="publicos.html" class="activo">Leer kensteins</a>
             <a href="about.html">¿Qué es Refránkenstein?</a>
         </div>
     </div>
@@ -235,7 +235,7 @@ window.addEventListener('click', function(e) {
 </script>
     <h1>Refránkensteins creados</h1>
     <div class="counter-container">
-        Ya llevamos <span id="refranes-counter">0</span>
+        Ya llevamos <span id="es-counter">0</span>
     </div>
     <div class="filters">
         <button class="filter-btn active" data-filter="nuevos">Más recientes</button>
@@ -243,9 +243,9 @@ window.addEventListener('click', function(e) {
         <button class="filter-btn" data-filter="alfabetico">Alfabético</button>
     </div>
     
-    <div id="loading">Cargando refranes...</div>
+    <div id="loading">Cargando es...</div>
     <div id="error-message"></div>
-    <div id="lista-refranes"></div>
+    <div id="lista-es"></div>
     
     <!-- Paginación -->
     <div class="pagination">
@@ -264,9 +264,9 @@ window.addEventListener('click', function(e) {
     // Configuración de Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyAdoPUF-cCyvpfiCJiBfCRv3ZYtwu1W4tc",
-        authDomain: "refrankenstein.firebaseapp.com",
-        projectId: "refrankenstein",
-        storageBucket: "refrankenstein.firebasestorage.app",
+        authDomain: "kenstein.firebaseapp.com",
+        projectId: "kenstein",
+        storageBucket: "kenstein.firebasestorage.app",
         messagingSenderId: "575434538832",
         appId: "1:575434538832:web:615f850a61c54ddd9d3655"
     };
@@ -279,9 +279,9 @@ window.addEventListener('click', function(e) {
         
         // Variables globales
         let currentFilter = 'nuevos';
-        let loadedRefranes = new Set();
+        let loadedes = new Set();
         let currentPage = 1;
-        const refranesPerPage = 25;
+        const esPerPage = 25;
         let totalRefranes = 0;
         let totalPages = 1;
         let lastVisibleDoc = null;
@@ -400,12 +400,14 @@ window.addEventListener('click', function(e) {
                     listaRefranes.innerHTML += `
                         <div class="refran-container" data-refran-id="${refran.id}">
                             <p class="refran-text">${refran.texto}</p>
-                            <div class="voting-container">
+                            <div class="refran-footer">
+			    <div class="voting-container">
                                 <button class="vote-btn" onclick="votarRefran('${refran.id}', ${refran.votos || 0})">
                                     👍 <span class="vote-count">${refran.votos || 0}</span>
                                 </button>
                             </div>
                             <small class="refran-date">${fecha}</small>
+			     </div>
                         </div>
                     `;
                 });
