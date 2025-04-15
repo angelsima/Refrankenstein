@@ -1,0 +1,464 @@
+
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Refránkenstein - Laboratorio</title>
+    <style>
+	    body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            touch-action: pan-y;
+        }
+      .title-container {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+    .modo-container {
+            text-align: center;
+            margin-bottom: 0px;
+        }
+	    
+        /* Estilos del menú */
+        .menu-flotante {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 1000;
+        }
+        .menu-btn {
+            background: #fff;
+            border: 2px solid #000;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .menu-contenido {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            border-radius: 5px;
+            padding: 10px 0;
+        }
+        .menu-contenido a {
+            display: block;
+            padding: 8px 16px;
+            text-decoration: none;
+            color: #333;
+        }
+        .menu-contenido a.activo {
+            font-weight: bold;
+            background: #eee;
+        }
+        .menu-contenido a:hover {
+            background: #ddd;
+        }
+
+        /* Estilos del Laboratorio */
+        .laboratorio {
+            max-width: 800px;
+            margin: 70px auto 20px;
+            padding: 20px;
+        }
+        .grupo-combinacion {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .selector-tipo {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        .selector-tipo select {
+            width: 48%;
+            padding: 8px;
+            border: 2px solid #bdc3c7;
+            border-radius: 5px;
+        }
+        .selector-contenido {
+            display: flex;
+            justify-content: space-between;
+        }
+        .selector-contenido select {
+            width: 48%;
+            padding: 8px;
+            border: 2px solid #bdc3c7;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            height: 150px;
+        }
+        .boton-generar {
+           font-size: 2em;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #ccc;
+            display: block;
+            margin: 0 auto;
+        }
+        .boton-generar:hover {
+            background: #2980b9;
+        }
+        .resultado {
+            font-size: 24px;
+            padding: 20px;
+            border: 2px dashed #bdc3c7;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+            background: #fff;
+        }
+     .notificacion {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #27ae60;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+            display: none;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { bottom: -50px; }
+            to { bottom: 20px; }
+        }
+    </style>
+<style>
+/* Añade estos estilos al CSS existente */
+.menu-flotante {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 1000;
+}
+
+.menu-btn {    
+  background: #2c3e50;
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%; /* ← corrección aquí */
+  font-size: 20px;
+  cursor: pointer;
+  border: none; /* ← elimina el borde del botón */
+}
+
+.menu-contenido {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  border-radius: 12px; /* ← más redondeado si quieres */
+  padding: 10px 0;
+  border: none; /* ← elimina cualquier borde */
+}
+
+.menu-contenido a {
+  display: block;
+  padding: 8px 16px;
+  text-decoration: none;
+  color: #333;
+}
+
+.menu-contenido a.activo {
+  font-weight: bold;
+  background: #eee;
+}
+
+.menu-contenido a:hover {
+  background: #ddd;
+}	
+</style>
+</head>
+<body>
+<div class="menu-flotante">
+    <button class="menu-btn">☰</button>
+    <div class="menu-contenido">
+        <div class="menu-grupo">
+            <div class="menu-titulo">Modos de juego</div>
+            <a href="index.html">Random</a>
+            <a href="laboratorio.html" class="activo">Laboratorio</a>
+            <a href="tradicional.html">Tradicional</a>
+        </div>
+        <div class="menu-grupo">
+            <a href="publicos.html">Leer refrankensteins</a>
+            <a href="about.html">¿Qué es Refránkenstein?</a>
+        </div>
+    </div>
+</div>
+    <!-- Menú -->
+     <div class="title-container">
+        <h1>Refránkenstein</h1>
+	    <h5>¡Reinventa el refranero!</h5>
+	      <h3> Modo Laboratorio🔬</h3>
+    </div>
+	
+       <!-- Laboratorio -->
+    <div class="laboratorio">
+        <div class="grupo-combinacion">
+            <div class="selector-tipo">
+                <select id="tipo-parte-1" onchange="actualizarContenido(1)">
+                    <option value="inicio" selected>Inicio</option>
+                    <option value="remate">Remate</option>
+                </select>
+                <select id="tipo-parte-2" onchange="actualizarContenido(2)">
+                    <option value="inicio">Inicio</option>
+                    <option value="remate" selected>Remate</option>
+                </select>
+            </div>
+            
+            <div class="selector-contenido">
+                <select id="contenido-parte-1" size="5"></select>
+                <select id="contenido-parte-2" size="5"></select>
+            </div>
+            
+            <button class="boton-generar" onclick="generarRefran()">
+                🧪
+            </button>
+        </div>
+        
+        <div class="resultado" id="resultado"></div>
+    </div>
+<div class="notificacion" id="notificacion">¡Refrán guardado!</div>
+    <!-- Firebase + Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <script>
+        // Configuración Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAdoPUF-cCyvpfiCJiBfCRv3ZYtwu1W4tc",
+            authDomain: "refrankenstein.firebaseapp.com",
+            projectId: "refrankenstein",
+            storageBucket: "refrankenstein.firebasestorage.app",
+            messagingSenderId: "575434538832",
+            appId: "1:575434538832:web:615f850a61c54ddd9d3655"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Datos
+        let inicios = [];
+        let remates = [];
+// Función mejorada para eliminar duplicados (considera mayúsculas y acentos)
+    function eliminarDuplicados(arr) {
+        const vistos = new Set();
+        return arr.filter(item => {
+            const normalizado = item
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .trim();
+            return vistos.has(normalizado) ? false : vistos.add(normalizado);
+        });
+    }
+   // Cargar datos (VERSIÓN CORREGIDA)
+    db.collection("tradicionales").get().then((querySnapshot) => {
+        const tempInicios = [];
+        const tempRemates = [];
+
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            
+            // Limpiar inicios
+            if(data.inicio) {
+                const inicioLimpio = data.inicio.trim();
+                if(inicioLimpio !== "") tempInicios.push(inicioLimpio);
+            }
+            
+            // Limpiar remates
+            if(data.remate) {
+                const remateLimpio = data.remate.trim();
+                if(remateLimpio !== "") tempRemates.push(remateLimpio);
+            }
+        });
+
+        // Procesar datos
+        inicios = eliminarDuplicados(tempInicios).sort((a, b) => a.localeCompare(b, 'es'));
+        remates = eliminarDuplicados(tempRemates).sort((a, b) => a.localeCompare(b, 'es'));
+
+        // Actualizar UI
+        actualizarContenido(1);
+        actualizarContenido(2);
+    });
+
+        // Actualizar selectores de contenido
+        function actualizarContenido(parte) {
+            const tipoSelector = document.getElementById(`tipo-parte-${parte}`);
+            const contenidoSelector = document.getElementById(`contenido-parte-${parte}`);
+            
+            const tipo = tipoSelector.value;
+            const opciones = tipo === "inicio" ? inicios : remates;
+            
+            contenidoSelector.innerHTML = opciones.map((texto, index) => 
+                `<option value="${index}">${texto}</option>`
+            ).join('');
+        }
+// Función para ordenar
+    function ordenarAlfabetico(arr) {
+        return arr.sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }));
+    }
+        // Generar refrán
+        function generarRefran() {
+            const tipo1 = document.getElementById('tipo-parte-1').value;
+            const tipo2 = document.getElementById('tipo-parte-2').value;
+            
+            const index1 = document.getElementById('contenido-parte-1').value;
+            const index2 = document.getElementById('contenido-parte-2').value;
+            
+            const parte1 = tipo1 === "inicio" ? inicios[index1] : remates[index1];
+            const parte2 = tipo2 === "inicio" ? inicios[index2] : remates[index2];
+            
+            document.getElementById('resultado').textContent = `${parte1} ${parte2}`;
+        }
+
+
+      async function guardarRefran(parte1, parte2) {
+    try {
+        // Verificar si es tradicional usando las partes reales
+        const esTradicional = await esRefranTradicional(parte1, parte2);
+        
+        if(esTradicional) {
+            mostrarNotificacion("¡Este es un refrán tradicional! Crea uno nuevo", 3000);
+            return;
+        }
+
+        // Guardar el refrán combinado
+        await db.collection("refranes").add({
+            texto: `${parte1} ${parte2}`,
+            fecha: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        mostrarNotificacion("¡Refránkenstein guardado!");
+    } catch (error) {
+        console.error("Error guardando refrán:", error);
+        mostrarNotificacion("Error al guardar", 3000);
+    }
+}
+	    // Añadir la misma función de verificación
+async function esRefranTradicional(inicio, remate) {
+    try {
+        const tradRef = firebase.firestore().collection('tradicionales');
+        const snapshot = await tradRef
+            .where('inicio', '==', inicio)
+            .where('remate', '==', remate)
+            .limit(1)
+            .get();
+        
+        return !snapshot.empty;
+    } catch (error) {
+        console.error("Error verificando refrán tradicional:", error);
+        return false;
+    }
+}
+        // Función de notificación (nueva)
+      function mostrarNotificacion(mensaje = "¡Refrán guardado!", duracion = 2000) {
+    const notificacion = document.getElementById('notificacion');
+    notificacion.textContent = mensaje;
+    notificacion.style.display = 'block';
+    setTimeout(() => {
+        notificacion.style.display = 'none';
+    }, duracion);
+}
+        // Generar refrán modificado para guardar
+        function generarRefran() {
+            const tipo1 = document.getElementById('tipo-parte-1').value;
+            const tipo2 = document.getElementById('tipo-parte-2').value;
+            
+            const index1 = document.getElementById('contenido-parte-1').value;
+            const index2 = document.getElementById('contenido-parte-2').value;
+            
+            const parte1 = tipo1 === "inicio" ? inicios[index1] : remates[index1];
+            const parte2 = tipo2 === "inicio" ? inicios[index2] : remates[index2];
+            
+            const refranCompleto = `${parte1} ${parte2}`;
+            
+            // Mostrar y guardar
+            document.getElementById('resultado').textContent = refranCompleto;
+            guardarRefran(parte1, parte2);
+        }
+    </script>
+<a href="publicos.html" class="floating-button">
+    📜 Refránkensteins creados→
+</a>
+
+<style>
+    .floating-button {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #2c3e50;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 50px;
+        text-decoration: none;
+	    text-align: center;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        z-index: 1000;
+        font-size: 0.9em;
+        transition: all 0.3s;
+    }
+    .floating-button:hover {
+        background: #1a252f;
+        transform: translateY(-3px);
+    }
+</style>
+<div id="custom-toast" class="toast-hidden">
+    <span id="toast-message"></span>
+	<div id="toast-message" class="toast-message-container"></div>
+</div>
+
+<style>
+#custom-toast {
+        position: fixed;
+        bottom: 70px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #2c3e50;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 30px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 10000;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+    .toast-visible {
+        opacity: 1 !important;
+}
+</style>
+	</style>
+	<script>
+// Mostrar/ocultar menú
+document.querySelector('.menu-btn').addEventListener('click', function() {
+  const menu = document.querySelector('.menu-contenido');
+  menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+});
+
+// Cerrar menú al hacer clic fuera
+window.addEventListener('click', function(e) {
+  if (!e.target.matches('.menu-btn') && !e.target.closest('.menu-contenido')) {
+    const menu = document.querySelector('.menu-contenido');
+    if (menu && menu.style.display === 'block') {
+      menu.style.display = 'none';
+    }
+  }
+});
+</script>
+</body>
+</html>
