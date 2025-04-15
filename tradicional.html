@@ -12,14 +12,23 @@
       padding: 20px;
       touch-action: pan-y;
     }
-    .title-container {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .modo-container {
-      text-align: center;
-      margin-bottom: 20px;
-    }
+    header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        h1 {
+            font-size: 3.5em;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .subtitulo {
+            font-size: 1.2em;
+            color: #7f8c8d;
+            max-width: 600px;
+            margin: 0 auto;
+        }
     /* Estilos específicos del modo Tradicional */
     .juego-container {
       max-width: 600px;
@@ -192,12 +201,10 @@
             </div>
         </div>
     </div>
-
-  <div class="title-container">
-      <h1>Refránkenstein</h1>
-      <h3>Modo Tradicional 🪑</h3>
-      <h5>¡Adivina el refrán original!</h5>
-  </div>
+ <header>
+            <h1>Refránkenstein</h1>
+            <p class="subtitulo">¡Adivina el refran original🪑!</p>
+        </header>
   <!-- Se eliminó el div de puntuación -->
   <div class="juego-container">
       <div class="refran-inicio" id="refran-inicio"></div>
