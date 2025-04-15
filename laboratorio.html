@@ -31,56 +31,47 @@
             max-width: 600px;
             margin: 0 auto;
         }
-
-        /* Menú */
-        .menu-flotante {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            z-index: 1000;
-        }
-
-        .menu-btn {    
-            background: #2c3e50;
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            font-size: 20px;
-            cursor: pointer;
-            border: none;
-        }
-
-        .menu-contenido {
-            display: none;
-            position: absolute;
-            background-color: #f9f9f9;
-            min-width: 160px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-            border-radius: 12px;
-            padding: 10px 0;
-        }
-
-        .menu-contenido a {
-            display: block;
-            padding: 8px 16px;
-            text-decoration: none;
-            color: #333;
-        }
-
-        .menu-contenido a.activo {
-            font-weight: bold;
-            background: #eee;
-        }
-
-        .menu-contenido a:hover {
-            background: #ddd;
-        }
-.menu-separador {
-  border: none;
-  border-top: 1px solid #ccc;
-  margin: 8px 0;
+/* Menú fijo debajo del encabezado */
+.menu-fijo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  background: #f9f9f9;
+  border-bottom: 1px solid #ccc;
+  padding: 10px 0;
+  margin-bottom: 30px; /* Espacio entre el menú y el resto del contenido */
+  position: relative;
+  z-index: 100;
 }
+
+.menu-fijo a,
+.menu-fijo .submenu span {
+  text-decoration: none;
+  color: #333;
+  padding: 8px 16px;
+  border-radius: 5px;
+  font-size: 1em;
+}
+
+.menu-fijo a.activo {
+  font-weight: bold;
+  background: #eee;
+}
+
+.menu-fijo a:hover,
+.menu-fijo .submenu a:hover {
+  background: #ddd;
+}
+
+/* Si deseas que el submenu (los elementos anidados) se vean en columna, opcional */
+.menu-fijo .submenu {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
         /* Selector de modos */
         .modo-selector {
             display: flex;
@@ -308,34 +299,24 @@
     </style>
 </head>
 <body>
-    <div class="menu-flotante">
-        <button class="menu-btn">☰</button>
-        <div class="menu-contenido">
-            <div class="menu-grupo">
-                <a href="laboratorio.html" class="activo">🧪Crear Refránkensteins</a>
-                </div>
-            <hr class="menu-separador">
-           <div class="menu-grupo">
-                <a href="publicos.html">👀Leer Refránkensteins</a>
-           </div>
-            <hr class="menu-separador">
-            <div class="menu-grupo">
-                <div class="menu-titulo">🧠Refranes originales</div>
-                <a href="tradicional.html">¡Ponte a prueba!🧩</a>
-                <a href="listaoriginales.html">Lista de refranes originales🪑</a>
-            </div>
-            <hr class="menu-separador">
-              <div class="menu-grupo">
-                <a href="about.html">¿Qué es Refránkenstein?</a>
-            </div>
-        </div>
-    </div>
-
+  
+          
     <div class="title-container">
        <header>
             <h1>Refránkenstein</h1>
             <p class="subtitulo">¡Reinventa el refranero!</p>
         </header> 
+    <div class="menu-fijo">
+  <a href="laboratorio.html" class="activo">🧪 Crear Refránkensteins</a>
+  <a href="publicos.html">👀 Leer Refránkensteins</a>
+  <div class="submenu">
+    <span>🧠 Refranes originales</span>
+    <a href="tradicional.html">¡Ponte a prueba! 🧩</a>
+    <a href="listaoriginales.html">Lista de refranes originales 🪑</a>
+  </div>
+  <a href="about.html">¿Qué es Refránkenstein?</a>
+</div>
+
     </div>
 
     <div class="modo-selector">
@@ -642,19 +623,7 @@
             await cargarRefranesTradicionales();
             cambiarInicio();
             
-            // Control del menú
-            document.querySelector('.menu-btn').addEventListener('click', () => {
-                const menu = document.querySelector('.menu-contenido');
-                menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-            });
-
-            // Cerrar menú al hacer click fuera
-            window.addEventListener('click', (e) => {
-                if (!e.target.closest('.menu-flotante')) {
-                    document.querySelector('.menu-contenido').style.display = 'none';
-                }
-            });
-        })();
+          
     </script>
 </body>
 </html>
