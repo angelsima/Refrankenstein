@@ -411,30 +411,38 @@
           }
       }
     
-    // Modo Lista
-    async function cargarListaRefranes() {
-        if(!refranesCargados) {
-            const lista = document.getElementById('lista-refranes');
-            const refranesUnicos = new Set();
+   // Modo Lista - Versión modificada
+async function cargarListaRefranes() {
+    if(!refranesCargados) {
+        const lista = document.getElementById('lista-refranes');
+        const refranesUnicos = new Set();
+        let contador = 1; // Añadimos un contador
+        
+        refranes.forEach(refran => {
+            const clave = refran.completo
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .replace(/[^a-zñ]/g, "");
             
-            refranes.forEach(refran => {
-                const clave = refran.completo
-                    .toLowerCase()
-                    .normalize("NFD")
-                    .replace(/[\u0300-\u036f]/g, "")
-                    .replace(/[^a-zñ]/g, "");
-                
-                if(!refranesUnicos.has(clave)) {
-                    refranesUnicos.add(clave);
-                    lista.innerHTML += `<li class="refran-item">${refran.completo}</li>`;
-                }
-            });
-            
-            document.getElementById('contador').textContent = 
-                `Mostrando ${refranesUnicos.size} refranes`;
-            refranesCargados = true;
-        }
+            if(!refranesUnicos.has(clave)) {
+                refranesUnicos.add(clave);
+                // Añadimos el número antes de cada refrán
+                lista.innerHTML += `
+                    <li class="refran-item">
+                        <span class="numero">${contador}.</span>
+                        ${refran.completo}
+                    </li>
+                `;
+                contador++; // Incrementamos el contador
+            }
+        });
+        
+        document.getElementById('contador').textContent = 
+            `Mostrando ${refranesUnicos.size} refranes`;
+        refranesCargados = true;
     }
+}
 
     // Control de modos
     function mostrarModo(modo) {
